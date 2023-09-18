@@ -4,15 +4,18 @@ devtools::load_all() # actualizar el codigo
 set.seed(314)
 
 # Simulated data
-N <- 100
-scenario <- "A"
-data <- AddScenario(N, scenario) # x1, y, yD
+data <- reffcy (
+  DGP = "add_scenario_XnY1",
+  parms = list (
+    N = 100,
+    scenario = "A"
+  )
+)
 
-DMUs <- NULL
 x <- 1
 y <- 2
 
-# Optimization orientation
+# efficiency orientation
 orientation <- "output"
 
 # Data train
@@ -48,11 +51,13 @@ methods <- list (
 
 # Result
 prueba <- efficiency_estimation (
-  data,
-  DMUs,
-  x,
-  y,
-  trControl,
-  methods,
-  orientation);prueba
+  data = data,
+  x = x,
+  y = y,
+  orientation = orientation,
+  trControl = trControl,
+  method = methods
+  )
+
+prueba
 

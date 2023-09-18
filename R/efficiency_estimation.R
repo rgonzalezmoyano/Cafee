@@ -1,83 +1,44 @@
-#' @title de eficiencia de las DMUs
+#' @title Fill
 #'
-#' @description Esta función devuelve los scores de eficiencia.
+#' @description Fill
 #'
 #' @param data \code{data.frame} or \code{matrix} containing the variables in the model.
-#' @param DMUs Column index of DMUs (optional). If there is not any DMU column, then it must be NULL.\code{data}.
 #' @param x Column input indexes in \code{data}.
 #' @param y Column output indexes in \code{data}.
+#' @param orientation ...
 #' @param trControl Parameters of the train \code{data}.
 #' @param methods A list of the chosen ML models' and their hyper-parameters\code{data}.
 #'
 #' @importFrom caret trainControl train
 #' @importFrom dplyr select select_if %>% arrange filter row_number
 #'
-#' @return Train model
+#' @return Fill
 #'
 #' @export
-efficiency_estimation <- function(data, DMUs, x, y, trControl, methods, orientation) {
+efficiency_estimation <- function (
+    data, x, y, orientation,
+    trControl, methods
+    ) {
+  
+  # pre-processing
+  data <- preprocessing (
+    data = data, 
+    x = x, 
+    y = y
+    )
 
-  # Available methods and parameters
-  list_SVM <- c("svmLinear", "svmRadial", "svmPoly")
-  list_SVM.params <- c("C", "sigma", "scale", "degree")
-
-  # All available methods and parameters
-  AllMethods <- c(list_SVM) # for more methods EXAMPLE: c(list_SVM, list_KNN)
-  Allparams <- c(list_SVM.params) # EXAMPLE c(list_SVMparams, list_KNNparams)
-
-  # User models'
-  method <- NULL
-  for(i in 1:length(names(methods))) {
-    method[i] <- names(methods)[i]
-  }
-
-  if (!is.null(DMUs)) {
-
-    nameDMUs <- data[, DMUs]
-
-  } else {
-
-    nameDMUs <- row.names(data)
-
-  }
-
-  # Preprocess
-  data <- preProcess(data = data, DMUs = DMUs, x = x, y = y, na.rm = na.rm)
-
-  # DMUs
-  if (!is.null(DMUs)) {
-
-    for (i in 1:length(x)) {
-      if (x[i] > DMUs) {
-        x[i] <- x[i] - 1
-      }
-    }
-
-    for (i in 1:length(y)) {
-      if (y[i] > DMUs) {
-        y[i] <- y[i] - 1
-      }
-    }
-
-    x <<- as.integer(x)
-    y <<- as.integer(y)
-
-  } else {
-
-    row.names(data) <- row.names(data) # if NA overwrite DMUs, else create new colum; char
-
-  }
-
-  print("Preprocesado ejecutado correctamente")
-
-  row.names(data) <- nameDMUs
-
-  # Number of inputs and outputs
+  # Reorder index 'x' and 'y' in data
+  x <- 1:(ncol(data) - length(y))
+  y <- (length(x) + 1):ncol(data)
+  
+  # Number of inputs / outputs as inputs and number of outputs
   nX <- length(x)
   nY <- length(y)
 
-  # DMUs' estimate efficiency
-  DEA <- ComputeScores(data = data, nX = nX, nY = nY, orientation = orientation)
+  # compute DEA scores through an additive model
+  DEA <- compute_scores_additive (
+    data = data, nX = nX, nY = nY
+    )
 
   print("Etiquetas DEA añadidas")
 

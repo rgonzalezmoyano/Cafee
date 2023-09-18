@@ -2,26 +2,26 @@
 % Please edit documentation in R/efficiency_estimation.R
 \name{efficiency_estimation}
 \alias{efficiency_estimation}
-\title{de eficiencia de las DMUs}
+\title{Fill}
 \usage{
-efficiency_estimation(data, DMUs, x, y, trControl, methods, orientation)
+efficiency_estimation(data, x, y, orientation, trControl, methods)
 }
 \arguments{
 \item{data}{\code{data.frame} or \code{matrix} containing the variables in the model.}
 
-\item{DMUs}{Column index of DMUs (optional). If there is not any DMU column, then it must be NULL.\code{data}.}
-
 \item{x}{Column input indexes in \code{data}.}
 
 \item{y}{Column output indexes in \code{data}.}
+
+\item{orientation}{...}
 
 \item{trControl}{Parameters of the train \code{data}.}
 
 \item{methods}{A list of the chosen ML models' and their hyper-parameters\code{data}.}
 }
 \value{
-Train model
+Fill
 }
 \description{
-Esta función devuelve los scores de eficiencia.
+Fill
 }

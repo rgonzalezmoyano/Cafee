@@ -1,23 +1,20 @@
-#' @title Data Pre-processing for Multivariate Adaptive Frontier Splines.
+#' @title fill
 #'
 #' @description This function arranges the data in the required format and displays error messages.
 #'
 #' @param data \code{data.frame} or \code{matrix} containing the variables in the model.
-#' @param DMUs Column index of DMUs (optional). If there is not any DMU column, then it must be NULL.\code{data}.
 #' @param x Column input indexes in \code{data}.
 #' @param y Column output indexes in \code{data}.
-#' @param na.rm \code{logical} If \code{TRUE}, \code{NA} rows are omitted.
 #'
 #' @importFrom stats na.omit
 #' @importFrom dplyr %>%
 #'
 #' @return It returns a \code{matrix} in the required format.
-preProcess <- function(data, DMUs, x, y, na.rm = TRUE) {
-
+preprocessing <- function(data, x, y) {
+  
   # x and y well / bad introduced
 
   cols <- 1:length(data)
-
   if (!(all(x %in% cols))) {
     stop("x index(es) are not in data.")
 
@@ -26,24 +23,21 @@ preProcess <- function(data, DMUs, x, y, na.rm = TRUE) {
     }
   }
 
-  # data.frame
-  # list with variables
-  # matrix
+  # (i) data.frame, (ii) list with variables, (iii) matrix
 
   # data.frame format to deal with classes
   if (is.list(data) && !is.data.frame(data)) {
 
-    # Data names?
-
+    # data names?
     ifelse(is.null(names(data)),
-           nms <- 1:length(data), # if not 1:x
-           nms <- names(data))
+           var_names <- 1:length(data), # if not 1:x
+           var_names <- names(data)
+           )
 
-    data <- matrix(unlist(data), ncol = length(nms), byrow = F)
-    colnames(data) <- nms
+    data <- matrix(unlist(data), ncol = length(var_names), byrow = F)
+    colnames(data) <- var_names
 
   } else if (is.matrix(data) || is.data.frame(data)) {
-
     data <- data.frame(data)
   }
 
@@ -78,20 +72,5 @@ preProcess <- function(data, DMUs, x, y, na.rm = TRUE) {
 
   data <- data[, c(x, y)]
 
-  # NA values
-
-  if (any(is.na(data))){
-    if (na.rm == T){
-      data <- na.omit(data)
-      warning("Rows with NA values have been omitted .\n")
-
-    } else {
-      stop("Please, detele or impute NA registers or set na.rm = TRUE to omit them. \n")
-    }
-  }
-
-  #data <- as.matrix(data)
-
-  # return(list(data = data, x = x, y = y))
-  return(data = data)
+  return(as.matrix(data))
 }
