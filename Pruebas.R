@@ -8,6 +8,7 @@ N <- 100
 scenario <- "A"
 data <- AddScenario(N, scenario) # x1, y, yD
 
+DMUs <- NULL
 x <- 1
 y <- 2
 
@@ -46,4 +47,12 @@ methods <- list (
 # https://topepo.github.io/caret/train-models-by-tag.html
 
 # Result
-prueba <- DEA.Classifier(data, DMUs, x, y, trControl, methods, orientation);prueba
+prueba <- efficiency_estimation (
+  data,
+  DMUs,
+  x,
+  y,
+  trControl,
+  methods,
+  orientation);prueba
+
