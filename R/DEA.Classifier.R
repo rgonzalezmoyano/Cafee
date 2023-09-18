@@ -8,7 +8,6 @@
 #' @param y Column output indexes in \code{data}.
 #' @param trControl Parameters of the train \code{data}.
 #' @param methods A list of the chosen ML models' and their hyper-parameters\code{data}.
-#' @param na.rm \code{logical}. If \code{TRUE}, \code{NA} rows are omitted.
 #'
 #' @importFrom caret trainControl train
 #' @importFrom dplyr select select_if %>% arrange filter row_number
@@ -16,7 +15,7 @@
 #' @return Train model
 #'
 #' @export
-DEA.Classifier <- function(data, DMUs, x, y, trControl, methods, orientation, na.rm  = TRUE) {
+efficiency_estimation <- function(data, DMUs, x, y, trControl, methods, orientation) {
 
   # Available methods and parameters
   list_SVM <- c("svmLinear", "svmRadial", "svmPoly")
