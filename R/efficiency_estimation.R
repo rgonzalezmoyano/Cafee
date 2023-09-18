@@ -21,9 +21,6 @@ efficiency_estimation <- function(data, DMUs, x, y, trControl, methods, orientat
   list_SVM <- c("svmLinear", "svmRadial", "svmPoly")
   list_SVM.params <- c("C", "sigma", "scale", "degree")
 
-  # list_KNN <- c()
-  # list_KNNparams <- c()
-
   # All available methods and parameters
   AllMethods <- c(list_SVM) # for more methods EXAMPLE: c(list_SVM, list_KNN)
   Allparams <- c(list_SVM.params) # EXAMPLE c(list_SVMparams, list_KNNparams)
@@ -33,15 +30,6 @@ efficiency_estimation <- function(data, DMUs, x, y, trControl, methods, orientat
   for(i in 1:length(names(methods))) {
     method[i] <- names(methods)[i]
   }
-
-  # User params'
-  #params <- NULL
-  #for(i in 1:length(methods))
-  # FALTA ES PARA LA COMPROBACION
-
-
-  # Comparation all user inputs are OK
-  #comprobation <- Comprobation(method = names(methods), params = params, AllMethods = AllMethods, Allparams = Allparams)
 
   if (!is.null(DMUs)) {
 
@@ -73,9 +61,6 @@ efficiency_estimation <- function(data, DMUs, x, y, trControl, methods, orientat
 
     x <<- as.integer(x)
     y <<- as.integer(y)
-
-    # Delete DMUs
-    #data <- data[, -DMUs]
 
   } else {
 
