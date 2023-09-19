@@ -2,15 +2,15 @@
 #'
 #' @description Fill
 #'
-#' @param data \code{data.frame} or \code{matrix} containing the variables in the model.
-#' @param x Column input indexes in \code{data}.
-#' @param y Column output indexes in \code{data}.
+#' @param data A \code{data.frame} or \code{matrix} containing the variables in the model.
+#' @param x Column indexes of input variables in \code{data}.
+#' @param y Column indexes of output variables in \code{data}.
 #' @param orientation ...
 #' @param trControl Parameters of the train \code{data}.
 #' @param methods A list of the chosen ML models' and their hyper-parameters\code{data}.
 #'
 #' @importFrom caret trainControl train
-#' @importFrom dplyr select select_if %>% arrange filter row_number
+#' @importFrom dplyr select select_if %>% arrange filter row_number mutate
 #'
 #' @return Fill
 #'
@@ -36,13 +36,16 @@ efficiency_estimation <- function (
   nY <- length(y)
 
   # compute DEA scores through an additive model
-  DEA <- compute_scores_additive (
-    data = data, nX = nX, nY = nY
+  scores <- compute_scores_additive (
+    data = data, x = x, y = y, nX = nX, nY = nY
     )
-
+  
+  class_efficiency <- ifelse(scores[, 1] <= 0.000001, 1, - 1)
+  
+  # Add efficient class
+  data <- cbind(data, class_efficiency)
+  
   print("Etiquetas DEA añadidas")
-
-  data <- DEA$data
 
   # ML validation
   trControl <- trainControl(method = trControl[["method"]],

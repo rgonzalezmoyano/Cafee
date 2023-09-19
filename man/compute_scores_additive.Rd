@@ -4,17 +4,21 @@
 \alias{compute_scores_additive}
 \title{Data envelopment analysis' clasification.}
 \usage{
-compute_scores_additive(data, nX, nY)
+compute_scores_additive(data, x, y, nX, nY)
 }
 \arguments{
-\item{data}{Dataset \code{data}.}
+\item{data}{A \code{data.frame} or \code{matrix} containing the variables in the model.}
+
+\item{x}{Column indexes of input variables in \code{data}.}
+
+\item{y}{Column indexes of output variables in \code{data}.}
 
 \item{nX}{Number of inputs \code{data}.}
 
 \item{nY}{Number of outputs \code{data}.}
 }
 \value{
-It returns a \code{data.frame} with the final data.
+Fill
 }
 \description{
 This function trains for each model, the different hyperparameters and returns the best model with its best hyperparameters.

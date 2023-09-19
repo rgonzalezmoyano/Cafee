@@ -7,11 +7,11 @@
 efficiency_estimation(data, x, y, orientation, trControl, methods)
 }
 \arguments{
-\item{data}{\code{data.frame} or \code{matrix} containing the variables in the model.}
+\item{data}{A \code{data.frame} or \code{matrix} containing the variables in the model.}
 
-\item{x}{Column input indexes in \code{data}.}
+\item{x}{Column indexes of input variables in \code{data}.}
 
-\item{y}{Column output indexes in \code{data}.}
+\item{y}{Column indexes of output variables in \code{data}.}
 
 \item{orientation}{...}
 

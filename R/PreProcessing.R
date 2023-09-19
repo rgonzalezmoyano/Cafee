@@ -2,9 +2,9 @@
 #'
 #' @description This function arranges the data in the required format and displays error messages.
 #'
-#' @param data \code{data.frame} or \code{matrix} containing the variables in the model.
-#' @param x Column input indexes in \code{data}.
-#' @param y Column output indexes in \code{data}.
+#' @param data A \code{data.frame} or \code{matrix} containing the variables in the model.
+#' @param x Column indexes of input variables in \code{data}.
+#' @param y Column indexes of output variables in \code{data}.
 #'
 #' @importFrom stats na.omit
 #' @importFrom dplyr %>%
