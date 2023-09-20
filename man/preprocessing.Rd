@@ -4,7 +4,7 @@
 \alias{preprocessing}
 \title{fill}
 \usage{
-preprocessing(data, x, y)
+preprocessing(data, x, y, trControl)
 }
 \arguments{
 \item{data}{A \code{data.frame} or \code{matrix} containing the variables in the model.}
@@ -12,9 +12,11 @@ preprocessing(data, x, y)
 \item{x}{Column indexes of input variables in \code{data}.}
 
 \item{y}{Column indexes of output variables in \code{data}.}
+
+\item{trControl}{Parameters for controlling the training process (from the \code{'caret'} package).}
 }
 \value{
-It returns a \code{matrix} in the required format.
+It returns a \code{matrix} in the required format and displays some error messages.
 }
 \description{
 This function arranges the data in the required format and displays error messages.

@@ -1,16 +1,23 @@
-#' @title fill
+#' @title Prepare Data and Handle Errors
 #'
-#' @description This function arranges the data in the required format and displays error messages.
+#' @description This function arranges the data in the required format and displays some error messages.
 #'
 #' @param data A \code{data.frame} or \code{matrix} containing the variables in the model.
 #' @param x Column indexes of input variables in \code{data}.
 #' @param y Column indexes of output variables in \code{data}.
+#' @param trControl Parameters for controlling the training process (from the \code{'caret'} package).
 #'
-#' @importFrom stats na.omit
-#' @importFrom dplyr %>%
-#'
-#' @return It returns a \code{matrix} in the required format.
-preprocessing <- function(data, x, y) {
+#' @return It returns a \code{matrix} in the required format and displays some error messages.
+preprocessing <- function (
+    data, x, y, trControl
+    ) {
+  
+  browser()
+  
+  # trControl errors
+  match.call(expand.dots = FALSE)
+  
+  names(trControl)
   
   # x and y well / bad introduced
 

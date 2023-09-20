@@ -2,7 +2,7 @@
 % Please edit documentation in R/efficiency_estimation.R
 \name{efficiency_estimation}
 \alias{efficiency_estimation}
-\title{Efficiency Estimation Through Classification Algorithms}
+\title{Efficiency Estimation Using Classification Algorithms}
 \usage{
 efficiency_estimation(data, x, y, orientation, trControl, methods)
 }
@@ -13,15 +13,15 @@ efficiency_estimation(data, x, y, orientation, trControl, methods)
 
 \item{y}{Column indexes of output variables in \code{data}.}
 
-\item{orientation}{...}
+\item{orientation}{A \code{string}, equal to \code{"input"} (input-oriented) or \code{"output} (output-oriented)}
 
-\item{trControl}{Parameters of the train \code{data}.}
+\item{trControl}{Parameters for controlling the training process (from the \code{'caret'} package).}
 
-\item{methods}{A list of the chosen ML models' and their hyper-parameters\code{data}.}
+\item{methods}{A \code{list} of selected machine learning models and their hyperparameters.}
 }
 \value{
-Fill
+A \code{"cafee"} object.
 }
 \description{
-This function estimates the efficiency of a set of DMUs through a classification algorithm.
+This function uses classification algorithms to estimate the efficiency of a set of DMUs (Decision Making Units).
 }

@@ -1,20 +1,21 @@
-#' @title Efficiency Estimation Through Classification Algorithms
+#' @title Efficiency Estimation Using Classification Algorithms
 #'
-#' @description This function estimates the efficiency of a set of DMUs through a classification algorithm.
+#' @description This function uses classification algorithms to estimate the efficiency of a set of DMUs (Decision Making Units).
 #'
 #' @param data A \code{data.frame} or \code{matrix} containing the variables in the model.
 #' @param x Column indexes of input variables in \code{data}.
 #' @param y Column indexes of output variables in \code{data}.
-#' @param orientation ...
-#' @param trControl Parameters of the train \code{data}.
-#' @param methods A list of the chosen ML models' and their hyper-parameters\code{data}.
+#' @param orientation A \code{string}, equal to \code{"input"} (input-oriented) or \code{"output} (output-oriented)
+#' @param trControl Parameters for controlling the training process (from the \code{'caret'} package).
+#' @param methods A \code{list} of selected machine learning models and their hyperparameters.
 #'
 #' @importFrom caret trainControl train
-#' @importFrom dplyr select select_if %>% arrange filter row_number mutate
+#' @importFrom dplyr select_if %>% arrange filter row_number
 #'
-#' @return Fill
+#' @return A \code{"cafee"} object.
 #'
 #' @export
+
 efficiency_estimation <- function (
     data, x, y, orientation,
     trControl, methods
@@ -24,7 +25,8 @@ efficiency_estimation <- function (
   data <- preprocessing (
     data = data, 
     x = x, 
-    y = y
+    y = y,
+    trControl = trControl
     )
 
   # Reorder index 'x' and 'y' in data
@@ -40,17 +42,20 @@ efficiency_estimation <- function (
     data = data, x = x, y = y, nX = nX, nY = nY
     )
   
+  # Determine efficient and inefficient DMUs
   class_efficiency <- ifelse(scores[, 1] <= 0.000001, 1, - 1)
   
-  # Add efficient class
+  # Add "efficient" class
   data <- cbind(data, class_efficiency)
-  
-  print("Etiquetas DEA añadidas")
 
-  # ML validation
-  trControl <- trainControl(method = trControl[["method"]],
-                            number = trControl[["number"]],
-                            savePredictions = "all")
+  # Parameters for controlling the training process
+  trControl <- trainControl (
+    method = trControl[["method"]],
+    number = trControl[["number"]],
+    savePredictions = "all"
+    )
+  
+  browser()
 
   # https://www.rdocumentation.org/packages/caret/versions/6.0-92/topics/trainControl
 
