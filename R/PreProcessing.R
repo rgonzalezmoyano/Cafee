@@ -6,18 +6,19 @@
 #' @param x Column indexes of input variables in \code{data}.
 #' @param y Column indexes of output variables in \code{data}.
 #' @param trControl Parameters for controlling the training process (from the \code{'caret'} package).
+#' 
+#' @importFrom caret trainControl
 #'
 #' @return It returns a \code{matrix} in the required format and displays some error messages.
 preprocessing <- function (
     data, x, y, trControl
     ) {
   
-  browser()
-  
   # trControl errors
-  match.call(expand.dots = FALSE)
-  
-  names(trControl)
+  if (any(!(names(trControl) %in% names(trainControl())))) {
+    cat("Some trControl names are not available in the trainControl of Caret.\n")
+    stop("Stopping the code execution.\n")
+  }
   
   # x and y well / bad introduced
 

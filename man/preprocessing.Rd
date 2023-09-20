@@ -2,7 +2,7 @@
 % Please edit documentation in R/PreProcessing.R
 \name{preprocessing}
 \alias{preprocessing}
-\title{fill}
+\title{Prepare Data and Handle Errors}
 \usage{
 preprocessing(data, x, y, trControl)
 }
@@ -19,5 +19,5 @@ preprocessing(data, x, y, trControl)
 It returns a \code{matrix} in the required format and displays some error messages.
 }
 \description{
-This function arranges the data in the required format and displays error messages.
+This function arranges the data in the required format and displays some error messages.
 }

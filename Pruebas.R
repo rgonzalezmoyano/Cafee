@@ -21,7 +21,7 @@ orientation <- "output"
 # Data train
 trControl <- list (
   method = "cv",
-  numberdfd = 5 # Either the number of folds or number of resampling iterations
+  numbere = 5 # Either the number of folds or number of resampling iterations
   )
 
 methods <- list (
