@@ -8,6 +8,7 @@
 #' @param orientation A \code{string}, equal to \code{"input"} (input-oriented) or \code{"output} (output-oriented)
 #' @param trControl Parameters for controlling the training process (from the \code{'caret'} package).
 #' @param methods A \code{list} of selected machine learning models and their hyperparameters.
+#' @param metric A \code{string} specifying the summary metric for classification to select the optimal model. Default includes "Kappa" due to (normally) unbalanced data.
 #'
 #' @importFrom caret trainControl train
 #' @importFrom dplyr select_if %>% arrange filter row_number
@@ -18,15 +19,14 @@
 
 efficiency_estimation <- function (
     data, x, y, orientation,
-    trControl, methods
+    trControl, methods, metric = "Kappa"
     ) {
   
   # pre-processing
   data <- preprocessing (
     data = data, 
     x = x, 
-    y = y,
-    trControl = trControl
+    y = y
     )
 
   # Reorder index 'x' and 'y' in data
@@ -46,40 +46,29 @@ efficiency_estimation <- function (
   class_efficiency <- ifelse(scores[, 1] <= 0.000001, 1, - 1)
   
   # Add "efficient" class
-  data <- cbind(data, class_efficiency)
-
-  # Parameters for controlling the training process
-  trControl <- trainControl (
-    method = trControl[["method"]],
-    number = trControl[["number"]],
-    savePredictions = "all"
-    )
-  
-  browser()
-
-  # https://www.rdocumentation.org/packages/caret/versions/6.0-92/topics/trainControl
-
-  print("Eligiendo mejores hiperparámtetros SVM")
+  data <- cbind(data, class_efficiency) %>% as.data.frame()
+  data$class_efficiency <- as.factor(class_efficiency)
 
   # Function train model
-  train_ml <- dea_classification(
+  ml_model <- train_ml (
     data = data,
+    trControl = trControl,
     methods = methods,
-    trControl = trControl
+    metric = metric
     )
 
-  print("Hiperparámetros SVM elegidos")
+  browser()
 
   # the chosen one model
-  precision_models <- data.frame(
-    "Model.name" = rep(NA, length(names(train_ml))),
-    "Model.Kappa" = rep(NA, length(names(train_ml))),
-    "Model.Accuracy" = rep(NA, length(names(train_ml)))
+  precision_models <- data.frame (
+    "Model.name" = rep(NA, length(names(ml_model))),
+    "Model.Kappa" = rep(NA, length(names(ml_model))),
+    "Model.Accuracy" = rep(NA, length(names(ml_model)))
     )
 
-  precision_models$Model.name <- names(train_ml)
-  precision_models$Model.Kappa <- sapply(train_ml, "[[", "Kappa")
-  precision_models$Model.Accuracy <- sapply(train_ml, "[[", "Accuracy")
+  precision_models$Model.name <- names(ml_model)
+  precision_models$Model.Kappa <- sapply(ml_model, "[[", "Kappa")
+  precision_models$Model.Accuracy <- sapply(ml_model, "[[", "Accuracy")
 
   # select the best
   selected_model <- precision_models %>%
@@ -90,11 +79,11 @@ efficiency_estimation <- function (
   params <- NULL
   
   # Choose the params
-  for(i in names(train_ml[[as.character(selected_model[1])]])) { # 1 to choose NameModel
+  for(i in names(ml_model[[as.character(selected_model[1])]])) { # 1 to choose NameModel
 
     if(i %in% names(methods[[selected_model[[1]]]])) {
 
-      pos <- which(names(train_ml[[as.character(selected_model[1])]]) == i)
+      pos <- which(names(ml_model[[as.character(selected_model[1])]]) == i)
       params[pos] <- i
       
     }
@@ -102,8 +91,8 @@ efficiency_estimation <- function (
   }
 
   # select the VALUES of the params
-  params_final <- train_ml[[as.character(selected_model[1])]] %>%
-    select_if(names(train_ml[[as.character(selected_model[1])]]) %in% params)
+  params_final <- ml_model[[as.character(selected_model[1])]] %>%
+    select_if(names(ml_model[[as.character(selected_model[1])]]) %in% params)
 
   tuneGrid_final <- expand.grid(params_final)
 

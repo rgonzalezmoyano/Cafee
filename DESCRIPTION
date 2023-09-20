@@ -1,11 +1,10 @@
-Package: DEA.Classifier
+Package: cafee
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Efficiency Estimation Using Classification Algorithms
 Version: 0.1.0
 Author: Who wrote it
 Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: This package uses classification algorithms to estimate the efficiency of a set of DMUs (Decision Making Units).
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true

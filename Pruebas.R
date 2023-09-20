@@ -18,35 +18,27 @@ y <- 2
 # efficiency orientation
 orientation <- "output"
 
-# Data train
-trControl <- list (
+# Parameters for controlling the training process
+trControl <- trainControl (
   method = "cv",
-  numbere = 5 # Either the number of folds or number of resampling iterations
-  )
+  number = 5,
+  savePredictions = "all"
+)
 
 methods <- list (
-  "svmLinear" = list (
-    "C" = c (
-      seq(0, 100, length.out = 10), 
-      seq(200, 1000, length.out = 10)
-      )
-    ),
   "svmRadial" = list (
-    "C" = c (
-      seq(0, 100, length.out = 10), 
-      seq(200, 1000, length.out = 10)
-      ),
+    "C" = seq(1, 100, length.out = 10),
     "sigma" = seq(0, 10, length.out = 20)
     ),
-  "svmPoly" = list (
-    "degree" = c(2, 3, 4),
-    "scale" = c(0.0001, 0.001, 0.01, 0.1, 1),
-    "C" = c (
-      seq(0, 100, length.out = 10), 
-      seq(200, 1000, length.out = 10)
-      )
-    )
+  "rf" = list (
+    "mtry" = c(1)
+  ),
+  "earth" = list (
+    nprune = c(5, 10, 15, 20, 25),
+    degree = c(1)
   )
+)
+
 # https://topepo.github.io/caret/train-models-by-tag.html
 
 # Result
@@ -56,7 +48,8 @@ prueba <- efficiency_estimation (
   y = y,
   orientation = orientation,
   trControl = trControl,
-  method = methods
+  method = methods,
+  metric = "Kappa"
   )
 
 prueba

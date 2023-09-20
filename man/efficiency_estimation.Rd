@@ -4,7 +4,15 @@
 \alias{efficiency_estimation}
 \title{Efficiency Estimation Using Classification Algorithms}
 \usage{
-efficiency_estimation(data, x, y, orientation, trControl, methods)
+efficiency_estimation(
+  data,
+  x,
+  y,
+  orientation,
+  trControl,
+  methods,
+  metric = "Kappa"
+)
 }
 \arguments{
 \item{data}{A \code{data.frame} or \code{matrix} containing the variables in the model.}
@@ -18,6 +26,8 @@ efficiency_estimation(data, x, y, orientation, trControl, methods)
 \item{trControl}{Parameters for controlling the training process (from the \code{'caret'} package).}
 
 \item{methods}{A \code{list} of selected machine learning models and their hyperparameters.}
+
+\item{metric}{A \code{string} specifying the summary metric for classification to select the optimal model. Default includes "Kappa" due to (normally) unbalanced data.}
 }
 \value{
 A \code{"cafee"} object.
