@@ -1,6 +1,6 @@
-#' @title Fill
+#' @title Efficiency Estimation Through Classification Algorithms
 #'
-#' @description Fill
+#' @description This function estimates the efficiency of a set of DMUs through a classification algorithm.
 #'
 #' @param data A \code{data.frame} or \code{matrix} containing the variables in the model.
 #' @param x Column indexes of input variables in \code{data}.
