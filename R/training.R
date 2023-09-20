@@ -1,20 +1,20 @@
-#' @title Training the different Support Vector Machines.
+#' @title Training the different machine Learning models.
 #'
 #' @description This function trains for each model, the different hyperparameters and returns the best model with its best hyperparameters.
 #'
 #' @param data Dataset \code{data}.
-#' @param method_svm Different SVM algorithms to train \code{data}.
+#' @param methods Different machine learning algorithms to train \code{data}.
 #' @param trControl Training characteristics \code{data}.
 #'
 #' @importFrom caret train
 #' @importFrom dplyr rename
 #'
 #' @return It returns a \code{list} with the chosen model.
-DEA.svm <- function(data, method_svm, trControl) {
+dea_classification <- function(data, method, trControl) {
 
-  SVM_results <- vector("list", length = length(method_svm))
+  results <- vector("list", length = length(method))
 
-  for (a in 1:length(method_svm)) {
+  for (a in 1:length(method)) {
 
     # Linear
     if(names(method_svm[a]) == "svmLinear") {

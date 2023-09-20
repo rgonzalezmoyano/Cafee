@@ -54,50 +54,30 @@ efficiency_estimation <- function (
 
   # https://www.rdocumentation.org/packages/caret/versions/6.0-92/topics/trainControl
 
-  # SVM methods to train
-  method_svm <- list()
-
-  # KNN methods to train (same structure than SVM)
-  # method_KNN <- NULL
-
-  # which ML models have to be trained
-  for(a in method) {
-    if(a %in% list_SVM) {
-      method_svm[a] <- list(a = methods[[a]]) # svm methods
-      }
-
-    # if(a %in% list_KNN) {
-      # method_kNN[a] <- list(a = methods[[a]]) <- a # KNN methods
-    # }
-  }
-
   print("Eligiendo mejores hiperparámtetros SVM")
 
-  # Function SVM
-  train_svm <- DEA.svm(
+  # Function train model
+  train_ml <- dea_classification(
     data = data,
-    method_svm = method_svm,
+    methods = methods,
     trControl = trControl
     )
 
   print("Hiperparámetros SVM elegidos")
 
-  # Function KNN
-  #train_KNN <- knn(data = data, method_svm = method_svm, trControl = trControl)
-
   # the chosen one model
   precision_models <- data.frame(
-    "Model.name" = rep(NA, length(names(train_svm))),
-    "Model.Kappa" = rep(NA, length(names(train_svm))),
-    "Model.Accuracy" = rep(NA, length(names(train_svm)))
+    "Model.name" = rep(NA, length(names(train_ml))),
+    "Model.Kappa" = rep(NA, length(names(train_ml))),
+    "Model.Accuracy" = rep(NA, length(names(train_ml)))
     )
 
-  precision_models$Model.name <- names(train_svm)
-  precision_models$Model.Kappa <- sapply(train_svm, "[[", "Kappa")
-  precision_models$Model.Accuracy <- sapply(train_svm, "[[", "Accuracy")
+  precision_models$Model.name <- names(train_ml)
+  precision_models$Model.Kappa <- sapply(train_ml, "[[", "Kappa")
+  precision_models$Model.Accuracy <- sapply(train_ml, "[[", "Accuracy")
 
   # select the best
-  selected_SVM_model <- precision_models %>%
+  selected_model <- precision_models %>%
     arrange(desc(Model.Kappa), desc(Model.Accuracy)) %>%
     filter(row_number() == 1L)
 
