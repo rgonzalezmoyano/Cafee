@@ -8,7 +8,7 @@
 #' @param nX Number of inputs \code{data}.
 #' @param nY Number of outputs \code{data}.
 #' 
-#' @importFrom lpSolveAPI make.lp lp.control set.objfn add.constraint
+#' @importFrom lpSolveAPI make.lp lp.control set.objfn add.constraint get.objective
 #'
 #' @return Fill
 compute_scores_additive <- function(data, x, y, nX, nY) {
