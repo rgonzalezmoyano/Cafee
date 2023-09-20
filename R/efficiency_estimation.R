@@ -103,9 +103,9 @@ efficiency_estimation <- function (
   tuneGrid_final <- expand.grid(params_final)
 
   # No train; FINAL MODEL FIT
-  final_model <- train(form = ClassEfficiency ~.,
+  final_model <- train(form = as.factor(class_efficiency) ~.,
                        data = data,
-                       method = as.character(selected_SVM_model[1]),
+                       method = as.character(selected_model[1]),
                        trControl = trainControl(method = "none"),
                        tuneGrid = params_final,
                        metric = "Kappa")
@@ -116,16 +116,7 @@ efficiency_estimation <- function (
 
   print("SVM scores calculados")
 
-  # FALTA PONER EL NOMBRE DE LAS DMUs ORIGINALES names_DMUs, borrar el numerico
-  #data <- data[-1]
-  #data <- cbind(DMUs, data)
-
-  #row.names(solution$solution_point) <- data[, 1]
-  #solution$solution_point <- cbind(data[, 1], solution$solution_point)
-
   resume <- data.frame()
-
-  #resume <- cbind(resume, data[, min(1 + y):max(1 + y)], DEA.score = DEA$scores, SVM.Classifier.score = solution$solution_score)
 
   if (orientation == "output") {
 
