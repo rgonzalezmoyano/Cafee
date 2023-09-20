@@ -10,68 +10,28 @@
 #' @importFrom dplyr rename
 #'
 #' @return It returns a \code{list} with the chosen model.
-dea_classification <- function(data, method, trControl) {
+dea_classification <- function(data, methods, trControl) {
 
-  results <- vector("list", length = length(method))
+  results <- vector("list", length = length(methods))
 
-  for (a in 1:length(method)) {
+  for (a in 1:length(methods)) {
 
-    # Linear
-    if(names(method_svm[a]) == "svmLinear") {
-
-      # Params only for Linear
-      tuneGrid_Linear <- unique(expand.grid(method_svm$svmLinear))
+      # Params grid
+      tune_grid <- unique(expand.grid(methods[[a]]))
 
       # Tune models
-      modelLinear <- train(form = ClassEfficiency ~.,
-                           data = data,
-                           method = names(method_svm[a]),
-                           trControl = trControl,
-                           tuneGrid = tuneGrid_Linear,
-                           metric = "Kappa")
+      model <- train(form = as.factor(class_efficiency) ~.,
+                     data = data,
+                     method = names(methods[a]),
+                     trControl = trControl,
+                     tuneGrid = tune_grid,
+                     metric = "Kappa")
 
-      SVM_results[[a]] <- modelLinear$results[which.max(modelLinear$results[, 3]),]
-      names(SVM_results)[a] <- names(method_svm[a])
-
-    }
-
-    # Radial
-    else if(names(method_svm[a]) == "svmRadial") {
-
-      # Params only for Radial
-      tuneGrid_Radial <- unique(expand.grid(method_svm$svmRadial)) # todas las combinaciones posibles sin repetirse
-
-      # Tune models
-      modelRadial <- train(form = ClassEfficiency ~.,
-                         data = data,
-                         method = names(method_svm[a]),
-                         trControl = trControl,
-                         tuneGrid = tuneGrid_Radial,
-                         metric = "Kappa")
-
-      SVM_results[[a]] <- modelRadial$results[which.max(modelRadial$results[, 4]),]
-      names(SVM_results)[a] <- names(method_svm[a])
-    }
-
-    # Polynomial
-    else if(names(method_svm[a]) == "svmPoly") {
-
-      # Aux variable Params only for Radial
-      tuneGrid_Poly <- unique(expand.grid(method_svm$svmPoly)) # todas las combinaciones posibles sin repetirse
-
-      # Tune models
-      modelPoly <- train(form = ClassEfficiency ~.,
-                         data = data,
-                         method = names(method_svm[a]),
-                         trControl = trControl,
-                         tuneGrid = tuneGrid_Poly,
-                         metric = "Kappa")
-
-      SVM_results[[a]] <- modelPoly$results[which.max(modelPoly$results[, 5]),]
-      names(SVM_results)[a] <- names(method_svm[a])
-    }
+      results[[a]] <- model$results[which.max(model$results[, "Kappa"]),]
+      names(results)[a] <- names(methods[a])
 
   }
 
-  return(SVM_results)
+  return(results)
+  
 }

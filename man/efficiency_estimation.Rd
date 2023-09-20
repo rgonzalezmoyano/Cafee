@@ -2,7 +2,7 @@
 % Please edit documentation in R/efficiency_estimation.R
 \name{efficiency_estimation}
 \alias{efficiency_estimation}
-\title{Fill}
+\title{Efficiency Estimation Through Classification Algorithms}
 \usage{
 efficiency_estimation(data, x, y, orientation, trControl, methods)
 }
@@ -23,5 +23,5 @@ efficiency_estimation(data, x, y, orientation, trControl, methods)
 Fill
 }
 \description{
-Fill
+This function estimates the efficiency of a set of DMUs through a classification algorithm.
 }

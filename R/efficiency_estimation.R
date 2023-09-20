@@ -83,21 +83,22 @@ efficiency_estimation <- function (
 
   # Params FINAL MODEL: C, sigma, degree...
   params <- NULL
-
+  
   # Choose the params
-  for(i in names(train_svm[[as.character(selected_SVM_model[1])]])){ # 1 to choose NameModel
+  for(i in names(train_ml[[as.character(selected_model[1])]])) { # 1 to choose NameModel
 
-    if(i %in% list_SVM.params){
+    if(i %in% names(methods[[selected_model[[1]]]])) {
 
-      pos <- which(names(train_svm[[as.character(selected_SVM_model[1])]]) == i)
+      pos <- which(names(train_ml[[as.character(selected_model[1])]]) == i)
       params[pos] <- i
+      
     }
 
   }
 
   # select the VALUES of the params
-  params_final <- train_svm[[as.character(selected_SVM_model[1])]] %>%
-    select_if(names(train_svm[[as.character(selected_SVM_model[1])]]) %in% params)
+  params_final <- train_ml[[as.character(selected_model[1])]] %>%
+    select_if(names(train_ml[[as.character(selected_model[1])]]) %in% params)
 
   tuneGrid_final <- expand.grid(params_final)
 
