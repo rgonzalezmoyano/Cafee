@@ -57,8 +57,6 @@ efficiency_estimation <- function (
     metric = metric
     )
 
-  browser()
-
   # the chosen one model
   precision_models <- data.frame (
     "Model.name" = rep(NA, length(names(ml_model))),

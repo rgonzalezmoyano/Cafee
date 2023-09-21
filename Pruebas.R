@@ -25,6 +25,14 @@ trControl <- trainControl (
   savePredictions = "all"
 )
 
+trControl <- trainControl(
+  method = "cv",
+  number = 5,
+  summaryFunction = twoClassSummary,
+  classProbs = TRUE,
+  savePredictions = "all"
+)
+
 methods <- list (
   "svmRadial" = list (
     "C" = seq(1, 100, length.out = 10),
@@ -40,6 +48,7 @@ methods <- list (
 )
 
 # https://topepo.github.io/caret/train-models-by-tag.html
+metric <- "F1"
 
 # Result
 prueba <- efficiency_estimation (
@@ -49,8 +58,7 @@ prueba <- efficiency_estimation (
   orientation = orientation,
   trControl = trControl,
   method = methods,
-  metric = "Kappa"
+  metric = metric
   )
 
 prueba
-
