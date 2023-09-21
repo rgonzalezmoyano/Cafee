@@ -5,15 +5,16 @@
 #' @param data A \code{data.frame} or \code{matrix} containing the variables in the model.
 #' @param trControl Parameters for controlling the training process (from the \code{'caret'} package).
 #' @param methods A \code{list} of selected machine learning models and their hyperparameters.
-#' @param metric A \code{string} specifying the summary metric for classification to select the optimal model. Default includes "Kappa" due to (normally) unbalanced data.
 #'
 #' @importFrom caret train twoClassSummary
 #'
 #' @return It returns a \code{list} with the chosen model.
 
 train_ml <- function (
-    data, trControl, methods, metric
+    data, trControl, methods
     ) {
+  
+  levels(data$class_efficiency) <- c("efficient", "not_efficient")
 
   model_eval <- vector("list", length = length(methods))
   
@@ -28,13 +29,13 @@ train_ml <- function (
         data = data,
         method = names(methods[a]),
         trControl = trControl,
-        tuneGrid = tune_grid
+        tuneGrid = tune_grid,
+        metric = "ROC"
         )
       
+      model[["results"]][["Balanced_Accuracy"]] <- (model[["results"]][["Sens"]] + model[["results"]][["Spec"]]) / 2
 
-      browser()
-
-      model_eval[[a]] <- model$results[which.max(model$results[, metric]),]
+      model_eval[[a]] <- model$results[which.max(model$results[, "Balanced_Accuracy"]),]
       names(model_eval)[a] <- names(methods[a])
   }
 

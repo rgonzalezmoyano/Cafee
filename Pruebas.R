@@ -40,9 +40,7 @@ methods <- list (
     degree = c(1)
   )
 )
-
 # https://topepo.github.io/caret/train-models-by-tag.html
-metric <- "F1"
 
 # Result
 prueba <- efficiency_estimation (

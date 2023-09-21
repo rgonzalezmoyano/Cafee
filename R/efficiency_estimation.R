@@ -48,30 +48,26 @@ efficiency_estimation <- function (
   # Add "efficient" class
   data <- cbind(data, class_efficiency) %>% as.data.frame()
   data$class_efficiency <- as.factor(class_efficiency)
-  levels(data$class_efficiency) <- c("efficient", "not_efficient")
   
   # Function train model
   ml_model <- train_ml (
     data = data,
     trControl = trControl,
-    methods = methods,
-    metric = metric
+    methods = methods
     )
 
   # the chosen one model
   precision_models <- data.frame (
     "Model.name" = rep(NA, length(names(ml_model))),
-    "Model.Kappa" = rep(NA, length(names(ml_model))),
-    "Model.Accuracy" = rep(NA, length(names(ml_model)))
+    "Model.balanced_accuracy" = rep(NA, length(names(ml_model)))
     )
 
   precision_models$Model.name <- names(ml_model)
-  precision_models$Model.Kappa <- sapply(ml_model, "[[", "Kappa")
-  precision_models$Model.Accuracy <- sapply(ml_model, "[[", "Accuracy")
+  precision_models$Model.balanced_accuracy <- sapply(ml_model, "[[", "Balanced_Accuracy")
 
   # select the best
   selected_model <- precision_models %>%
-    arrange(desc(Model.Kappa), desc(Model.Accuracy)) %>%
+    arrange(desc(Model.balanced_accuracy)) %>%
     filter(row_number() == 1L)
 
   # Params FINAL MODEL: C, sigma, degree...
