@@ -22,12 +22,6 @@ orientation <- "output"
 trControl <- trainControl (
   method = "cv",
   number = 5,
-  savePredictions = "all"
-)
-
-trControl <- trainControl(
-  method = "cv",
-  number = 5,
   summaryFunction = twoClassSummary,
   classProbs = TRUE,
   savePredictions = "all"
@@ -35,8 +29,8 @@ trControl <- trainControl(
 
 methods <- list (
   "svmRadial" = list (
-    "C" = seq(1, 100, length.out = 10),
-    "sigma" = seq(0, 10, length.out = 20)
+    "C" = seq(1, 10, length.out = 5),
+    "sigma" = seq(0, 10, length.out = 5)
     ),
   "rf" = list (
     "mtry" = c(1)
@@ -58,7 +52,7 @@ prueba <- efficiency_estimation (
   orientation = orientation,
   trControl = trControl,
   method = methods,
-  metric = metric
+  metric = "Kappa"
   )
 
 prueba

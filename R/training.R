@@ -7,7 +7,7 @@
 #' @param methods A \code{list} of selected machine learning models and their hyperparameters.
 #' @param metric A \code{string} specifying the summary metric for classification to select the optimal model. Default includes "Kappa" due to (normally) unbalanced data.
 #'
-#' @importFrom caret train
+#' @importFrom caret train twoClassSummary
 #'
 #' @return It returns a \code{list} with the chosen model.
 
@@ -16,8 +16,6 @@ train_ml <- function (
     ) {
 
   model_eval <- vector("list", length = length(methods))
-
-  data$class_efficiency <- factor(data$class_efficiency, levels = c(-1, 1), labels = c("negativo", "positivo"))
   
   for (a in 1:length(methods)) {
 
@@ -30,19 +28,11 @@ train_ml <- function (
         data = data,
         method = names(methods[a]),
         trControl = trControl,
-        tuneGrid = tune_grid,
-        metric = metric
+        tuneGrid = tune_grid
         )
       
-      predictions <- model$pred$pred
-      observado <- model$pred$obs
-      
-      f1_scores <- rep(NA, nrow(model$pred))
-      library(MLmetrics)
-      for (i in 1:nrow(model$pred)) {
-        f1_score[i] <- F1_Score(y_true = observado, y_pred = predictions)
-      }
-        
+
+      browser()
 
       model_eval[[a]] <- model$results[which.max(model$results[, metric]),]
       names(model_eval)[a] <- names(methods[a])

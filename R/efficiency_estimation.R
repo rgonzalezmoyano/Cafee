@@ -43,12 +43,13 @@ efficiency_estimation <- function (
     )
   
   # Determine efficient and inefficient DMUs
-  class_efficiency <- ifelse(scores[, 1] <= 0.000001, 1, - 1)
+  class_efficiency <- ifelse(scores[, 1] <= 0.000001, 1, 0)
   
   # Add "efficient" class
   data <- cbind(data, class_efficiency) %>% as.data.frame()
   data$class_efficiency <- as.factor(class_efficiency)
-
+  levels(data$class_efficiency) <- c("efficient", "not_efficient")
+  
   # Function train model
   ml_model <- train_ml (
     data = data,
