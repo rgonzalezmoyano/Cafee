@@ -50,7 +50,7 @@ prueba <- efficiency_estimation (
   orientation = orientation,
   trControl = trControl,
   method = methods,
-  metric = "Kappa"
+  metric = "Balanced_accuracy"
   )
 
 prueba

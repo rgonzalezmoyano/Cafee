@@ -8,10 +8,10 @@
 #' @param orientation A \code{string}, equal to \code{"input"} (input-oriented) or \code{"output} (output-oriented)
 #' @param trControl Parameters for controlling the training process (from the \code{'caret'} package).
 #' @param methods A \code{list} of selected machine learning models and their hyperparameters.
-#' @param metric A \code{string} specifying the summary metric for classification to select the optimal model. Default includes "Kappa" due to (normally) unbalanced data.
+#' @param metric A \code{string} specifying the summary metric for classification to select the optimal model. Default includes \code{"Balanced_accuracy"} due to (normally) unbalanced data.
 #'
 #' @importFrom caret trainControl train
-#' @importFrom dplyr select_if %>% arrange filter row_number
+#' @importFrom dplyr select_if %>% arrange top_n
 #'
 #' @return A \code{"cafee"} object.
 #'
@@ -19,7 +19,7 @@
 
 efficiency_estimation <- function (
     data, x, y, orientation,
-    trControl, methods, metric = "Kappa"
+    trControl, methods, metric = "Balanced_accuracy"
     ) {
   
   # pre-processing
@@ -53,41 +53,31 @@ efficiency_estimation <- function (
   ml_model <- train_ml (
     data = data,
     trControl = trControl,
-    methods = methods
+    methods = methods,
+    metric = metric
     )
 
-  # the chosen one model
+  # best configuration for each model
   precision_models <- data.frame (
-    "Model.name" = rep(NA, length(names(ml_model))),
-    "Model.balanced_accuracy" = rep(NA, length(names(ml_model)))
+    "model_name" = names(ml_model),
+    "model_balanced_accuracy" = unname(sapply(ml_model, "[[", "Balanced_accuracy")),
+    "model_roc" = unname(sapply(ml_model, "[[", "ROC"))
     )
 
-  precision_models$Model.name <- names(ml_model)
-  precision_models$Model.balanced_accuracy <- sapply(ml_model, "[[", "Balanced_Accuracy")
-
-  # select the best
+  # select the best model
   selected_model <- precision_models %>%
-    arrange(desc(Model.balanced_accuracy)) %>%
-    filter(row_number() == 1L)
-
-  # Params FINAL MODEL: C, sigma, degree...
-  params <- NULL
+    arrange(model_balanced_accuracy, model_roc) %>%
+    top_n(1)
   
-  # Choose the params
-  for(i in names(ml_model[[as.character(selected_model[1])]])) { # 1 to choose NameModel
-
-    if(i %in% names(methods[[selected_model[[1]]]])) {
-
-      pos <- which(names(ml_model[[as.character(selected_model[1])]]) == i)
-      params[pos] <- i
-      
-    }
-
-  }
-
-  # select the VALUES of the params
-  params_final <- ml_model[[as.character(selected_model[1])]] %>%
-    select_if(names(ml_model[[as.character(selected_model[1])]]) %in% params)
+  # index of the best model in ml_model
+  best_model_index <- which(selected_model[1, 1] == names(ml_model))
+    
+  # name of the parameters of the best model
+  parms <- names(methods[[best_model_index]])
+  
+  # values of the parameters of the best model
+  parms_cols <- names(ml_model[[best_model_index]]) %in% parms
+  parms_vals <- ml_model[[best_model_index]][, parms_cols]
 
   tuneGrid_final <- expand.grid(params_final)
 
