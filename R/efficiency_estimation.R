@@ -11,7 +11,7 @@
 #' @param metric A \code{string} specifying the summary metric for classification to select the optimal model. Default includes \code{"Balanced_accuracy"} due to (normally) unbalanced data.
 #' @param hold_out A \code{number} value (5-20) for validation data percentage during training (default: 0.2).
 #'
-#' @importFrom caret trainControl train
+#' @importFrom caret trainControl train createDataPartition
 #' @importFrom dplyr select_if %>% arrange top_n
 #'
 #' @return A \code{"cafee"} object.
@@ -51,13 +51,13 @@ efficiency_estimation <- function (
   data$class_efficiency <- as.factor(class_efficiency)
   
   # Create train and validation data
-  index_partition <- createDataPartition (
+  valid_index <- createDataPartition (
     data$class_efficiency,
     p = hold_out,
     list = FALSE)
 
-  validation_data <- data[index_partition, ]
-  train_data <- data[- index_partition, ]
+  valid_data <- data[valid_index, ]
+  train_data <- data[- valid_index, ]
   
   # Function train model
   ml_model <- train_ml (
@@ -91,22 +91,24 @@ efficiency_estimation <- function (
   # Best training 
   best_ml_model <- vector("list", length = length(methods))
   
+  browser()
+  
   for (i in 1:length(methods)) {
-    best_ml_model[i] <- best_train(form = as.factor(class_efficiency) ~.,
-                                   data = data,
-                                   method = as.character(selected_model[1]),
-                                   trControl = trainControl(
-                                     method = "cv",
-                                     number = 1,
-                                     index = list(Train = -index_partition,
-                                                  Validation = index_partition)),
-                                   tuneGrid = parms_vals,
-                                   metric = "ROC")
+    best_ml_model[i] <- train (
+      form = as.factor(class_efficiency) ~.,
+      data = data,
+      method = names(methods[i]),
+      trControl = trainControl (
+        method = "cv",
+        number = 1,
+        index = list (
+          Train = - valid_index,
+          Validation = valid_index)
+        ),
+       tuneGrid = parms_vals,
+       metric = "ROC")
   }
   
-
-                                 
-
   # Optimization problem
   solution <- optimization(data = data, x = x, y = y, final_model = final_model, orientation = orientation)
 
