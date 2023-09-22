@@ -9,6 +9,7 @@
 #' @param trControl Parameters for controlling the training process (from the \code{'caret'} package).
 #' @param methods A \code{list} of selected machine learning models and their hyperparameters.
 #' @param metric A \code{string} specifying the summary metric for classification to select the optimal model. Default includes \code{"Balanced_accuracy"} due to (normally) unbalanced data.
+#' @param hold_out A \code{number} value (5-20) for validation data percentage during training (default: 0.2).
 #'
 #' @importFrom caret trainControl train
 #' @importFrom dplyr select_if %>% arrange top_n
@@ -19,7 +20,7 @@
 
 efficiency_estimation <- function (
     data, x, y, orientation,
-    trControl, methods, metric = "Balanced_accuracy"
+    trControl, methods, metric, hold_out
     ) {
   
   # pre-processing
@@ -49,19 +50,27 @@ efficiency_estimation <- function (
   data <- cbind(data, class_efficiency) %>% as.data.frame()
   data$class_efficiency <- as.factor(class_efficiency)
   
+  # Create train and validation data
+  index_partition <- createDataPartition (
+    data$class_efficiency,
+    p = hold_out,
+    list = FALSE)
+
+  validation_data <- data[index_partition, ]
+  train_data <- data[- index_partition, ]
+  
   # Function train model
   ml_model <- train_ml (
-    data = data,
+    data = train_data,
     trControl = trControl,
-    methods = methods,
-    metric = metric
+    methods = methods
     )
 
   # best configuration for each model
   precision_models <- data.frame (
-    "model_name" = names(ml_model),
-    "model_balanced_accuracy" = unname(sapply(ml_model, "[[", "Balanced_accuracy")),
-    "model_roc" = unname(sapply(ml_model, "[[", "ROC"))
+    "model_name" = names(ml_model$metric_information),
+    "model_balanced_accuracy" = unname(sapply(ml_model$metric_information, "[[", "Balanced_accuracy")),
+    "model_roc" = unname(sapply(ml_model$metric_information, "[[", "ROC"))
     )
 
   # select the best model
@@ -70,30 +79,36 @@ efficiency_estimation <- function (
     top_n(1)
   
   # index of the best model in ml_model
-  best_model_index <- which(selected_model[1, 1] == names(ml_model))
+  best_model_index <- which(selected_model[1, 1] == names(ml_model$metric_information))
     
   # name of the parameters of the best model
   parms <- names(methods[[best_model_index]])
   
   # values of the parameters of the best model
-  parms_cols <- names(ml_model[[best_model_index]]) %in% parms
-  parms_vals <- ml_model[[best_model_index]][, parms_cols]
+  parms_cols <- names(ml_model$metric_information[[best_model_index]]) %in% parms
+  parms_vals <- ml_model$metric_information[[best_model_index]][, parms_cols]
 
-  tuneGrid_final <- expand.grid(params_final)
+  # Best training 
+  best_ml_model <- vector("list", length = length(methods))
+  
+  for (i in 1:length(methods)) {
+    best_ml_model[i] <- best_train(form = as.factor(class_efficiency) ~.,
+                                   data = data,
+                                   method = as.character(selected_model[1]),
+                                   trControl = trainControl(
+                                     method = "cv",
+                                     number = 1,
+                                     index = list(Train = -index_partition,
+                                                  Validation = index_partition)),
+                                   tuneGrid = parms_vals,
+                                   metric = "ROC")
+  }
+  
 
-  # No train; FINAL MODEL FIT
-  final_model <- train(form = as.factor(class_efficiency) ~.,
-                       data = data,
-                       method = as.character(selected_model[1]),
-                       trControl = trainControl(method = "none"),
-                       tuneGrid = params_final,
-                       metric = "Kappa")
+                                 
 
-  print("Calculando SVM scores")
   # Optimization problem
   solution <- optimization(data = data, x = x, y = y, final_model = final_model, orientation = orientation)
-
-  print("SVM scores calculados")
 
   resume <- data.frame()
 

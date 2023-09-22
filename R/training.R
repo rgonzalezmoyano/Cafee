@@ -5,19 +5,22 @@
 #' @param data A \code{data.frame} or \code{matrix} containing the variables in the model.
 #' @param trControl Parameters for controlling the training process (from the \code{'caret'} package).
 #' @param methods A \code{list} of selected machine learning models and their hyperparameters.
-#' @param metric A \code{string} specifying the summary metric for classification to select the optimal model. Default includes \code{"Balanced_accuracy"} due to (normally) unbalanced data.
 #'
 #' @importFrom caret train twoClassSummary
 #'
 #' @return It returns a \code{list} with the chosen model.
 
 train_ml <- function (
-    data, trControl, methods, metric
+    data, trControl, methods
     ) {
   
   levels(data$class_efficiency) <- c("efficient", "not_efficient")
 
-  model_eval <- vector("list", length = length(methods))
+  model_best <- vector("list", length = 2)
+  names(model_best) <- c("metric_information", "best_model_fit")
+  
+  model_best$metric_information <- vector("list", length = length(methods))
+  model_best$best_model_fit <- vector("list", length = length(methods))
   
   for (a in 1:length(methods)) {
 
@@ -36,10 +39,15 @@ train_ml <- function (
       
       model[["results"]][["Balanced_accuracy"]] <- (model[["results"]][["Sens"]] + model[["results"]][["Spec"]]) / 2
 
-      model_eval[[a]] <- model$results[which.max(model$results[, metric]),]
-      names(model_eval)[a] <- names(methods[a])
+      model_best$metric_information[[a]] <- model$results[which.max(model$results[, "Balanced_accuracy"]),]
+      names(model_best$metric_information)[a] <- names(methods[a])
+      
+      model_best$best_model_fit[[a]] <- model[["finalModel"]]
+      names(model_best$best_model_fit)[a] <- names(methods[a])
+      
+      
   }
 
-  return(model_eval)
+  return(model_best)
   
 }

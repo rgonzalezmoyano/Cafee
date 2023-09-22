@@ -27,6 +27,8 @@ trControl <- trainControl (
   savePredictions = "all"
 )
 
+hold_out <- 0.2
+
 methods <- list (
   "svmRadial" = list (
     "C" = seq(1, 10, length.out = 5),
@@ -50,7 +52,8 @@ prueba <- efficiency_estimation (
   orientation = orientation,
   trControl = trControl,
   method = methods,
-  metric = "Balanced_accuracy"
+  metric = "Balanced_accuracy",
+  hold_out = hold_out
   )
 
 prueba

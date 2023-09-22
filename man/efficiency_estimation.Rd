@@ -11,7 +11,8 @@ efficiency_estimation(
   orientation,
   trControl,
   methods,
-  metric = "Balanced_accuracy"
+  metric,
+  hold_out
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ efficiency_estimation(
 \item{methods}{A \code{list} of selected machine learning models and their hyperparameters.}
 
 \item{metric}{A \code{string} specifying the summary metric for classification to select the optimal model. Default includes \code{"Balanced_accuracy"} due to (normally) unbalanced data.}
+
+\item{hold_out}{A \code{number} value (5-20) for validation data percentage during training (default: 0.2).}
 }
 \value{
 A \code{"cafee"} object.
