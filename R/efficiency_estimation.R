@@ -72,8 +72,6 @@ efficiency_estimation <- function (
   # Change names to ROC matrics in train
   levels(data$class_efficiency) <- c("efficient", "not_efficient")
   
-  browser()
-  
   for (i in 1:length(methods)) {
     
     # parameter position
@@ -99,15 +97,15 @@ efficiency_estimation <- function (
     names(best_ml_model)[i] <- names(methods[i])
     
     y_obs <- valid_data$class_efficiency
-    y_hat <- predict(best_ml_model[[i]], valid_data)
+    y_hat <- predict(best_ml_model[[i]][[1]], valid_data)
     
     #create confusion matrix and calculate metrics related to confusion matrix
     best_ml_model[[i]][[2]] <- confusionMatrix (
       data = y_hat,
       reference = y_obs,
-      mode = "everything"
+      mode = "everything",
+      positive = "1"
       )
-    
   }
   
   browser()

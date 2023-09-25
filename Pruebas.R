@@ -7,7 +7,7 @@ set.seed(314)
 data <- reffcy (
   DGP = "add_scenario_XnY1",
   parms = list (
-    N = 100,
+    N = 500,
     scenario = "A"
   )
 )
@@ -27,7 +27,7 @@ trControl <- trainControl (
   savePredictions = "all"
 )
 
-hold_out <- 0.2
+hold_out <- 0.1
 
 methods <- list (
   "svmRadial" = list (
