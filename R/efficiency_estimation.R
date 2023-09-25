@@ -66,48 +66,83 @@ efficiency_estimation <- function (
     methods = methods
     )
 
+  # Best training 
+  best_ml_model <- vector("list", length = length(methods))
+  
+  # Change names to ROC matrics in train
+  levels(data$class_efficiency) <- c("efficient", "not_efficient")
+  
+  browser()
+  
+  for (i in 1:length(methods)) {
+    
+    # parameter position
+    parms_posn <- which(names(ml_model$metric_information[[i]]) %in% names(methods[[i]])) 
+    
+    # parameter values
+    parms_vals <- as.data.frame(ml_model$metric_information[[i]])[, parms_posn]
+    
+    # rename parameters if is null
+    if (is.null(names(parms_vals))) {
+      parms_vals <- as.data.frame(parms_vals)
+      names(parms_vals) <- names(methods[[i]])
+    }
+    
+    # Tune models
+    best_ml_model[[i]][[1]] <- train (
+      form = class_efficiency ~.,
+      data = train_data,
+      method = names(methods[i]),
+      tuneGrid = parms_vals
+      )
+    
+    names(best_ml_model)[i] <- names(methods[i])
+    
+    y_obs <- valid_data$class_efficiency
+    y_hat <- predict(best_ml_model[[i]], valid_data)
+    
+    #create confusion matrix and calculate metrics related to confusion matrix
+    best_ml_model[[i]][[2]] <- confusionMatrix (
+      data = y_hat,
+      reference = y_obs,
+      mode = "everything"
+      )
+    
+  }
+  
+  browser()
+  
+  
+  
+  
+  
+  
+  
   # best configuration for each model
   precision_models <- data.frame (
     "model_name" = names(ml_model$metric_information),
     "model_balanced_accuracy" = unname(sapply(ml_model$metric_information, "[[", "Balanced_accuracy")),
     "model_roc" = unname(sapply(ml_model$metric_information, "[[", "ROC"))
-    )
-
+  )
+  
+  
+  
+  
   # select the best model
-  selected_model <- precision_models %>%
+  #ERROR
+  selected_model <- best_ml_model %>%
     arrange(model_balanced_accuracy, model_roc) %>%
     top_n(1)
   
   # index of the best model in ml_model
   best_model_index <- which(selected_model[1, 1] == names(ml_model$metric_information))
-    
+  
   # name of the parameters of the best model
   parms <- names(methods[[best_model_index]])
   
   # values of the parameters of the best model
   parms_cols <- names(ml_model$metric_information[[best_model_index]]) %in% parms
   parms_vals <- ml_model$metric_information[[best_model_index]][, parms_cols]
-
-  # Best training 
-  best_ml_model <- vector("list", length = length(methods))
-  
-  browser()
-  
-  for (i in 1:length(methods)) {
-    best_ml_model[i] <- train (
-      form = as.factor(class_efficiency) ~.,
-      data = data,
-      method = names(methods[i]),
-      trControl = trainControl (
-        method = "cv",
-        number = 1,
-        index = list (
-          Train = - valid_index,
-          Validation = valid_index)
-        ),
-       tuneGrid = parms_vals,
-       metric = "ROC")
-  }
   
   # Optimization problem
   solution <- optimization(data = data, x = x, y = y, final_model = final_model, orientation = orientation)
