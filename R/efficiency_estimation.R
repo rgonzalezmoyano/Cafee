@@ -67,7 +67,8 @@ efficiency_estimation <- function (
     )
 
   # Best training 
-  best_ml_model <- vector("list", length = length(methods))
+  confusion_matrix <- vector("list", length = length(methods))
+  names(confusion_matrix) <- names(methods)
   
   # Change names to ROC matrics in train
   levels(data$class_efficiency) <- c("efficient", "not_efficient")
@@ -87,28 +88,24 @@ efficiency_estimation <- function (
     }
     
     # Tune models
-    best_ml_model[[i]][[1]] <- train (
+    best_ml_model <- train (
       form = class_efficiency ~.,
       data = train_data,
       method = names(methods[i]),
       tuneGrid = parms_vals
       )
     
-    names(best_ml_model)[i] <- names(methods[i])
-    
     y_obs <- valid_data$class_efficiency
-    y_hat <- predict(best_ml_model[[i]][[1]], valid_data)
+    y_hat <- predict(best_ml_model, valid_data)
     
     #create confusion matrix and calculate metrics related to confusion matrix
-    best_ml_model[[i]][[2]] <- confusionMatrix (
+    confusion_matrix[[i]] <- confusionMatrix (
       data = y_hat,
       reference = y_obs,
       mode = "everything",
       positive = "1"
-      )
+      )[["byClass"]]
   }
-  
-  browser()
   
   
   
@@ -122,9 +119,6 @@ efficiency_estimation <- function (
     "model_balanced_accuracy" = unname(sapply(ml_model$metric_information, "[[", "Balanced_accuracy")),
     "model_roc" = unname(sapply(ml_model$metric_information, "[[", "ROC"))
   )
-  
-  
-  
   
   # select the best model
   #ERROR
