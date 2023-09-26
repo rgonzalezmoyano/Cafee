@@ -135,9 +135,6 @@ efficiency_estimation <- function (
   # index of the best model in ml_model
   best_model_index <- which(row.names(selected_model) == names(ml_model$metric_information))
   
-  data$class_efficiency <- ifelse(data$class_efficiency == "efficient", 1, 0)
-  data$class_efficiency <- as.factor(data$class_efficiency)
-  
   # Final best model
   final_model <- train (
     form = class_efficiency ~.,

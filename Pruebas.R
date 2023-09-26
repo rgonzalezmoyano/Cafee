@@ -27,7 +27,7 @@ trControl <- trainControl (
   savePredictions = "all"
 )
 
-hold_out <- 0.1
+hold_out <- 0.15
 
 methods <- list (
   "knn" = list (
@@ -64,7 +64,7 @@ methods <- list (
 )
 # https://topepo.github.io/caret/train-models-by-tag.html
 
-metric = "Balanced Accuracy"
+metric = "F1"
 
 # Result
 prueba <- efficiency_estimation (
@@ -78,4 +78,4 @@ prueba <- efficiency_estimation (
   hold_out = hold_out
   )
 
-prueba
+prueba$final_model
