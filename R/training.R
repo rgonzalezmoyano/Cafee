@@ -23,11 +23,11 @@ train_ml <- function (
   model_best$best_model_fit <- vector("list", length = length(methods))
   
   for (a in 1:length(methods)) {
-    
-    print(a)
 
       # Params grid
       tune_grid <- unique(expand.grid(methods[[a]]))
+      
+      sink("nul")
       
       # Tune models
       model <- train (
@@ -38,6 +38,8 @@ train_ml <- function (
         tuneGrid = tune_grid,
         metric = "ROC"
         )
+      
+      sink()
       
       model[["results"]][["Balanced_accuracy"]] <- (model[["results"]][["Sens"]] + model[["results"]][["Spec"]]) / 2
 

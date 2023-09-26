@@ -135,6 +135,9 @@ efficiency_estimation <- function (
   # index of the best model in ml_model
   best_model_index <- which(row.names(selected_model) == names(ml_model$metric_information))
   
+  data$class_efficiency <- ifelse(data$class_efficiency == "efficient", 1, 0)
+  data$class_efficiency <- as.factor(data$class_efficiency)
+  
   # Final best model
   final_model <- train (
     form = class_efficiency ~.,
@@ -197,6 +200,6 @@ efficiency_estimation <- function (
   # 
   # return(list(data = data, train_models = train_svm, best_model = as.character(selected_SVM_model[1]), best_model_fit = final_model, solution_point = solution[["solution_point"]], score = solution[["solution_score"]], resume = resume, plot = graph, correlation_pearson = correlation))
   
-  return(final_model)
+  return(list(final_model = final_model, data = data))
 
 }

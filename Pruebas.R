@@ -7,7 +7,7 @@ set.seed(314)
 data <- reffcy (
   DGP = "add_scenario_XnY1",
   parms = list (
-    N = 50,
+    N = 100,
     scenario = "A"
   )
 )
@@ -43,6 +43,11 @@ methods <- list (
     C = c(0.01, 0.1, 1, 10),
     sigma = c(0.001, 0.01, 0.1, 1)
     ),
+  # "svmPoly" = list(
+  #   "degree" = c(2,3,4),
+  #   "scale" = c(0.0001,0.001,0.01,0.1,1),
+  #   "C" = c(seq(0, 100, length.out = 10), seq(200, 1000, length.out = 3))
+  # ),
   "rf" = list (
     mtry = c(1, 2)
     ),
@@ -69,7 +74,7 @@ prueba <- efficiency_estimation (
   orientation = orientation,
   trControl = trControl,
   method = methods,
-  metric = "Balanced Accuracy",
+  metric = "F1",
   hold_out = hold_out
   )
 
