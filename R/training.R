@@ -14,7 +14,7 @@ train_ml <- function (
     data, trControl, methods
     ) {
   
-  levels(data$class_efficiency) <- c("efficient", "not_efficient")
+  levels(data$class_efficiency) <- c("not_efficient", "efficient")
 
   model_best <- vector("list", length = 2)
   names(model_best) <- c("metric_information", "best_model_fit")
@@ -23,6 +23,8 @@ train_ml <- function (
   model_best$best_model_fit <- vector("list", length = length(methods))
   
   for (a in 1:length(methods)) {
+    
+    print(a)
 
       # Params grid
       tune_grid <- unique(expand.grid(methods[[a]]))
@@ -44,8 +46,7 @@ train_ml <- function (
       
       model_best$best_model_fit[[a]] <- model[["finalModel"]]
       names(model_best$best_model_fit)[a] <- names(methods[a])
-      
-      
+    
   }
 
   return(model_best)

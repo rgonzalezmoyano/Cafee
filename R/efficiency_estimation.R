@@ -12,7 +12,7 @@
 #' @param hold_out A \code{number} value (5-20) for validation data percentage during training (default: 0.2).
 #'
 #' @importFrom caret trainControl train createDataPartition
-#' @importFrom dplyr select_if %>% arrange top_n
+#' @importFrom dplyr select_if %>% arrange top_n sample_n
 #'
 #' @return A \code{"cafee"} object.
 #'
@@ -70,8 +70,11 @@ efficiency_estimation <- function (
   confusion_matrix <- vector("list", length = length(methods))
   names(confusion_matrix) <- names(methods)
   
+  parms_vals <- vector("list", length = length(methods))
+  names(parms_vals) <- names(methods)
+  
   # Change names to ROC matrics in train
-  levels(data$class_efficiency) <- c("efficient", "not_efficient")
+  levels(data$class_efficiency) <- c("not_efficient", "efficient")
   
   for (i in 1:length(methods)) {
     
@@ -79,12 +82,12 @@ efficiency_estimation <- function (
     parms_posn <- which(names(ml_model$metric_information[[i]]) %in% names(methods[[i]])) 
     
     # parameter values
-    parms_vals <- as.data.frame(ml_model$metric_information[[i]])[, parms_posn]
+    parms_vals[[i]] <- as.data.frame(ml_model$metric_information[[i]])[, parms_posn]
     
     # rename parameters if is null
-    if (is.null(names(parms_vals))) {
-      parms_vals <- as.data.frame(parms_vals)
-      names(parms_vals) <- names(methods[[i]])
+    if (is.null(names(parms_vals[[i]]))) {
+      parms_vals[[i]] <- as.data.frame(parms_vals[[i]])
+      names(parms_vals[[i]]) <- names(methods[[i]])
     }
     
     # Tune models
@@ -92,7 +95,7 @@ efficiency_estimation <- function (
       form = class_efficiency ~.,
       data = train_data,
       method = names(methods[i]),
-      tuneGrid = parms_vals
+      tuneGrid = parms_vals[[i]]
       )
     
     y_obs <- valid_data$class_efficiency
@@ -107,87 +110,93 @@ efficiency_estimation <- function (
       )[["byClass"]]
   }
   
-  
-  
-  
-  
-  
-  
-  # best configuration for each model
-  precision_models <- data.frame (
-    "model_name" = names(ml_model$metric_information),
-    "model_balanced_accuracy" = unname(sapply(ml_model$metric_information, "[[", "Balanced_accuracy")),
-    "model_roc" = unname(sapply(ml_model$metric_information, "[[", "ROC"))
+  # matrix for model evaluation
+  precision_models <- matrix (
+    nrow = length(methods),
+    ncol = length(names(confusion_matrix[[1]]))
   )
   
-  # select the best model
-  #ERROR
-  selected_model <- best_ml_model %>%
-    arrange(model_balanced_accuracy, model_roc) %>%
-    top_n(1)
+  precision_models <- as.data.frame(precision_models)
+  
+  # names of precision_models matrix
+  colnames(precision_models) <- names(confusion_matrix[[1]])
+  rownames(precision_models) <- names(methods)
+  
+  for (i in 1:length(methods)) {
+    precision_models[i, ] <- confusion_matrix[[i]]
+  }
+  
+  # select the best model by metric
+  selected_model <- precision_models %>%
+    arrange(metric, "Balanced Accuracy", "Sensitivity") %>%
+    top_n(1) %>%
+    sample_n(1)
   
   # index of the best model in ml_model
-  best_model_index <- which(selected_model[1, 1] == names(ml_model$metric_information))
+  best_model_index <- which(row.names(selected_model) == names(ml_model$metric_information))
   
-  # name of the parameters of the best model
-  parms <- names(methods[[best_model_index]])
+  # Final best model
+  final_model <- train (
+    form = class_efficiency ~.,
+    data = data,
+    method = row.names(selected_model),
+    tuneGrid = parms_vals[[best_model_index]]
+  )
   
-  # values of the parameters of the best model
-  parms_cols <- names(ml_model$metric_information[[best_model_index]]) %in% parms
-  parms_vals <- ml_model$metric_information[[best_model_index]][, parms_cols]
+  # # Optimization problem
+  # solution <- optimization(data = data, x = x, y = y, final_model = final_model, orientation = orientation)
+  # 
+  # resume <- data.frame()
+  # 
+  # if (orientation == "output") {
+  # 
+  #   resume <- cbind(data[, c(min(x):max(x), min(y):max(y))], DEA.score = DEA$scores, SVM.Classifier.score = solution$solution_score)
+  # 
+  #   resume <- as.data.frame(resume)
+  # 
+  #   names <- colnames(data)[c(x, y)]
+  # 
+  #   colnames(resume)[c(x, y)] <- names
+  # 
+  #   rownames(resume) <- nameDMUs
+  # 
+  #   long <- max(c(max(resume$DEA.score), max(resume$SVM.Classifier.score)))
+  # 
+  #   graph <- ggplot(resume) +
+  #     geom_point(aes(x = SVM.Classifier.score, y = DEA.score)) +
+  #     scale_y_continuous(limits = c(1, long),
+  #                        breaks = seq(1, long, by = 0.1)) +
+  #     scale_x_continuous(limits = c(1, long),
+  #                        breaks = seq(1, long, by = 0.1)) +
+  #     geom_abline(intercept = 0, slope = 1)
+  # 
+  # } else { # orientation == "input"
+  # 
+  #   resume <- cbind(data[, c(min(x):max(x), min(y):max(y))], DEA.score = DEA$scores, SVM.Classifier.score = solution$solution_score)
+  # 
+  #   name <- colnames(data)[x]
+  # 
+  #   colnames(resume)[x] <- name
+  # 
+  #   rownames(resume) <- nameDMUs
+  # 
+  #   long <- min(c(min(resume$SVM.Classifier.score), min(resume$DEA.score)))
+  # 
+  #   graph <- ggplot(resume) +
+  #     geom_point(aes(x = SVM.Classifier.score, y = DEA.score)) +
+  #     scale_y_continuous(limits = c(long, 1),
+  #                        breaks = seq(0, 1, by = 0.1)) +
+  #     scale_x_continuous(limits = c(long, 1),
+  #                        breaks = seq(0, 1, by = 0.1)) +
+  #     geom_abline(intercept = 0, slope = 1)
+  # 
+  # }
+  # 
+  # correlation <- cor(resume$SVM.Classifier.score, resume$DEA.score , use = "everything",
+  #                    method = "pearson")
+  # 
+  # return(list(data = data, train_models = train_svm, best_model = as.character(selected_SVM_model[1]), best_model_fit = final_model, solution_point = solution[["solution_point"]], score = solution[["solution_score"]], resume = resume, plot = graph, correlation_pearson = correlation))
   
-  # Optimization problem
-  solution <- optimization(data = data, x = x, y = y, final_model = final_model, orientation = orientation)
-
-  resume <- data.frame()
-
-  if (orientation == "output") {
-
-    resume <- cbind(data[, c(min(x):max(x), min(y):max(y))], DEA.score = DEA$scores, SVM.Classifier.score = solution$solution_score)
-
-    resume <- as.data.frame(resume)
-
-    names <- colnames(data)[c(x, y)]
-
-    colnames(resume)[c(x, y)] <- names
-
-    rownames(resume) <- nameDMUs
-
-    long <- max(c(max(resume$DEA.score), max(resume$SVM.Classifier.score)))
-
-    graph <- ggplot(resume) +
-      geom_point(aes(x = SVM.Classifier.score, y = DEA.score)) +
-      scale_y_continuous(limits = c(1, long),
-                         breaks = seq(1, long, by = 0.1)) +
-      scale_x_continuous(limits = c(1, long),
-                         breaks = seq(1, long, by = 0.1)) +
-      geom_abline(intercept = 0, slope = 1)
-
-  } else { # orientation == "input"
-
-    resume <- cbind(data[, c(min(x):max(x), min(y):max(y))], DEA.score = DEA$scores, SVM.Classifier.score = solution$solution_score)
-
-    name <- colnames(data)[x]
-
-    colnames(resume)[x] <- name
-
-    rownames(resume) <- nameDMUs
-
-    long <- min(c(min(resume$SVM.Classifier.score), min(resume$DEA.score)))
-
-    graph <- ggplot(resume) +
-      geom_point(aes(x = SVM.Classifier.score, y = DEA.score)) +
-      scale_y_continuous(limits = c(long, 1),
-                         breaks = seq(0, 1, by = 0.1)) +
-      scale_x_continuous(limits = c(long, 1),
-                         breaks = seq(0, 1, by = 0.1)) +
-      geom_abline(intercept = 0, slope = 1)
-
-  }
-
-  correlation <- cor(resume$SVM.Classifier.score, resume$DEA.score , use = "everything",
-                     method = "pearson")
-
-  return(list(data = data, train_models = train_svm, best_model = as.character(selected_SVM_model[1]), best_model_fit = final_model, solution_point = solution[["solution_point"]], score = solution[["solution_score"]], resume = resume, plot = graph, correlation_pearson = correlation))
+  return(final_model)
 
 }

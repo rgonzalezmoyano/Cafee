@@ -116,7 +116,7 @@ optimization <- function(data, x, y, final_model, orientation) {
       grid.1 <- data.frame(data[i, x], y = aux.y)
       predict[1] <- predict(final_model$finalModel, grid.1, type = "decision")[, 1]
 
-      if (predict[1] > 0) { # efficient by SVM prediction
+      if (predict[1] > 0) { # efficient by final_model
 
         result.int <- rbind(result.int, aux.y)
 
@@ -133,7 +133,7 @@ optimization <- function(data, x, y, final_model, orientation) {
           grid <- data.frame(data[i, x], y = aux.y[j,])
           predict[j] <- predict(final_model$finalModel, grid, type = "decision")[, 1]
 
-          # print(paste("Iteración while", j))
+          print(paste("Iteración while 1 ", j))
 
           j.ref <- incr[j]
           j <- j + 1
@@ -155,7 +155,7 @@ optimization <- function(data, x, y, final_model, orientation) {
           grid <- data.frame(x = data[i, x], y = aux.y[j,])
           predict[j] <- predict(final_model$finalModel, grid, type = "decision")[, 1]
 
-          #print(paste("Iteracion while ", j))
+          print(paste("Iteracion while 2 ", j))
 
         }
 
@@ -173,7 +173,7 @@ optimization <- function(data, x, y, final_model, orientation) {
 
     }
 
-      #print(paste("iteration ", i))
+      print(paste("iteration ", i))
 
   } # FIN bucle for
 
