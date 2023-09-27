@@ -64,7 +64,7 @@ methods <- list (
 )
 # https://topepo.github.io/caret/train-models-by-tag.html
 
-metric = "Balanced Accuracy"
+metric = "F1"
 
 # Result
 prueba <- efficiency_estimation (
@@ -74,7 +74,7 @@ prueba <- efficiency_estimation (
   orientation = orientation,
   trControl = trControl,
   method = methods,
-  metric = "Balanced Accuracy",
+  metric = "F1",
   hold_out = hold_out
   )
 

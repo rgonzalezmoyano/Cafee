@@ -168,7 +168,20 @@ generate_plot <- function (techique, N, std_dev, metric) {
   
   # make a grid of the predictors
   rng.x <- range(data[1])
-  rng.y <- range(data[2])
+  
+  if (max(data[3] > max(data[2]))) {
+    top <- max(data[3])
+  } else {
+    top <- max(data[2])
+  }
+  
+  if (min(data[3] < min(data[2]))) {
+    bottom <- min(data[3])
+  } else {
+    bottom <- min(data[2])
+  }
+  
+  rng.y <- range(bottom, top)
   
   grid <- expand.grid (
     x1 = seq(rng.x[1], rng.x[2], length = 150),
@@ -179,9 +192,10 @@ generate_plot <- function (techique, N, std_dev, metric) {
   
   img <- ggplot(data = data) +
     geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.75, alpha = 0.5) +
-    geom_line(aes(x = x1, y = yD), linewidth = 1) +
+    geom_line(aes(x = x1, y = yD), linewidth = 1, linetype = "dotted") +
     geom_line(aes(x = x1, y = dea), linewidth = 1) +
     scale_color_manual(values = c("not_efficient" = "pink", "efficient" = "lightgreen")) +
+    ggtitle(paste("Frontera knn", " | ", "e ~ N(0, ", std_dev, ")", sep = "")) +
     theme_bw() +
     theme(
       axis.title.x = element_text (
@@ -229,7 +243,7 @@ generate_plot <- function (techique, N, std_dev, metric) {
 
 technique <- "knn"
 N <- c(25, 50, 100, 200, 500)
-std_dev <- c(0, 0.01, 0.05, 0.1, 0.15)
+std_dev <- c(0, 0.005, 0.01)
 metric <- "F1"
 
 for (n in N) {
@@ -237,15 +251,3 @@ for (n in N) {
     generate_plot(techique = techique, N = n, std_dev = std, metric = metric)
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

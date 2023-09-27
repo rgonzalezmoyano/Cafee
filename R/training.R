@@ -41,9 +41,9 @@ train_ml <- function (
       
       sink()
       
-      model[["results"]][["Balanced_accuracy"]] <- (model[["results"]][["Sens"]] + model[["results"]][["Spec"]]) / 2
+      #model[["results"]][["Balanced_accuracy"]] <- (model[["results"]][["Sens"]] + model[["results"]][["Spec"]]) / 2
 
-      model_best$metric_information[[a]] <- model$results[which.max(model$results[, "Balanced_accuracy"]),]
+      model_best$metric_information[[a]] <- model$results[which.max(model$results[, "ROC"]),]
       names(model_best$metric_information)[a] <- names(methods[a])
       
       model_best$best_model_fit[[a]] <- model[["finalModel"]]
