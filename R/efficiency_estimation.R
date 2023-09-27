@@ -197,6 +197,6 @@ efficiency_estimation <- function (
   # 
   # return(list(data = data, train_models = train_svm, best_model = as.character(selected_SVM_model[1]), best_model_fit = final_model, solution_point = solution[["solution_point"]], score = solution[["solution_score"]], resume = resume, plot = graph, correlation_pearson = correlation))
   
-  return(list(final_model = final_model, data = data))
+  return(final_model)
 
 }

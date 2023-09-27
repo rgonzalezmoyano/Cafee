@@ -10,7 +10,7 @@ output:
     mathjax: true
 ---
 
-```{librerias}
+```{r librerias}
 devtools::load_all()
 library(ggplot2)
 
@@ -48,7 +48,7 @@ hold_out <- 0.15
 
 methods <- list (
   "knn" = list (
-    k = 5:15
+    k = 1:3
   ),
   "gbm" = list (
     n.trees = c(50, 100, 150),
@@ -89,39 +89,22 @@ model <- efficiency_estimation (
 
 ```{r grafico echo = FALSE}
 # Simulated data
-data <- model$data
-
-#data$class_efficiency <- ifelse(data$class_efficiency == "efficient", 1, 0)
-#data$class_efficiency <- as.factor(data$class_efficiency)
 
 # hiperplano
 # make a grid of the predictors
 rng.x <- range(data[1])
 rng.y <- range(data[2])
 
-n_points <- 50
+n_points <- 150
 grid <- expand.grid(x1 = seq(rng.x[1], rng.x[2], length = n_points),
                     y = seq(rng.y[1], rng.y[2], length = n_points))
 
-grid$decision <- predict(model$final_model, grid, type = "raw")
+grid$decision <- predict(model, grid, type = "raw")
 
-
-# Contriur hiperplano
-rango_X1 <- range(min(data[x]), max(data[x]))
-
-#rango_X2 <- range(0, 5.7)
-rango_X2 <- range(min(prueba$data[y]), max(prueba$data[y]))
-
-# Interpolación de puntos
-new_x1 <- seq(from = rango_X1[1], to = rango_X1[2], length = 200)
-new_x2 <- seq(from = rango_X2[1], to = rango_X2[2], length = 200)
-nuevos_puntos <- expand.grid(x1 = new_x1, y = new_x2)
-
-# Predicción según el modelo
-predicciones <- predict(object = prueba$final_model, newdata = nuevos_puntos)
 
 ggplot(data = data) +
   geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.75) +
+  geom_line(aes(x = x1, y = yD)) +
+  scale_color_manual(values = c("not_efficient" = "pink", "efficient" = "lightgreen")) +
   theme_bw()
 ```
-
