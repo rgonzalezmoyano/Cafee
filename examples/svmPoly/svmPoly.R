@@ -22,8 +22,16 @@ set.seed(314)
 # std_dev: standard deviation for random inefficiency
 
 # metric: performance metric to evaluate models. Options:
-  # 
-  #
+  # Sensitivity
+  # Specificity
+  # Pos Pred Value
+  # Neg Pred Value
+  # Precision
+  # Recall
+  # F1
+  # Prevalence
+  # Detection Prevalence
+  # Balanced Accuracy
 
 # Fixed: cross-validation with 10 folds and 10% of DMUs as hold out data
 
