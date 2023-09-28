@@ -2,6 +2,7 @@
 
 export(efficiency_estimation)
 export(reffcy)
+importFrom(ROSE,ROSE)
 importFrom(Rdpack,reprompt)
 importFrom(caret,createDataPartition)
 importFrom(caret,train)

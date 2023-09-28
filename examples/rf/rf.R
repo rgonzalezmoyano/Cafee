@@ -4,6 +4,7 @@
 
 devtools::load_all()
 library("ggplot2")
+library("caret")
 
 # ==== #
 # seed #
@@ -139,11 +140,27 @@ generate_plot <- function (techique, N, std_dev, metric) {
   # efficiency orientation
   orientation <- "output"
   
+  # metric for tuning evaluation
+  MySummary <- function (data, lev = NULL, model = NULL) {
+    
+    # accuracy and kappa
+    acc_kpp <- defaultSummary(data, lev, model)
+    
+    # AUC, sensitivity and specificity
+    auc_sen_spe <- twoClassSummary(data, lev, model)
+    
+    # precision and recall
+    pre_rec <- prSummary(data, lev, model)
+    
+    c(acc_kpp, auc_sen_spe, pre_rec)
+  } 
+  
   # Parameters for controlling the training process
   trControl <- trainControl (
-    method = "cv",
-    number = 10,
-    summaryFunction = twoClassSummary,
+    method = "repeatedcv",
+    number = 5,
+    repeats = 5,
+    summaryFunction = MySummary,
     classProbs = TRUE,
     savePredictions = "all"
   )
@@ -203,7 +220,7 @@ generate_plot <- function (techique, N, std_dev, metric) {
     geom_line(aes(x = x1, y = yD), linewidth = 1, linetype = "dotted") +
     geom_line(aes(x = x1, y = dea), linewidth = 1) +
     scale_color_manual(values = c("not_efficient" = "pink", "efficient" = "lightgreen")) +
-    ggtitle(paste("Frontera rf", " | ", "e ~ N(0, ", std_dev, ")", sep = "")) +
+    ggtitle(paste("Frontera rf", " | ", "e ~ N(0, ", std_dev, ") | N = ", N, sep = "")) +
     theme_bw() +
     theme(
       axis.title.x = element_text (

@@ -4,6 +4,7 @@
 
 devtools::load_all()
 library("ggplot2")
+library("caret")
 
 # ==== #
 # seed #
@@ -140,25 +141,26 @@ generate_plot <- function (techique, N, std_dev, metric) {
   orientation <- "output"
   
   # metric for tuning evaluation
-  f1 <- function (data, lev = NULL, model = NULL) {
+  MySummary <- function (data, lev = NULL, model = NULL) {
     
-    precision <- posPredValue(data$pred, data$obs, positive = "efficient")
+    # accuracy and kappa
+    acc_kpp <- defaultSummary(data, lev, model)
     
-    recall <- sensitivity(data$pred, data$obs, postive = "efficient")
+    # AUC, sensitivity and specificity
+    auc_sen_spe <- twoClassSummary(data, lev, model)
     
-    f1_val <- (2 * precision * recall) / (precision + recall)
+    # precision and recall
+    pre_rec <- prSummary(data, lev, model)
     
-    names(f1_val) <- c("F1")
-    
-    f1_val
+    c(acc_kpp, auc_sen_spe, pre_rec)
   } 
   
   # Parameters for controlling the training process
   trControl <- trainControl (
     method = "repeatedcv",
-    number = 10,
+    number = 5,
     repeats = 5,
-    summaryFunction = f1,
+    summaryFunction = MySummary,
     classProbs = TRUE,
     savePredictions = "all"
   )
@@ -167,9 +169,9 @@ generate_plot <- function (techique, N, std_dev, metric) {
   
   methods <- list (
     "svmPoly" = list(
-        "degree" = c(2,3,4),
-        "scale" = c(0.0001,0.001,0.01,0.1,1),
-        "C" = c(seq(1, 100, length.out = 10), seq(200, 1000, length.out = 3))
+        "degree" = c(2, 3),
+        "scale" = c(0.001, 0.1, 1),
+        "C" = c(1, 5, 10, 20, 50, 100)
       )
   )
   
@@ -218,9 +220,10 @@ generate_plot <- function (techique, N, std_dev, metric) {
   img <- ggplot(data = data) +
     geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.75, alpha = 0.5) +
     geom_line(aes(x = x1, y = yD), linewidth = 1, linetype = "dotted") +
+    geom_point(aes(x = x1, y = y)) +
     geom_line(aes(x = x1, y = dea), linewidth = 1) +
     scale_color_manual(values = c("not_efficient" = "pink", "efficient" = "lightgreen")) +
-    ggtitle(paste("Frontera svmPoly", " | ", "e ~ N(0, ", std_dev, ")", sep = "")) +
+    ggtitle(paste("Frontera svmPoly", " | ", "e ~ N(0, ", std_dev, ") | N = ", N, sep = "")) +
     theme_bw() +
     theme(
       axis.title.x = element_text (

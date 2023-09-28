@@ -4,6 +4,7 @@
 
 devtools::load_all()
 library("ggplot2")
+library("caret")
 
 # ==== #
 # seed #

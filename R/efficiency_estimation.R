@@ -12,6 +12,7 @@
 #' @param hold_out A \code{number} value (5-20) for validation data percentage during training (default: 0.2).
 #'
 #' @importFrom caret trainControl train createDataPartition
+#' @importFrom ROSE ROSE
 #' @importFrom dplyr select_if %>% arrange top_n sample_n
 #'
 #' @return A \code{"cafee"} object.
@@ -63,6 +64,40 @@ efficiency_estimation <- function (
 
   valid_data <- data[valid_index, ]
   train_data <- data[- valid_index, ]
+  
+  # generade new efficient DMUs to trate unbalanced data
+  table(train_data$class_efficiency)
+  table(train_data$class_efficiency)[2] / nrow(train_data)
+  
+  number_new_dmus <- NULL
+  i <- 0
+  
+  while (table(train_data$class_efficiency)[2] / (nrow(train_data) + i) > 0.6) {
+    number_new_dmus <- i
+    i <- i + 1
+  }
+  
+  print(number_new_dmus) # número de nuevas DMUs
+  
+  new_dmus <- data.frame (
+    "x1" = runif(min = min(train_data$x1), max = max(train_data$x1), n = number_new_dmus),
+    "y" = min(data$x1) * 0.9
+  )
+  
+  browser()
+
+  new_data_train <- rbind(data[, c(x, y)], new_dmus)
+  
+  # calculate y value efficient for new dmus
+  
+
+  
+  
+  
+  
+  
+  # smote approach
+  #rose_data <- ROSE(class_efficiency ~ ., data = train_data)$data
   
   # Function train model
   ml_model <- train_ml (
