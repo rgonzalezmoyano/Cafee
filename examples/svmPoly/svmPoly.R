@@ -139,11 +139,26 @@ generate_plot <- function (techique, N, std_dev, metric) {
   # efficiency orientation
   orientation <- "output"
   
+  # metric for tuning evaluation
+  f1 <- function (data, lev = NULL, model = NULL) {
+    
+    precision <- posPredValue(data$pred, data$obs, positive = "efficient")
+    
+    recall <- sensitivity(data$pred, data$obs, postive = "efficient")
+    
+    f1_val <- (2 * precision * recall) / (precision + recall)
+    
+    names(f1_val) <- c("F1")
+    
+    f1_val
+  } 
+  
   # Parameters for controlling the training process
   trControl <- trainControl (
-    method = "cv",
+    method = "repeatedcv",
     number = 10,
-    summaryFunction = twoClassSummary,
+    repeats = 5,
+    summaryFunction = f1,
     classProbs = TRUE,
     savePredictions = "all"
   )
@@ -154,7 +169,7 @@ generate_plot <- function (techique, N, std_dev, metric) {
     "svmPoly" = list(
         "degree" = c(2,3,4),
         "scale" = c(0.0001,0.001,0.01,0.1,1),
-        "C" = c(seq(0, 100, length.out = 10), seq(200, 1000, length.out = 3))
+        "C" = c(seq(1, 100, length.out = 10), seq(200, 1000, length.out = 3))
       )
   )
   

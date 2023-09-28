@@ -14,17 +14,12 @@ train_ml <- function (
     data, trControl, methods
     ) {
   
-  levels(data$class_efficiency) <- c("not_efficient", "efficient")
-
-  model_best <- vector("list", length = 2)
-  names(model_best) <- c("metric_information", "best_model_fit")
-  
-  model_best$metric_information <- vector("list", length = length(methods))
-  model_best$best_model_fit <- vector("list", length = length(methods))
+  # list with best configuration
+  best_model_fit <- vector("list", length = length(methods))
   
   for (a in 1:length(methods)) {
 
-      # Params grid
+      # parameters grid
       tune_grid <- unique(expand.grid(methods[[a]]))
     
       # Tune models
@@ -33,25 +28,23 @@ train_ml <- function (
         data = data,
         method = names(methods[a]),
         trControl = trControl,
-        tuneGrid = tune_grid,
-        metric = "Spec"
+        tuneGrid = tune_grid
         )
       
-      # browser()
-      # index_best_model <- model$results %>%
-      #   arrange(desc(Spec), desc(ROC)) %>%
-      #   top_n(1) %>%
-      #   sample_n(1)
-      # 
+      # compute F1 score
+      prec <- model[["results"]]["Precision"]
+      sens <- model[["results"]]["Sens"]
       
-      model_best$metric_information[[a]] <- model$results[which.max(model$results[, "ROC"]),]
-      names(model_best$metric_information)[a] <- names(methods[a])
+      model[["results"]]["F1"] <- (2 * prec * sens) / (sens + prec)
       
-      model_best$best_model_fit[[a]] <- model[["finalModel"]]
-      names(model_best$best_model_fit)[a] <- names(methods[a])
-    
+      # select best configuration
+      best_config <- model[["results"]] %>%
+        arrange(desc(F1), desc(Spec), desc(AUC), desc(Kappa), desc(Accuracy))
+      
+      best_model_fit[[a]] <- best_config[1, ]
+      names(best_model_fit)[a] <- names(methods[a])
+      
   }
 
-  return(model_best)
-  
+  return(best_model_fit)
 }

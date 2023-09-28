@@ -18,11 +18,26 @@ y <- 2
 # efficiency orientation
 orientation <- "output"
 
+# metrics for model evaluation
+MySummary <- function (data, lev = NULL, model = NULL) {
+  
+  # accuracy and kappa
+  acc_kpp <- defaultSummary(data, lev, model)
+  
+  # AUC, sensitivity and specificity
+  auc_sen_spe <- twoClassSummary(data, lev, model)
+  
+  # precision and recall
+  pre_rec <- prSummary(data, lev, model)
+  
+  c(acc_kpp, auc_sen_spe, pre_rec)
+} 
+
 # Parameters for controlling the training process
 trControl <- trainControl (
   method = "cv",
   number = 5,
-  summaryFunction = twoClassSummary,
+  summaryFunction = MySummary,
   classProbs = TRUE,
   savePredictions = "all"
 )

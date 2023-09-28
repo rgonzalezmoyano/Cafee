@@ -22,7 +22,7 @@ efficiency_estimation <- function (
     data, x, y, orientation,
     trControl, methods, metric, hold_out
     ) {
-  
+
   # pre-processing
   data <- preprocessing (
     data = data, 
@@ -43,13 +43,18 @@ efficiency_estimation <- function (
     data = data, x = x, y = y, nX = nX, nY = nY
     )
   
-  # Determine efficient and inefficient DMUs
+  # determine efficient and inefficient DMUs
   class_efficiency <- ifelse(scores[, 1] <= 0.0001, 1, 0)
-  
+
   # Add "efficient" class
   data <- cbind(data, class_efficiency) %>% as.data.frame()
-  data$class_efficiency <- as.factor(class_efficiency)
-  
+  data$class_efficiency <- factor(data$class_efficiency)
+  data$class_efficiency <- factor (
+    data$class_efficiency, 
+    levels = rev(levels(data$class_efficiency))
+    )
+  levels(data$class_efficiency) <- c("efficient", "not_efficient")
+
   # Create train and validation data
   valid_index <- createDataPartition (
     data$class_efficiency,
@@ -73,16 +78,13 @@ efficiency_estimation <- function (
   parms_vals <- vector("list", length = length(methods))
   names(parms_vals) <- names(methods)
   
-  # Change names to ROC matrics in train
-  levels(data$class_efficiency) <- c("not_efficient", "efficient")
-  
   for (i in 1:length(methods)) {
     
     # parameter position
-    parms_posn <- which(names(ml_model$metric_information[[i]]) %in% names(methods[[i]])) 
+    parms_posn <- which(names(ml_model[[i]]) %in% names(methods[[i]])) 
     
     # parameter values
-    parms_vals[[i]] <- as.data.frame(ml_model$metric_information[[i]])[, parms_posn]
+    parms_vals[[i]] <- as.data.frame(ml_model[[i]])[, parms_posn]
     
     # rename parameters if is null
     if (is.null(names(parms_vals[[i]]))) {
@@ -106,7 +108,7 @@ efficiency_estimation <- function (
       data = y_hat,
       reference = y_obs,
       mode = "everything",
-      positive = "1"
+      positive = "efficient"
       )[["byClass"]]
   }
   
@@ -125,15 +127,14 @@ efficiency_estimation <- function (
   for (i in 1:length(methods)) {
     precision_models[i, ] <- confusion_matrix[[i]]
   }
-  
+
   # select the best model by metric
   selected_model <- precision_models %>%
-    arrange(metric, "Balanced Accuracy", "Sensitivity") %>%
-    top_n(1) %>%
-    sample_n(1)
+    arrange(desc(F1), desc(Sensitivity), desc("Balanced Accuracy"))
+  selected_model <- selected_model[1, ]
   
   # index of the best model in ml_model
-  best_model_index <- which(row.names(selected_model) == names(ml_model$metric_information))
+  best_model_index <- which(row.names(selected_model) == names(ml_model))
   
   # Final best model
   final_model <- train (
