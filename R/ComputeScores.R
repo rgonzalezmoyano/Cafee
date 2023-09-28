@@ -30,9 +30,7 @@ compute_scores_additive <- function(data, x, y, nX, nY) {
       # vector for variables: slack_X + slack_y + lambdas
       objVal <- matrix(ncol = nX + nY + dmu, nrow = 1) 
       
-      x.weight <- rep(1, nX)
-      y.weight <- rep(1, nY)
-      objVal[1:(nX + nY)] <- c(x.weight, y.weight)
+      objVal[1:(nX + nY)] <- 1
       
       lps <- make.lp(nrow = 0, ncol = nX + nY + dmu)
       lp.control(lps, sense = "max")
@@ -53,7 +51,7 @@ compute_scores_additive <- function(data, x, y, nX, nY) {
         
         # Slacks para outputs
         y_slack <- rep(0, nY)
-        y_slack[yi] <- -1
+        y_slack[yi] <- - 1
         slacks  <- c(rep(0, nX), y_slack)
         
         add.constraint(lps, xt = c(slacks, ymat[,yi]), "=", rhs = ymat[d, yi])
@@ -64,7 +62,7 @@ compute_scores_additive <- function(data, x, y, nX, nY) {
       add.constraint(lprec = lps, xt = c(rep(0, nX + nY), rep(1, dmu)), type = "=", rhs = 1)
       
       solve(lps)
-      scores[d] <- get.objective(lps)
+      scores[d, ] <- get.objective(lps)
       
     }
 

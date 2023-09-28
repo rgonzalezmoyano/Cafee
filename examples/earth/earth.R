@@ -129,7 +129,7 @@ generate_plot <- function (techique, N, std_dev, metric) {
     returns = "variable"
   )
   
-  dea_proj <- as.data.frame(data$y * bcc_scores)
+  dea_proj <- as.data.frame(data[, y] * bcc_scores)
   data$dea <- dea_proj$V1
   
   # ======== #

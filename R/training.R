@@ -26,9 +26,7 @@ train_ml <- function (
 
       # Params grid
       tune_grid <- unique(expand.grid(methods[[a]]))
-      
-      sink("nul")
-      
+    
       # Tune models
       model <- train (
         form = class_efficiency ~ .,
@@ -36,13 +34,16 @@ train_ml <- function (
         method = names(methods[a]),
         trControl = trControl,
         tuneGrid = tune_grid,
-        metric = "ROC"
+        metric = "Spec"
         )
       
-      sink()
+      # browser()
+      # index_best_model <- model$results %>%
+      #   arrange(desc(Spec), desc(ROC)) %>%
+      #   top_n(1) %>%
+      #   sample_n(1)
+      # 
       
-      #model[["results"]][["Balanced_accuracy"]] <- (model[["results"]][["Sens"]] + model[["results"]][["Spec"]]) / 2
-
       model_best$metric_information[[a]] <- model$results[which.max(model$results[, "ROC"]),]
       names(model_best$metric_information)[a] <- names(methods[a])
       
