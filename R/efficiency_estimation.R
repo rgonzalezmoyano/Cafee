@@ -38,8 +38,6 @@ efficiency_estimation <- function (
   nX <- length(x)
   nY <- length(y)
   
-  browser()
-
   # compute DEA scores through an additive model
   add_scores <- compute_scores_additive (
     data = data, x = x, y = y, nX = nX, nY = nY
@@ -50,11 +48,108 @@ efficiency_estimation <- function (
   
   # efficient dmus indexes
   eff_dmus_idx <- which(class_efficiency == 1)
+  ineff_dmus_idx <- which(class_efficiency == 0)
+  
+  data <- cbind(data, class_efficiency) %>% as.data.frame()
+  data$class_efficiency <- factor(data$class_efficiency)
+  data$class_efficiency <- factor (
+    data$class_efficiency, 
+    levels = rev(levels(data$class_efficiency))
+  )
+  levels(data$class_efficiency) <- c("efficient", "not_efficient")
+  
+  # number of DMUs efficient and inefficient
+  number_eff_dmus <- length(eff_dmus_idx)
+  number_ineff_dmus <- length(ineff_dmus_idx)
+  
+  # proportion of class
+  prop_eff_class <- number_eff_dmus / nrow(data)
+  prop_ineff_class <- number_ineff_dmus / nrow(data)
+  
+  # determinate the majority class
+  if (prop_eff_class > prop_ineff_class) {
+    
+    majority_class <- "efficient"
+    print(majority_class)
+    
+    q <- 0
+    while (((number_ineff_dmus + q) / (nrow(data))) < 0.35) {
+      
+      new_dmus <- q
+      print(new_dmus)
+      print(q)
+      q <- q + 1
+      print(q)
+      
+    }
+    
+    # Create inefficients dmus
+    index_dmu_change <- sample(1:nrow(data), size = new_dmus)
+    
+    new_dmus_value <- matrix(data = NA, nrow = new_dmus, ncol = max(y))  ######## REVISAR   
+    colnames(new_dmus_value) <- names(data)[c(x, y)]
+  
+    max_value <- as.data.frame(matrix(data = max(data[, x]), nrow = new_dmus, ncol = max(x)) - data[index_dmu_change, x])
+    
+    new_dmus_value_x <- apply(data[index_dmu_change, x],
+                              MARGIN = 1,
+                              function(x) runif(length(x), min = 0.1, max = max_value))
+    
+    
+    for (i in 1:max(x)) {
+      new_dmus_value[, ] <- data[i, x] + runif(1, min = 0.1, max = max(data[, x]) - data[i, x])
+    }
+    
+  } else if (prop_eff_class < prop_ineff_class) {
+    
+    majority_class <- "inefficient"
+    print(majority_class)
+    
+    q <- 0
+    while (((number_ineff_dmus + q) / (nrow(data) + q)) < 0.35) {
+      
+      new_dmus <- q
+      
+      q <- q + 1
+      
+    }
+    
+  } else {
+    
+    majority_class <- "equal"
+    print(majority_class)
+    
+  }
   
   browser()
-
-  # Add "efficient" class if less than 35 %
- 
+  
+  
+  
+  
+  
+  
+  
+  # Add new DMUs to balance the data
+  if (majority_class == "efficient") {
+    
+    
+    # Add "inefficient" class if less than 35 %
+    if (prop_eff_class > 0.65) {
+      
+      size_new_dmus <- round(0.05 * nrow(data), digits = 0)
+      
+      while (prop_eff_class > 0.65) {
+        news_dmus <- sample(data, size = size_new_dmus)
+      }
+    }
+  } 
+  
+  
+  
+  
+  
+  
+  
   
   data <- cbind(data, class_efficiency) %>% as.data.frame()
   data$class_efficiency <- factor(data$class_efficiency)
@@ -141,8 +236,6 @@ efficiency_estimation <- function (
       positive = "efficient"
       )[["byClass"]]
   }
-  
-  browser()
   
   # matrix for model evaluation
   precision_models <- matrix (
