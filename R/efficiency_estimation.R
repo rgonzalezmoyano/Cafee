@@ -40,12 +40,15 @@ efficiency_estimation <- function (
   nY <- length(y)
 
   # compute DEA scores through an additive model
-  scores <- compute_scores_additive (
+  add_scores <- compute_scores_additive (
     data = data, x = x, y = y, nX = nX, nY = nY
     )
   
   # determine efficient and inefficient DMUs
-  class_efficiency <- ifelse(scores[, 1] <= 0.0001, 1, 0)
+  class_efficiency <- ifelse(add_scores[, 1] <= 0.0001, 1, 0)
+  
+  # efficient dmus indexes
+  eff_dmus_idx <- which(class_efficiency == 1)
 
   # Add "efficient" class
   data <- cbind(data, class_efficiency) %>% as.data.frame()
@@ -55,6 +58,26 @@ efficiency_estimation <- function (
     levels = rev(levels(data$class_efficiency))
     )
   levels(data$class_efficiency) <- c("efficient", "not_efficient")
+  
+  # compute bcc_scores
+  bcc_scores <- rad_out (
+    tech_xmat = as.matrix(data[, x]),
+    tech_ymat = as.matrix(data[, y]),
+    eval_xmat = as.matrix(data[, x]),
+    eval_ymat = as.matrix(data[, y]),
+    convexity = TRUE,
+    returns = "variable"
+  ) 
+  
+  proj_data <- as.data.frame(cbind(data[, x], data[, y] * bcc_scores[, 1]))
+  names(proj_data) <- names(data[, c(x, y)])
+  proj_data$class_efficiency <- "efficient"
+  
+  # drop duplicated indexes
+  proj_data <- proj_data[- eff_dmus_idx, ]
+  
+  # add proj_data to original data
+  data <- as.data.frame(rbind(data, proj_data))
 
   # Create train and validation data
   valid_index <- createDataPartition (
@@ -64,40 +87,6 @@ efficiency_estimation <- function (
 
   valid_data <- data[valid_index, ]
   train_data <- data[- valid_index, ]
-  
-  # generade new efficient DMUs to trate unbalanced data
-  table(train_data$class_efficiency)
-  table(train_data$class_efficiency)[2] / nrow(train_data)
-  
-  number_new_dmus <- NULL
-  i <- 0
-  
-  while (table(train_data$class_efficiency)[2] / (nrow(train_data) + i) > 0.6) {
-    number_new_dmus <- i
-    i <- i + 1
-  }
-  
-  print(number_new_dmus) # número de nuevas DMUs
-  
-  new_dmus <- data.frame (
-    "x1" = runif(min = min(train_data$x1), max = max(train_data$x1), n = number_new_dmus),
-    "y" = min(data$x1) * 0.9
-  )
-  
-  browser()
-
-  new_data_train <- rbind(data[, c(x, y)], new_dmus)
-  
-  # calculate y value efficient for new dmus
-  
-
-  
-  
-  
-  
-  
-  # smote approach
-  #rose_data <- ROSE(class_efficiency ~ ., data = train_data)$data
   
   # Function train model
   ml_model <- train_ml (

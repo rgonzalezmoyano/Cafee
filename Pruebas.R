@@ -94,3 +94,31 @@ prueba <- efficiency_estimation (
   )
 
 prueba
+
+# Experimento
+
+scores <- compute_scores_additive (
+  data = data, x = x, y = y, nX = 1, nY = 1
+)
+
+class_efficiency <- ifelse(scores[, 1] <= 0.0001, 1, 0)
+
+data <- cbind(data, class_efficiency) %>% as.data.frame()
+data$class_efficiency <- factor(data$class_efficiency)
+data$class_efficiency <- factor (
+  data$class_efficiency, 
+  levels = rev(levels(data$class_efficiency))
+)
+levels(data$class_efficiency) <- c("efficient", "not_efficient")
+
+table(data$class_efficiency)
+
+rose_data <- ROSE(class_efficiency ~ ., data = data)$data
+
+table(rose_data$class_efficiency)
+
+ggplot(data) +
+  geom_point(aes(x = x1, y = y, color = class_efficiency))
+
+ggplot(rose_data) +
+  geom_point(aes(x = x1, y = y, color = class_efficiency))

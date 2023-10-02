@@ -158,7 +158,7 @@ generate_plot <- function (techique, N, std_dev, metric) {
   # Parameters for controlling the training process
   trControl <- trainControl (
     method = "repeatedcv",
-    number = 10,
+    number = 5,
     repeats = 5,
     summaryFunction = MySummary,
     classProbs = TRUE,
@@ -268,7 +268,7 @@ generate_plot <- function (techique, N, std_dev, metric) {
 
 technique <- "knn"
 N <- c(25, 50, 100, 200, 500)
-std_dev <- c(0, 0.005, 0.01)
+std_dev <- c(0, 0.005, 0.01, 0.03)
 metric <- "F1"
 
 for (n in N) {
