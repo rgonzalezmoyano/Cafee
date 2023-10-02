@@ -21,15 +21,32 @@ train_ml <- function (
 
       # parameters grid
       tune_grid <- unique(expand.grid(methods[[a]]))
-    
-      # Tune models
-      model <- train (
-        form = class_efficiency ~ .,
-        data = data,
-        method = names(methods[a]),
-        trControl = trControl,
-        tuneGrid = tune_grid
+      
+      # avoid messages for some methods
+      verb_methods <- c("gbm", "svmPoly")
+      
+      if (names(methods[a]) %in% verb_methods) {
+        # Tune models
+        model <- train (
+          form = class_efficiency ~ .,
+          data = data,
+          method = names(methods[a]),
+          trControl = trControl,
+          tuneGrid = tune_grid,
+          verbose = FALSE
         )
+      } else {
+        # Tune models
+        model <- train (
+          form = class_efficiency ~ .,
+          data = data,
+          method = names(methods[a]),
+          trControl = trControl,
+          tuneGrid = tune_grid
+        )
+      }
+    
+
       
       # compute F1 score
       prec <- model[["results"]]["Precision"]

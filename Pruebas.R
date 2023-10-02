@@ -5,15 +5,15 @@ set.seed(314)
 
 # Simulated data
 data <- reffcy (
-  DGP = "add_scenario_XnY1",
+  DGP = "cobb_douglas_XnY1",
   parms = list (
-    N = 100,
-    scenario = "A"
+    N = 200,
+    nX = 12
   )
 )
 
-x <- 1
-y <- 2
+x <- 1:12
+y <- 13
 
 # efficiency orientation
 orientation <- "output"
@@ -58,11 +58,11 @@ methods <- list (
     C = c(0.01, 0.1, 1, 10),
     sigma = c(0.001, 0.01, 0.1, 1)
     ),
-  # "svmPoly" = list(
-  #   "degree" = c(2,3,4),
-  #   "scale" = c(0.0001,0.001,0.01,0.1,1),
-  #   "C" = c(seq(0, 100, length.out = 10), seq(200, 1000, length.out = 3))
-  # ),
+  "svmPoly" = list(
+    "degree" = c(2, 3, 4),
+    "scale" = c(0.0001, 0.001, 0.01, 0.1, 1),
+    "C" = c(seq(0, 100, length.out = 10), seq(200, 1000, length.out = 3))
+  ),
   "rf" = list (
     mtry = c(1, 2)
     ),
@@ -70,13 +70,8 @@ methods <- list (
     nprune = c(5, 10, 15, 20, 25),
     degree = c(1)
   )
-  # ),
-  # "avNNet" = list (
-  #   size = c(5, 10, 20),
-  #   decay = c(0, 0.001, 0.01, 0.1),
-  #   bag = c(TRUE, FALSE)
-  # )
 )
+
 # https://topepo.github.io/caret/train-models-by-tag.html
 
 metric = "F1"
@@ -94,31 +89,3 @@ prueba <- efficiency_estimation (
   )
 
 prueba
-
-# Experimento
-
-scores <- compute_scores_additive (
-  data = data, x = x, y = y, nX = 1, nY = 1
-)
-
-class_efficiency <- ifelse(scores[, 1] <= 0.0001, 1, 0)
-
-data <- cbind(data, class_efficiency) %>% as.data.frame()
-data$class_efficiency <- factor(data$class_efficiency)
-data$class_efficiency <- factor (
-  data$class_efficiency, 
-  levels = rev(levels(data$class_efficiency))
-)
-levels(data$class_efficiency) <- c("efficient", "not_efficient")
-
-table(data$class_efficiency)
-
-rose_data <- ROSE(class_efficiency ~ ., data = data)$data
-
-table(rose_data$class_efficiency)
-
-ggplot(data) +
-  geom_point(aes(x = x1, y = y, color = class_efficiency))
-
-ggplot(rose_data) +
-  geom_point(aes(x = x1, y = y, color = class_efficiency))

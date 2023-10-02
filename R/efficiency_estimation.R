@@ -11,8 +11,7 @@
 #' @param metric A \code{string} specifying the summary metric for classification to select the optimal model. Default includes \code{"Balanced_accuracy"} due to (normally) unbalanced data.
 #' @param hold_out A \code{number} value (5-20) for validation data percentage during training (default: 0.2).
 #'
-#' @importFrom caret trainControl train createDataPartition
-#' @importFrom ROSE ROSE
+#' @importFrom caret trainControl train createDataPartition defaultSummary prSummary
 #' @importFrom dplyr select_if %>% arrange top_n sample_n
 #'
 #' @return A \code{"cafee"} object.
@@ -38,6 +37,8 @@ efficiency_estimation <- function (
   # Number of inputs / outputs as inputs and number of outputs
   nX <- length(x)
   nY <- length(y)
+  
+  browser()
 
   # compute DEA scores through an additive model
   add_scores <- compute_scores_additive (
@@ -49,8 +50,12 @@ efficiency_estimation <- function (
   
   # efficient dmus indexes
   eff_dmus_idx <- which(class_efficiency == 1)
+  
+  browser()
 
-  # Add "efficient" class
+  # Add "efficient" class if less than 35 %
+ 
+  
   data <- cbind(data, class_efficiency) %>% as.data.frame()
   data$class_efficiency <- factor(data$class_efficiency)
   data$class_efficiency <- factor (
@@ -121,7 +126,8 @@ efficiency_estimation <- function (
       form = class_efficiency ~.,
       data = train_data,
       method = names(methods[i]),
-      tuneGrid = parms_vals[[i]]
+      tuneGrid = parms_vals[[i]],
+      verbose = FALSE
       )
     
     y_obs <- valid_data$class_efficiency
@@ -135,6 +141,8 @@ efficiency_estimation <- function (
       positive = "efficient"
       )[["byClass"]]
   }
+  
+  browser()
   
   # matrix for model evaluation
   precision_models <- matrix (
@@ -165,7 +173,8 @@ efficiency_estimation <- function (
     form = class_efficiency ~.,
     data = data,
     method = row.names(selected_model),
-    tuneGrid = parms_vals[[best_model_index]]
+    tuneGrid = parms_vals[[best_model_index]],
+    verbose = FALSE
   )
   
   # # Optimization problem
