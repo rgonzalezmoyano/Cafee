@@ -58,126 +58,101 @@ efficiency_estimation <- function (
   )
   levels(data$class_efficiency) <- c("efficient", "not_efficient")
   
-  # number of DMUs efficient and inefficient
+  # number of efficient and inefficient DMUs
   number_eff_dmus <- length(eff_dmus_idx)
   number_ineff_dmus <- length(ineff_dmus_idx)
   
-  # proportion of class
-  prop_eff_class <- number_eff_dmus / nrow(data)
-  prop_ineff_class <- number_ineff_dmus / nrow(data)
+  prop_eff <- number_eff_dmus / nrow(data)
+  prop_ineff <- number_ineff_dmus / nrow(data)
   
-  # determinate the majority class
-  if (prop_eff_class > prop_ineff_class) {
+  # check for imbalanced data
+  if (max(prop_eff, prop_ineff) > 0.65) {
     
-    majority_class <- "efficient"
-    print(majority_class)
-    
-    q <- 0
-    while (((number_ineff_dmus + q) / (nrow(data))) < 0.35) {
+    if (prop_eff > prop_ineff) {
       
-      new_dmus <- q
-      print(new_dmus)
-      print(q)
-      q <- q + 1
-      print(q)
+      print("efficient imbalanced")
       
+      new_dmus <- ceiling(((-0.65 * number_ineff_dmus) + (0.35 * number_eff_dmus)) / 0.65)
+      print(paste("Se crean ", new_dmus, " dmus ineficientes"))
+      
+      # Create inefficients dmus
+      index_dmu_change <- sample(1:nrow(data), size = new_dmus)
+      
+      # create a new matrix data
+      new_dmus_value <- matrix(data = NA, nrow = new_dmus, ncol = nX + nY)  
+      colnames(new_dmus_value) <- names(data)[c(x, y)]
+      
+      # maximum values to worsen
+      max_value_x <- apply(X = data[, x], MARGIN = 2, FUN = max)
+      
+      for (i in 1:new_dmus) {
+        min_unif <- 0
+        dmu <- index_dmu_change[i]
+        max_unif <- max_value_x - data[dmu, x]
+        
+        for (j in 1:nX) {
+          make_inefficient <- runif(n = 1, min = min_unif, max = as.numeric(max_unif[j]))
+          print(make_inefficient)
+          new_dmus_value[i, j] <- data[dmu, j] + make_inefficient
+        }
+      }
+      
+      # minimum values to worsen
+      min_value_y <- apply(X = as.matrix(data[, y]), MARGIN = 2, FUN = min)
+      
+      min_value_y <- matrix(data = NA, ncol = length(y), nrow = 1)
+      colnames(min_value_y) <- names(data[y])
+      
+      for (i in (nX + 1):max(y)) {
+        min_value_y[i] <- min(data[, i])
+      }
+      
+      for (i in 1:new_dmus) {
+        min_unif <- 0
+        dmu <- index_dmu_change[i]
+        max_unif <- data[dmu, y] - min_value_y
+        
+        for (j in (max(x) + 1):max(y)) {
+          make_inefficient <- runif(n = 1, min = as.numeric(min_unif), max = as.numeric(max_unif[j]))
+          print(make_inefficient)
+          new_dmus_value[i, j] <- data[dmu, j] - make_inefficient
+        }
+      }
+      
+      # new dmus to data.frame
+      new_dmus_value <- as.data.frame(new_dmus_value)
+      
+      # clasification "ineffcient"
+      new_dmus_value$class_efficiency <- "not_efficient"
+      
+      # combinate new dmus to dataset
+      data <- rbind(data, new_dmus_value)
     }
-    
-    # Create inefficients dmus
-    index_dmu_change <- sample(1:nrow(data), size = new_dmus)
-    
-    new_dmus_value <- matrix(data = NA, nrow = new_dmus, ncol = max(y))  ######## REVISAR   
-    colnames(new_dmus_value) <- names(data)[c(x, y)]
   
-    max_value <- as.data.frame(matrix(data = max(data[, x]), nrow = new_dmus, ncol = max(x)) - data[index_dmu_change, x])
-    
-    new_dmus_value_x <- apply(data[index_dmu_change, x],
-                              MARGIN = 1,
-                              function(x) runif(length(x), min = 0.1, max = max_value))
-    
-    
-    for (i in 1:max(x)) {
-      new_dmus_value[, ] <- data[i, x] + runif(1, min = 0.1, max = max(data[, x]) - data[i, x])
-    }
-    
-  } else if (prop_eff_class < prop_ineff_class) {
-    
-    majority_class <- "inefficient"
-    print(majority_class)
-    
-    q <- 0
-    while (((number_ineff_dmus + q) / (nrow(data) + q)) < 0.35) {
-      
-      new_dmus <- q
-      
-      q <- q + 1
-      
-    }
-    
   } else {
     
-    majority_class <- "equal"
-    print(majority_class)
+    # compute bcc_scores
+    bcc_scores <- rad_out (
+      tech_xmat = as.matrix(data[, x]),
+      tech_ymat = as.matrix(data[, y]),
+      eval_xmat = as.matrix(data[, x]),
+      eval_ymat = as.matrix(data[, y]),
+      convexity = TRUE,
+      returns = "variable"
+    ) 
     
+    proj_data <- as.data.frame(cbind(data[, x], data[, y] * bcc_scores[, 1]))
+    names(proj_data) <- names(data[, c(x, y)])
+    proj_data$class_efficiency <- "efficient"
+    
+    # drop duplicated indexes
+    proj_data <- proj_data[- eff_dmus_idx, ]
+    
+    # add proj_data to original data
+    data <- as.data.frame(rbind(data, proj_data))
   }
   
   browser()
-  
-  
-  
-  
-  
-  
-  
-  # Add new DMUs to balance the data
-  if (majority_class == "efficient") {
-    
-    
-    # Add "inefficient" class if less than 35 %
-    if (prop_eff_class > 0.65) {
-      
-      size_new_dmus <- round(0.05 * nrow(data), digits = 0)
-      
-      while (prop_eff_class > 0.65) {
-        news_dmus <- sample(data, size = size_new_dmus)
-      }
-    }
-  } 
-  
-  
-  
-  
-  
-  
-  
-  
-  data <- cbind(data, class_efficiency) %>% as.data.frame()
-  data$class_efficiency <- factor(data$class_efficiency)
-  data$class_efficiency <- factor (
-    data$class_efficiency, 
-    levels = rev(levels(data$class_efficiency))
-    )
-  levels(data$class_efficiency) <- c("efficient", "not_efficient")
-  
-  # compute bcc_scores
-  bcc_scores <- rad_out (
-    tech_xmat = as.matrix(data[, x]),
-    tech_ymat = as.matrix(data[, y]),
-    eval_xmat = as.matrix(data[, x]),
-    eval_ymat = as.matrix(data[, y]),
-    convexity = TRUE,
-    returns = "variable"
-  ) 
-  
-  proj_data <- as.data.frame(cbind(data[, x], data[, y] * bcc_scores[, 1]))
-  names(proj_data) <- names(data[, c(x, y)])
-  proj_data$class_efficiency <- "efficient"
-  
-  # drop duplicated indexes
-  proj_data <- proj_data[- eff_dmus_idx, ]
-  
-  # add proj_data to original data
-  data <- as.data.frame(rbind(data, proj_data))
 
   # Create train and validation data
   valid_index <- createDataPartition (
