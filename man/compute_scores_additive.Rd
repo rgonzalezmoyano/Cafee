@@ -4,7 +4,7 @@
 \alias{compute_scores_additive}
 \title{Data envelopment analysis' clasification.}
 \usage{
-compute_scores_additive(data, x, y, nX, nY)
+compute_scores_additive(data, x, y)
 }
 \arguments{
 \item{data}{A \code{data.frame} or \code{matrix} containing the variables in the model.}
@@ -12,10 +12,6 @@ compute_scores_additive(data, x, y, nX, nY)
 \item{x}{Column indexes of input variables in \code{data}.}
 
 \item{y}{Column indexes of output variables in \code{data}.}
-
-\item{nX}{Number of inputs \code{data}.}
-
-\item{nY}{Number of outputs \code{data}.}
 }
 \value{
 Fill

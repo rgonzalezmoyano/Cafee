@@ -67,10 +67,7 @@ efficiency_estimation <- function (
       data = data, 
       x = x, 
       y = y,
-      obs_prop = obs_prop,
-      number_eff_dmus = number_eff_dmus, 
-      number_ineff_dmus = number_ineff_dmus,
-      eff_dmus_idx = eff_dmus_idx
+      obs_prop = obs_prop
     )
       
   }

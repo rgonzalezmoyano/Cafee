@@ -4,43 +4,20 @@
 \alias{balance_data}
 \title{Create New DMUs to Balance Data}
 \usage{
-balance_data(
-  data,
-  x,
-  y,
-  nX,
-  nY,
-  number_eff_dmus,
-  number_ineff_dmus,
-  prop_eff,
-  prop_ineff,
-  eff_dmus_idx
-)
+balance_data(data, x, y, obs_prop)
 }
 \arguments{
-\item{data}{A data.frame or matrix containing the variables used in the model.}
+\item{data}{A \code{data.frame} containing the variables used in the model.}
 
-\item{x}{Column indexes of the input variables in the \code{data}}
+\item{x}{Column indexes of the input variables in the \code{data}.}
 
-\item{y}{Column indexes of the output variables in the \code{data}}
+\item{y}{Column indexes of the output variables in the \code{data}.}
 
-\item{nX}{Number of inputs \code{data}.}
-
-\item{nY}{Number of outputs \code{data}.}
-
-\item{number_eff_dmus}{Number of efficient DMUs to be created in the \code{data}}
-
-\item{number_ineff_dmus}{Number of inefficient DMUs to be generated in the \code{data}}
-
-\item{prop_eff}{Proportion of efficient DMUs to be introduced in the \code{data}}
-
-\item{prop_ineff}{Proportion of inefficient DMUs to be added to the \code{data}}
-
-\item{eff_dmus_idx}{Index of the efficient dmus observed in \code{data}}
+\item{obs_prop}{A \code{table} with the observed proportions of efficient and inefficient DMUs.}
 }
 \value{
-Fill
+It returns a \code{data.frame} with the newly created set of DMUs incorporated.
 }
 \description{
-This function creates new DMUs to address data imbalances. It can generate both efficient and inefficient DMUs.
+This function creates new DMUs to address data imbalances. If the majority class is efficient, it generates new inefficient DMUs by worsering the observed units. Conversely, if the majority class is inefficient, it projects inefficient DMUs to the frontier. Finally, a random selection if performed to keep a proportion of 0.65 for the majority class and 0.35 for the minority class.
 }

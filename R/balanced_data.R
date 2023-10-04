@@ -13,37 +13,36 @@ balance_data <- function (
       data, x, y, obs_prop
     ) {
   
-  # prop_eff
-  # prop_ineff
+  # proportion of dmus efficient
+  prop_eff <- obs_prop["efficient"]
   
-  # n_eff
-  # n_ineff
+  # proportion of dmus not efficient
+  prop_ineff <- obs_prop["not_efficient"]
   
-  # idx_eff
-  # idx_ineff
+  # number of dmus efficient
+  n_eff <- prop_eff * nrow(data)
   
-  # efficient dmus indexes
-  eff_dmus_idx <- which(class_efficiency == 1)
-  ineff_dmus_idx <- which(class_efficiency == 0)
+  # number of dmus not efficient
+  n_ineff <- prop_ineff * nrow(data)
   
-  # number of efficient and inefficient DMUs
-  number_eff_dmus <- length(eff_dmus_idx)
-  number_ineff_dmus <- length(ineff_dmus_idx)
+  # index of dmus efficient
+  idx_eff <- which(data$class_efficiency == "efficient")
   
-  
+  # index of dmus not efficient
+  idx_ineff <- which(data$class_efficiency == "not_efficient")
   
   if (prop_eff > prop_ineff) {
     
     print("efficient imbalanced")
     
-    new_dmus <- ceiling(((-0.65 * number_ineff_dmus) + (0.35 * number_eff_dmus)) / 0.65)
+    new_dmus <- ceiling(((-0.65 * n_ineff) + (0.35 * n_eff)) / 0.65)
     print(paste("Se crean ", new_dmus, " dmus ineficientes"))
     
     # Create inefficients dmus
     index_dmu_change <- sample(1:nrow(data), size = new_dmus)
     
     # create a new matrix data
-    new_dmus_value <- matrix(data = NA, nrow = new_dmus, ncol = nX + nY)  
+    new_dmus_value <- matrix(data = NA, nrow = new_dmus, ncol = length(x) + length(y))  
     colnames(new_dmus_value) <- names(data)[c(x, y)]
     
     # maximum values to worsen
@@ -54,7 +53,7 @@ balance_data <- function (
       dmu <- index_dmu_change[i]
       max_unif <- max_value_x - data[dmu, x]
       
-      for (j in 1:nX) {
+      for (j in 1:length(x)) {
         make_inefficient <- runif(n = 1, min = min_unif, max = as.numeric(max_unif[j]))
         new_dmus_value[i, j] <- data[dmu, j] + make_inefficient
       }
@@ -66,7 +65,7 @@ balance_data <- function (
     min_value_y <- matrix(data = NA, ncol = length(y), nrow = 1)
     colnames(min_value_y) <- names(data[y])
     
-    for (i in (nX + 1):max(y)) {
+    for (i in (length(x) + 1):max(y)) {
       min_value_y[i] <- min(data[, i])
     }
     
@@ -110,16 +109,16 @@ balance_data <- function (
     proj_data$class_efficiency <- "efficient"
     
     # drop duplicated indexes
-    proj_data <- proj_data[- eff_dmus_idx, ]
+    proj_data <- proj_data[- idx_eff, ]
     
     # Select the minimum number of additions required to balance the data
-    new_dmus <- ceiling(((-0.65 * number_eff_dmus) + (0.35 * number_ineff_dmus)) / 0.65)
+    new_dmus <- ceiling(((-0.65 * n_eff) + (0.35 * n_ineff)) / 0.65)
     print(paste("Se crean ", new_dmus, " dmus eficientes"))
     
     # Select the efficient dmus
     index_dmu_effi <- sample(1:nrow(proj_data), size = new_dmus)
     
-    new_dmus_value <- as.data.frame(matrix(data = NA, nrow = new_dmus, ncol = nX + nY + 1))  
+    new_dmus_value <- as.data.frame(matrix(data = NA, nrow = new_dmus, ncol = length(x) + length(y) + 1))  
     names(new_dmus_value) <- names(data)
     
     for (i in 1:new_dmus) {

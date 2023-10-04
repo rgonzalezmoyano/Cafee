@@ -7,7 +7,7 @@ set.seed(314)
 data <- reffcy (
   DGP = "cobb_douglas_XnY1",
   parms = list (
-    N = 500,
+    N = 200,
     nX = 1
   )
 )
