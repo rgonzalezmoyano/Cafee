@@ -13,7 +13,11 @@ balance_data <- function (
       data, x, y, obs_prop
     ) {
   
-  browser()
+  # number of inputs
+  nX <- length(x)
+  
+  # number of outputs
+  nY <- length(y)
   
   # proportion of dmus efficient
   prop_eff <- obs_prop["efficient"]
@@ -29,64 +33,72 @@ balance_data <- function (
   
   # index of dmus efficient
   idx_eff <- which(data$class_efficiency == "efficient")
-  
+
   if (prop_eff > prop_ineff) {
     
-    # create inefficient DMUs
+    # ======================= #
+    # create inefficient DMUs #
+    # ======================= #
     
+    # number of dmus to create
     new_dmus <- ceiling(((-0.65 * n_ineff) + (0.35 * n_eff)) / 0.65)
-    print(paste("Se crean ", new_dmus, " dmus ineficientes"))
     
-    # Create inefficients dmus
-    index_dmu_change <- sample(1:nrow(data), size = new_dmus)
+    # indexes of DMUs for worsening
+    idx_dmu_change <- sample(1:nrow(data), size = new_dmus)
     
-    # create a new matrix data
-    new_dmus_value <- matrix(data = NA, nrow = new_dmus, ncol = length(x) + length(y))  
-    colnames(new_dmus_value) <- names(data)[c(x, y)]
+    # create a new matrix of data
+    new_dmu_values <- matrix(data = NA, nrow = new_dmus, ncol = nX + nY)  
+    colnames(new_dmu_values) <- names(data)[c(x, y)]
     
-    # maximum values to worsen
+    # data is moved by a uniform distribution.
+    # minimum parameter for the uniform distribution.
+    min_unif <- 0
+    
+    # alteration of inputs
+    # maximum values of inputs
     max_value_x <- apply(X = data[, x], MARGIN = 2, FUN = max)
     
     for (i in 1:new_dmus) {
-      min_unif <- 0
-      dmu <- index_dmu_change[i]
+      
+      # select a specific DMU
+      dmu <- idx_dmu_change[i]
+    
+      # maximum parameter for the uniform distribution
       max_unif <- max_value_x - data[dmu, x]
       
-      for (j in 1:length(x)) {
+      # create new DMUs
+      for (j in x) {
         make_inefficient <- runif(n = 1, min = min_unif, max = as.numeric(max_unif[j]))
-        new_dmus_value[i, j] <- data[dmu, j] + make_inefficient
+        new_dmu_values[i, j] <- data[dmu, j] + make_inefficient
       }
     }
-    
-    # minimum values to worsen
+
+    # alteration of outputs
+    # minimum values of outputs
     min_value_y <- apply(X = as.matrix(data[, y]), MARGIN = 2, FUN = min)
     
-    min_value_y <- matrix(data = NA, ncol = length(y), nrow = 1)
-    colnames(min_value_y) <- names(data[y])
-    
-    for (i in (length(x) + 1):max(y)) {
-      min_value_y[i] <- min(data[, i])
-    }
-    
     for (i in 1:new_dmus) {
-      min_unif <- 0
-      dmu <- index_dmu_change[i]
+      
+      # select a specific DMU
+      dmu <- idx_dmu_change[i]
+
+      # maximum parameter for the uniform distribution
       max_unif <- data[dmu, y] - min_value_y
       
-      for (j in (max(x) + 1):max(y)) {
-        make_inefficient <- runif(n = 1, min = as.numeric(min_unif), max = as.numeric(max_unif[j]))
-        new_dmus_value[i, j] <- data[dmu, j] - make_inefficient
+      for (j in 1:nY) {
+        make_inefficient <- runif(n = 1, min = min_unif, max = as.numeric(max_unif[j]))
+        new_dmu_values[i, nX + j] <- data[dmu, nX + j] - make_inefficient
       }
     }
     
-    # new dmus to data.frame
-    new_dmus_value <- as.data.frame(new_dmus_value)
+    # new set of DMUs to data.frame
+    new_dmu_values <- as.data.frame(new_dmu_values)
     
-    # clasification "ineffcient"
-    new_dmus_value$class_efficiency <- "not_efficient"
+    # classification of the new dmus as "inefficient"
+    new_dmu_values$class_efficiency <- "not_efficient"
     
-    # combinate new dmus to dataset
-    data <- rbind(data, new_dmus_value)
+    # add the new set of DMUs to the original data
+    data <- rbind(data, new_dmu_values)
     
   } else {
     

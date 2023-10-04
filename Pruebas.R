@@ -7,13 +7,13 @@ set.seed(314)
 data <- reffcy (
   DGP = "cobb_douglas_XnY1",
   parms = list (
-    N = 200,
-    nX = 1
+    N = 30,
+    nX = 9
   )
 )
 
-x <- 1
-y <- 2
+x <- 1:9
+y <- 10
 
 # efficiency orientation
 orientation <- "output"
