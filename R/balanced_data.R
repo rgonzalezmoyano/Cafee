@@ -1,28 +1,38 @@
 #' @title Create New DMUs to Balance Data
 #'
-#' @description This function creates new DMUs to address data imbalances. It can generate both efficient and inefficient DMUs.
+#' @description This function creates new DMUs to address data imbalances. If the majority class is efficient, it generates new inefficient DMUs by worsering the observed units. Conversely, if the majority class is inefficient, it projects inefficient DMUs to the frontier. Finally, a random selection if performed to keep a proportion of 0.65 for the majority class and 0.35 for the minority class.
+#' 
+#' @param data A \code{data.frame} containing the variables used in the model.
+#' @param x Column indexes of the input variables in the \code{data}.
+#' @param y Column indexes of the output variables in the \code{data}.
+#' @param obs_prop A \code{table} with the observed proportions of efficient and inefficient DMUs.
 #'
-#' @param data A data.frame or matrix containing the variables used in the model.
-#' @param x Column indexes of the input variables in the \code{data}
-#' @param y Column indexes of the output variables in the \code{data}
-#' @param nX Number of inputs \code{data}.
-#' @param nY Number of outputs \code{data}.
-#' @param number_eff_dmus Number of efficient DMUs to be created in the \code{data}
-#' @param number_ineff_dmus Number of inefficient DMUs to be generated in the \code{data}
-#' @param prop_eff Proportion of efficient DMUs to be introduced in the \code{data}
-#' @param prop_ineff Proportion of inefficient DMUs to be added to the \code{data}
-#' @param eff_dmus_idx Index of the efficient dmus observed in \code{data}
-#'
-#' @return Fill
+#' @return It returns a \code{data.frame} with the newly created set of DMUs incorporated.
 
-balanced_data <- function (
-      data, x, y, nX, nY,
-      number_eff_dmus, number_ineff_dmus, 
-      prop_eff, prop_ineff,
-      eff_dmus_idx
-) {
+balance_data <- function (
+      data, x, y, obs_prop
+    ) {
   
-    if (prop_eff > prop_ineff) {
+  # prop_eff
+  # prop_ineff
+  
+  # n_eff
+  # n_ineff
+  
+  # idx_eff
+  # idx_ineff
+  
+  # efficient dmus indexes
+  eff_dmus_idx <- which(class_efficiency == 1)
+  ineff_dmus_idx <- which(class_efficiency == 0)
+  
+  # number of efficient and inefficient DMUs
+  number_eff_dmus <- length(eff_dmus_idx)
+  number_ineff_dmus <- length(ineff_dmus_idx)
+  
+  
+  
+  if (prop_eff > prop_ineff) {
     
     print("efficient imbalanced")
     

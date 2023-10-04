@@ -5,66 +5,72 @@
 #' @param data A \code{data.frame} or \code{matrix} containing the variables in the model.
 #' @param x Column indexes of input variables in \code{data}.
 #' @param y Column indexes of output variables in \code{data}.
-#' @param nX Number of inputs \code{data}.
-#' @param nY Number of outputs \code{data}.
 #' 
 #' @importFrom lpSolveAPI make.lp lp.control set.objfn add.constraint get.objective
 #'
 #' @return Fill
-compute_scores_additive <- function(data, x, y, nX, nY) {
-    
-    # matrix of inputs 
-    xmat <- as.matrix(data[, x])
+compute_scores_additive <- function (
+    data, x, y
+    ) {
   
-    # matrix of outputs
-    ymat <- as.matrix(data[, y])
-    
-    # number of dmus
-    dmu <- nrow(data)
+  # number of inputs
+  nX <- length(x)
   
-    # initialize vectors of scores
-    scores <- matrix(nrow = dmu, ncol = 1) 
+  # number of outputs
+  nY <- length(y)
     
-    for (d in 1:dmu) {
+  # matrix of inputs 
+  xmat <- as.matrix(data[, x])
+  
+  # matrix of outputs
+  ymat <- as.matrix(data[, y])
+    
+  # number of dmus
+  dmu <- nrow(data)
+  
+  # initialize vectors of scores
+  scores <- matrix(nrow = dmu, ncol = 1) 
+    
+  for (d in 1:dmu) {
       
-      # vector for variables: slack_X + slack_y + lambdas
-      objVal <- matrix(ncol = nX + nY + dmu, nrow = 1) 
+    # vector for variables: slack_X + slack_y + lambdas
+    objVal <- matrix(ncol = nX + nY + dmu, nrow = 1) 
       
-      objVal[1:(nX + nY)] <- 1
+    objVal[1:(nX + nY)] <- 1
       
-      lps <- make.lp(nrow = 0, ncol = nX + nY + dmu)
-      lp.control(lps, sense = "max")
-      set.objfn(lps, objVal)
+    lps <- make.lp(nrow = 0, ncol = nX + nY + dmu)
+    lp.control(lps, sense = "max")
+    set.objfn(lps, objVal)
       
-      for(xi in 1:nX) {
+    for(xi in 1:nX) {
         
-        # slacks for inputs
-        x_slack <- rep(0, nX)
-        x_slack[xi] <- 1
-        slacks  <- c(x_slack, rep(0, nY))
+      # slacks for inputs
+      x_slack <- rep(0, nX)
+      x_slack[xi] <- 1
+      slacks  <- c(x_slack, rep(0, nY))
         
-        add.constraint(lps, xt = c(slacks, xmat[, xi]), "=", rhs = xmat[d, xi])
-        
-      }
-      
-      for(yi in 1:nY) {
-        
-        # Slacks para outputs
-        y_slack <- rep(0, nY)
-        y_slack[yi] <- - 1
-        slacks  <- c(rep(0, nX), y_slack)
-        
-        add.constraint(lps, xt = c(slacks, ymat[,yi]), "=", rhs = ymat[d, yi])
-        
-      }
-      
-      # Convexitiy and variable returns to scale
-      add.constraint(lprec = lps, xt = c(rep(0, nX + nY), rep(1, dmu)), type = "=", rhs = 1)
-      
-      solve(lps)
-      scores[d, ] <- get.objective(lps)
+      add.constraint(lps, xt = c(slacks, xmat[, xi]), "=", rhs = xmat[d, xi])
       
     }
+      
+    for(yi in 1:nY) {
+        
+      # Slacks para outputs
+      y_slack <- rep(0, nY)
+      y_slack[yi] <- - 1
+      slacks  <- c(rep(0, nX), y_slack)
+        
+      add.constraint(lps, xt = c(slacks, ymat[,yi]), "=", rhs = ymat[d, yi])
+        
+    }
+      
+    # convexitiy and variable returns to scale
+    add.constraint(lprec = lps, xt = c(rep(0, nX + nY), rep(1, dmu)), type = "=", rhs = 1)
+      
+    solve(lps)
+    scores[d, ] <- get.objective(lps)
+      
+  }
 
   return(scores)
 }

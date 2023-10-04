@@ -40,15 +40,13 @@ efficiency_estimation <- function (
   
   # compute DEA scores through an additive model
   add_scores <- compute_scores_additive (
-    data = data, x = x, y = y, nX = nX, nY = nY
+    data = data, 
+    x = x, 
+    y = y
     )
   
   # determine efficient and inefficient DMUs
   class_efficiency <- ifelse(add_scores[, 1] <= 0.0001, 1, 0)
-  
-  # efficient dmus indexes
-  eff_dmus_idx <- which(class_efficiency == 1)
-  ineff_dmus_idx <- which(class_efficiency == 0)
   
   data <- cbind(data, class_efficiency) %>% as.data.frame()
   data$class_efficiency <- factor(data$class_efficiency)
@@ -59,22 +57,19 @@ efficiency_estimation <- function (
   
   levels(data$class_efficiency) <- c("efficient", "not_efficient")
   
-  # number of efficient and inefficient DMUs
-  number_eff_dmus <- length(eff_dmus_idx)
-  number_ineff_dmus <- length(ineff_dmus_idx)
-  
-  prop_eff <- number_eff_dmus / nrow(data)
-  prop_ineff <- number_ineff_dmus / nrow(data)
-  
-  # check for imbalanced data
-  if (max(prop_eff, prop_ineff) > 0.65) {
+  # observed proportion of efficient and inefficient DMUs.
+  obs_prop <- prop.table(table(data$class_efficiency))
+
+  # check presence of imbalanced data
+  if (max(obs_prop[1], obs_prop[2]) > 0.65) {
     
-    print("Existen datos desbalanceados")
-    
-    data <- balanced_data (
-      data = data, x = x, y = y, nX = nX, nY = nY,
-      number_eff_dmus = number_eff_dmus, number_ineff_dmus = number_ineff_dmus,
-      prop_eff = prop_eff, prop_ineff = prop_ineff,
+    data <- balance_data (
+      data = data, 
+      x = x, 
+      y = y,
+      obs_prop = obs_prop,
+      number_eff_dmus = number_eff_dmus, 
+      number_ineff_dmus = number_ineff_dmus,
       eff_dmus_idx = eff_dmus_idx
     )
       
