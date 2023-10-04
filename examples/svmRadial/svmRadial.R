@@ -202,6 +202,7 @@ generate_plot <- function (techique, N, std_dev, metric) {
   img <- ggplot(data = data) +
     geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.75, alpha = 0.5) +
     geom_line(aes(x = x1, y = yD), linewidth = 1, linetype = "dotted") +
+    geom_point(aes(x = x1, y = y), size = 0.75) +
     geom_line(aes(x = x1, y = dea), linewidth = 1) +
     scale_color_manual(values = c("not_efficient" = "pink", "efficient" = "lightgreen")) +
     ggtitle(paste("Frontera svmRadial", " | ", "e ~ N(0, ", std_dev, ")", sep = "")) +
@@ -236,9 +237,9 @@ generate_plot <- function (techique, N, std_dev, metric) {
   }
   
   if (std_dev == 0) {
-    std_dev <- "0.00"
+    std_dev <- "0.000"
   } else if (std_dev == 0.1) {
-    std_dev <- "0.10"
+    std_dev <- "0.100"
   } else {
     std_dev <- std_dev
   }

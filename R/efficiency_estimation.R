@@ -71,8 +71,6 @@ efficiency_estimation <- function (
     )
       
   }
-  
-  browser()
 
   # Create train and validation data
   valid_index <- createDataPartition (
@@ -116,8 +114,7 @@ efficiency_estimation <- function (
       form = class_efficiency ~.,
       data = train_data,
       method = names(methods[i]),
-      tuneGrid = parms_vals[[i]],
-      verbose = FALSE
+      tuneGrid = parms_vals[[i]]
       )
     
     y_obs <- valid_data$class_efficiency
@@ -161,8 +158,7 @@ efficiency_estimation <- function (
     form = class_efficiency ~.,
     data = data,
     method = row.names(selected_model),
-    tuneGrid = parms_vals[[best_model_index]],
-    verbose = FALSE
+    tuneGrid = parms_vals[[best_model_index]]
   )
   
   # # Optimization problem

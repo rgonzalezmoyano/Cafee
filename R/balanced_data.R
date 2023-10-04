@@ -71,6 +71,7 @@ balance_data <- function (
         make_inefficient <- runif(n = 1, min = min_unif, max = as.numeric(max_unif[j]))
         new_dmu_values[i, j] <- data[dmu, j] + make_inefficient
       }
+      
     }
 
     # alteration of outputs
@@ -89,6 +90,7 @@ balance_data <- function (
         make_inefficient <- runif(n = 1, min = min_unif, max = as.numeric(max_unif[j]))
         new_dmu_values[i, nX + j] <- data[dmu, nX + j] - make_inefficient
       }
+      
     }
     
     # new set of DMUs to data.frame
@@ -107,7 +109,16 @@ balance_data <- function (
     # ===================== #
     
     # compute bcc_scores
-    bcc_scores <- rad_out (
+    bcc_scores_out <- rad_out (
+      tech_xmat = as.matrix(data[, x]),
+      tech_ymat = as.matrix(data[, y]),
+      eval_xmat = as.matrix(data[, x]),
+      eval_ymat = as.matrix(data[, y]),
+      convexity = TRUE,
+      returns = "variable"
+    ) 
+    
+    bcc_scores_inp <- rad_inp (
       tech_xmat = as.matrix(data[, x]),
       tech_ymat = as.matrix(data[, y]),
       eval_xmat = as.matrix(data[, x]),
@@ -117,27 +128,47 @@ balance_data <- function (
     ) 
     
     # project inefficient data 
-    proj_data <- as.data.frame(cbind(data[, x], data[, y] * bcc_scores[, 1]))
+    proj_data_out <- as.data.frame(cbind(data[, x], data[, y] * bcc_scores_out[, 1]))
+    proj_data_inp <- as.data.frame(cbind(data[, x] * bcc_scores_inp[, 1], data[, y]))
     
-    names(proj_data) <- names(data[, c(x, y)])
-    proj_data$class_efficiency <- "efficient"
+    
+    names(proj_data_out) <- names(data[, c(x, y)])
+    names(proj_data_inp) <- names(data[, c(x, y)])
+    
+    proj_data_out$class_efficiency <- "efficient"
+    proj_data_inp$class_efficiency <- "efficient"
     
     # drop duplicated indexes
-    proj_data <- proj_data[- idx_eff, ]
+    proj_data_out <- proj_data_out[- idx_eff, ]
+    proj_data_inp <- proj_data_inp[- idx_eff, ]
     
-    # Select the minimum number of additions required to balance the data
+    # select the minimum number of additions required to balance the data
     new_dmus <- ceiling(((-0.65 * n_eff) + (0.35 * n_ineff)) / 0.65)
     print(paste("Se crean ", new_dmus, " dmus eficientes"))
+
+    # select the index to improve dmus
+    idx_eff <- sample(1:nrow(proj_data_out), size = new_dmus)
     
-    # Select the efficient dmus
-    index_dmu_effi <- sample(1:nrow(proj_data), size = new_dmus)
+    # number of dmus to output projected  
+    n_division <- ceiling(new_dmus/2)
     
-    new_dmus_value <- as.data.frame(matrix(data = NA, nrow = new_dmus, ncol = length(x) + length(y) + 1))  
+    # index to improve by oriented
+    idx_eff_inp <- sample(idx_eff, size = n_division)
+    idx_eff_out <- setdiff(idx_eff, idx_eff_inp)
+    
+    # create dmus by orientation
+    new_dmus_value <- as.data.frame(matrix(data = NA, nrow = new_dmus, ncol = nX + nY + 1)) 
     names(new_dmus_value) <- names(data)
     
     for (i in 1:new_dmus) {
-      dmu <- index_dmu_effi[i]
-      new_dmus_value[i, ] <- proj_data[dmu, ]
+    
+      dmu <- idx_eff[i]
+      
+      if (dmu %in% idx_eff_out) {
+        new_dmus_value[i, ] <- proj_data_out[dmu, ]
+      } else {
+        new_dmus_value[i, ] <- proj_data_inp[dmu, ]
+      }
       
     }
     

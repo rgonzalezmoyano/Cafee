@@ -8,12 +8,12 @@ data <- reffcy (
   DGP = "cobb_douglas_XnY1",
   parms = list (
     N = 30,
-    nX = 9
+    nX = 1
   )
 )
 
-x <- 1:9
-y <- 10
+x <- 1
+y <- 2
 
 # efficiency orientation
 orientation <- "output"
