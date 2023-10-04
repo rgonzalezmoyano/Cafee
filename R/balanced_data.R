@@ -13,6 +13,8 @@ balance_data <- function (
       data, x, y, obs_prop
     ) {
   
+  browser()
+  
   # proportion of dmus efficient
   prop_eff <- obs_prop["efficient"]
   
@@ -28,12 +30,9 @@ balance_data <- function (
   # index of dmus efficient
   idx_eff <- which(data$class_efficiency == "efficient")
   
-  # index of dmus not efficient
-  idx_ineff <- which(data$class_efficiency == "not_efficient")
-  
   if (prop_eff > prop_ineff) {
     
-    print("efficient imbalanced")
+    # create inefficient DMUs
     
     new_dmus <- ceiling(((-0.65 * n_ineff) + (0.35 * n_eff)) / 0.65)
     print(paste("Se crean ", new_dmus, " dmus ineficientes"))
@@ -91,6 +90,10 @@ balance_data <- function (
     
   } else {
     
+    # ===================== #
+    # create efficient DMUs #
+    # ===================== #
+    
     # compute bcc_scores
     bcc_scores <- rad_out (
       tech_xmat = as.matrix(data[, x]),
@@ -101,9 +104,8 @@ balance_data <- function (
       returns = "variable"
     ) 
     
+    # project inefficient data 
     proj_data <- as.data.frame(cbind(data[, x], data[, y] * bcc_scores[, 1]))
-    
-    print("efficient imbalanced")
     
     names(proj_data) <- names(data[, c(x, y)])
     proj_data$class_efficiency <- "efficient"
