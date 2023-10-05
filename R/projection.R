@@ -1,35 +1,42 @@
-#' @title Optimization problem.
+#' @title Compute Efficiency Scores
 #'
-#' @description This function solve the optimization problem and return the solution for each DMU.
+#' @description This function computes the efficiency scores based on a given model.
 #'
-#' @param data Dataset \code{data}.
-#' @param x Input value \code{data}.
-#' @param y Output value \code{data}.
-#' @param final_model Best trained model \code{data}.
-#' @param orientation Direction of the optimization. \code{data}.
+#' @param data A \code{data.frame} or \code{matrix} containing the variables in the model.
+#' @param x Column indexes of input variables in \code{data}.
+#' @param y Column indexes of output variables in \code{data}.
+#' @param final_model The best-fitted model used for efficiency score computation.
+#' @param orientation The direction in which data should be projected to calculate efficiency scores.
 #'
-#' @importFrom dplyr %>% select_if between
-#' @importFrom kernlab predict
-#'
-#' @return It returns a \code{list} with the chosen model.
-optimization <- function(data, x, y, final_model, orientation) {
+#' @return A numeric vector containing the efficiency scores for each observation in the input data.
 
-  # Grid Intelgente FINAL
+compute_scores <- function (
+    data, x, y, final_model, orientation
+    ) {
+  
+  browser()
 
-  # Save optimal points
-  result.int <- data.frame()
-
-  col <- colnames(data)
-
-  # Save scores
-  # result.int <- matrix(data = NA, nrow = nrow(data) , ncol = length(x))
-  scores.int <- rep(NA, nrow(data))
-
-  #matrix(nrow = dmu, ncol = 1)
+  # vector of optimal scores
+  scores <- matrix(NA, nrow = nrow(data), ncol = 1)
 
   for (i in 1:nrow(data)) {
 
     if (orientation == "input") {
+      
+      # probability of being efficient
+      prob_eff <- predict(final_model, data[i, ], type = "prob")[1]
+      
+      incr <- 0
+      
+      while (prob_eff > 0.5) {
+        incr <- incr + 0.1
+        
+        # the dmu is efficient
+        new_pred <- data[x ]
+        
+      }
+        
+      
 
       aux.x <- data.frame() # points
       iter <- c() # iteration

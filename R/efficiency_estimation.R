@@ -30,11 +30,11 @@ efficiency_estimation <- function (
     y = y
     )
 
-  # Reorder index 'x' and 'y' in data
+  # reorder index 'x' and 'y' in data
   x <- 1:(ncol(data) - length(y))
   y <- (length(x) + 1):ncol(data)
   
-  # Number of inputs / outputs as inputs and number of outputs
+  # number of inputs / outputs as inputs and number of outputs
   nX <- length(x)
   nY <- length(y)
   
@@ -56,6 +56,9 @@ efficiency_estimation <- function (
   )
   
   levels(data$class_efficiency) <- c("efficient", "not_efficient")
+  
+  # save a copy of the original data
+  eval_data <- data
   
   # observed proportion of efficient and inefficient DMUs.
   obs_prop <- prop.table(table(data$class_efficiency))
@@ -81,7 +84,10 @@ efficiency_estimation <- function (
   valid_data <- data[valid_index, ]
   train_data <- data[- valid_index, ]
   
-  # Function train model
+  # ====================== #
+  # SELECT HYPERPARAMETERS #
+  # ====================== #
+  
   ml_model <- train_ml (
     data = train_data,
     trControl = trControl,
@@ -94,6 +100,10 @@ efficiency_estimation <- function (
   
   parms_vals <- vector("list", length = length(methods))
   names(parms_vals) <- names(methods)
+  
+  # ================= #
+  # SELECT BEST MODEL #
+  # ================= #
   
   for (i in 1:length(methods)) {
     
@@ -109,13 +119,27 @@ efficiency_estimation <- function (
       names(parms_vals[[i]]) <- names(methods[[i]])
     }
     
-    # Tune models
-    best_ml_model <- train (
-      form = class_efficiency ~.,
-      data = train_data,
-      method = names(methods[i]),
-      tuneGrid = parms_vals[[i]]
+    # avoid messages for some methods
+    verb_methods <- c("gbm", "svmPoly")
+    
+    if (names(methods[i]) %in% verb_methods) {
+      # Tune models
+      best_ml_model <- train (
+        form = class_efficiency ~.,
+        data = train_data,
+        method = names(methods[i]),
+        tuneGrid = parms_vals[[i]],
+        verbose = FALSE
       )
+    } else {
+      # Tune models
+      best_ml_model <- train (
+        form = class_efficiency ~.,
+        data = train_data,
+        method = names(methods[i]),
+        tuneGrid = parms_vals[[i]]
+      )
+    }
     
     y_obs <- valid_data$class_efficiency
     y_hat <- predict(best_ml_model, valid_data)
@@ -153,17 +177,44 @@ efficiency_estimation <- function (
   # index of the best model in ml_model
   best_model_index <- which(row.names(selected_model) == names(ml_model))
   
-  # Final best model
-  final_model <- train (
-    form = class_efficiency ~.,
-    data = data,
-    method = row.names(selected_model),
-    tuneGrid = parms_vals[[best_model_index]]
-  )
+  # ============== #
+  # FIT BEST MODEL #
+  # ============== #
   
-  # # Optimization problem
-  # solution <- optimization(data = data, x = x, y = y, final_model = final_model, orientation = orientation)
-  # 
+  # avoid messages for some methods
+  verb_methods <- c("gbm", "svmPoly")
+  
+  if (names(methods[i]) %in% verb_methods) {
+    final_model <- train (
+      form = class_efficiency ~.,
+      data = data,
+      method = row.names(selected_model),
+      tuneGrid = parms_vals[[best_model_index]],
+      verbose = FALSE,
+      trControl = trainControl(classProbs = TRUE)
+    )
+  } else {
+    final_model <- train (
+      form = class_efficiency ~.,
+      data = data,
+      method = row.names(selected_model),
+      tuneGrid = parms_vals[[best_model_index]],
+      trControl = trainControl(classProbs = TRUE)
+    )
+  }
+  
+  # ============== #
+  # COMPUTE SCORES #
+  # ============== #
+  
+  scores <- compute_scores (
+    data = eval_data,
+    x = x, 
+    y = y, 
+    final_model = final_model, 
+    orientation = orientation
+    )
+
   # resume <- data.frame()
   # 
   # if (orientation == "output") {

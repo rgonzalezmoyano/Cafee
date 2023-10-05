@@ -46,8 +46,6 @@ train_ml <- function (
         )
       }
     
-
-      
       # compute F1 score
       prec <- model[["results"]]["Precision"]
       sens <- model[["results"]]["Sens"]

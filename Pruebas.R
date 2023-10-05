@@ -55,7 +55,7 @@ methods <- list (
     n.minobsinnode = c(1, 3, 5)
   ),
   "svmRadial" = list (
-    C = c(0.01, 0.1, 1, 10),
+  C = c(0.01, 0.1, 1, 10),
     sigma = c(0.001, 0.01, 0.1, 1)
     ),
   "svmPoly" = list(

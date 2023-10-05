@@ -143,37 +143,36 @@ balance_data <- function (
     proj_data_inp <- proj_data_inp[- idx_eff, ]
     
     # select the minimum number of additions required to balance the data
-    new_dmus <- ceiling(((-0.65 * n_eff) + (0.35 * n_ineff)) / 0.65)
-    print(paste("Se crean ", new_dmus, " dmus eficientes"))
+    new_dmus <- ceiling(((- 0.65 * n_eff) + (0.35 * n_ineff)) / 0.65)
 
     # select the index to improve dmus
     idx_eff <- sample(1:nrow(proj_data_out), size = new_dmus)
     
     # number of dmus to output projected  
-    n_division <- ceiling(new_dmus/2)
+    n_division <- ceiling(new_dmus / 2)
     
-    # index to improve by oriented
+    # index to improve by orientation
     idx_eff_inp <- sample(idx_eff, size = n_division)
     idx_eff_out <- setdiff(idx_eff, idx_eff_inp)
     
-    # create dmus by orientation
-    new_dmus_value <- as.data.frame(matrix(data = NA, nrow = new_dmus, ncol = nX + nY + 1)) 
-    names(new_dmus_value) <- names(data)
+    # create DMUs by orientation
+    new_dmu_values <- as.data.frame(matrix(data = NA, nrow = new_dmus, ncol = nX + nY + 1)) 
+    names(new_dmu_values) <- names(data)
     
     for (i in 1:new_dmus) {
     
       dmu <- idx_eff[i]
       
       if (dmu %in% idx_eff_out) {
-        new_dmus_value[i, ] <- proj_data_out[dmu, ]
+        new_dmu_values[i, ] <- proj_data_out[dmu, ]
       } else {
-        new_dmus_value[i, ] <- proj_data_inp[dmu, ]
+        new_dmu_values[i, ] <- proj_data_inp[dmu, ]
       }
       
     }
     
     # add proj_data to original data
-    data <- as.data.frame(rbind(data, new_dmus_value))
+    data <- as.data.frame(rbind(data, new_dmu_values))
     
   }
 
