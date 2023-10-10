@@ -2,7 +2,7 @@
 % Please edit documentation in R/projection.R
 \name{compute_scores}
 \alias{compute_scores}
-\title{Compute Efficiency Scores}
+\title{Projections}
 \usage{
 compute_scores(data, x, y, final_model, orientation)
 }

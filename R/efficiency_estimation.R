@@ -207,13 +207,13 @@ efficiency_estimation <- function (
   # COMPUTE SCORES #
   # ============== #
   
-  scores <- compute_scores (
-    data = eval_data,
-    x = x, 
-    y = y, 
-    final_model = final_model, 
-    orientation = orientation
-    )
+  #scores <- compute_scores (
+  #  data = eval_data,
+  #  x = x, 
+  #  y = y, 
+  #  final_model = final_model, 
+  #  orientation = orientation
+  #  )
 
   # resume <- data.frame()
   # 
