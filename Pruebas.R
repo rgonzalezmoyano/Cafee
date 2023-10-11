@@ -7,7 +7,7 @@ set.seed(314)
 data <- reffcy (
   DGP = "cobb_douglas_XnY1",
   parms = list (
-    N = 700,
+    N = 30,
     nX = 1
   )
 )
@@ -132,7 +132,7 @@ grid$decision <- predict(final_model, grid, type = "raw")
 i <- 19
 
 ggplot(data = data) +
-  geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.75, alpha = 0.5) +
+  geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.75, alpha = 0.8) +
   geom_line(aes(x = x1, y = yD), linewidth = 1, linetype = "dotted") +
   geom_point(aes(x = x1, y = y), size = 0.75) +
   geom_point(aes(x = x1[i], y = y[i]), colour = "black", size = 3) +
