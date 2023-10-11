@@ -7,7 +7,7 @@ set.seed(314)
 data <- reffcy (
   DGP = "cobb_douglas_XnY1",
   parms = list (
-    N = 30,
+    N = 700,
     nX = 1
   )
 )
@@ -157,3 +157,4 @@ ggplot(data = data) +
   )
 
 scores[i]
+
