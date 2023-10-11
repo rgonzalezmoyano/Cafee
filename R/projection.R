@@ -129,7 +129,7 @@ compute_scores <- function (
                 
               }
               
-              scores[i] <- incr + 0.005
+              scores[i] <- 1- (incr + 0.005)
               
             }
             
