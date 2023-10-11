@@ -44,12 +44,37 @@ compute_scores <- function (
             # calculate increments to make the efficient class the minority
             while (prob_eff > 0.5) {
               
-              if (data[i, x] + (data[i, x] * incr) > max_value_x) { # si te pasas de los valores minimos observados 
+              # Check if it exceed the minimum observed values
+              if (data[i, x] + (data[i, x] * incr) > max_value_x) {
                 
-                scores[i] <- NA
+                # probability of being efficient
+                prob_eff <- predict(final_model, data[i, ], type = "prob")[1]
+                incr <- 0
+                
+                while (prob_eff > 0.5) {
+                  
+                  incr <- incr + 0.01
+                  
+                  # the dmu with the increments
+                  new_point <- cbind(data[i, x] * (1 + incr), data[i, y])
+                  colnames(new_point) <- names(data[c(x, y)])
+                  
+                  prob_eff <- predict(final_model, new_point, type = "prob")[1]
+                  
+                  if (data[i, x] + (data[i, x] * incr) > max_value_x) {
+                    
+                    scores[i] <- NA
+                    break
+                    
+                  }
+                  
+                  scores[i] <- 1 + incr - 0.005
+                  
+                }
+                
                 break
                 
-              } else {
+              }
                 
                 # Increase by 0.1
                 incr <- incr + 0.1
@@ -59,14 +84,11 @@ compute_scores <- function (
                 colnames(new_point) <- names(data[c(x, y)])
                 
                 prob_eff <- predict(final_model, new_point, type = "prob")[1]
-                  
-              }
               
             } # end first while
               
               # Once the threshold is crossed, make the majority class efficient again
-          
-              if (!(data[i, x] + (data[i, x] * incr) > max_value_x)) { # si te pasas de los valores minimos observados
+              if (!(data[i, x] + (data[i, x] * incr) > max_value_x)) {
                   
                 while (prob_eff < 0.5) {
                   
@@ -147,12 +169,38 @@ compute_scores <- function (
             # calculate increments to make the efficient class the minority
             while (prob_eff > 0.5) {
               
-              if (data[i, y] - (data[i, y] * incr) < min_value_y) { # si te pasas de los valores minimos observados 
+              # If it exceed the observed minimum values
+              if (data[i, y] - (data[i, y] * incr) < min_value_y) {
                 
-                scores[i] <- NA
+                # probability of being efficient
+                prob_eff <- predict(final_model, data[i, ], type = "prob")[1]
+                incr <- 0
+                
+                while (prob_eff > 0.5) {
+                  
+                  # Increase by 0.1
+                  incr <- incr + 0.01
+                  
+                  # the dmu with the increments
+                  new_point <- cbind(data[i, x], data[i, y] * (1 - incr))
+                  colnames(new_point) <- names(data[c(x, y)])
+                  
+                  prob_eff <- predict(final_model, new_point, type = "prob")[1]
+                  
+                  if (data[i, y] - (data[i, y] * incr) < min_value_y) {
+                    
+                    scores[i] <- NA
+                    break
+                    
+                  }
+                  
+                  scores[i] <- 1 - (incr + 0.005)
+                  
+                }
+                
                 break
                 
-                }
+              }
                 
               # Increase by 0.1
               incr <- incr + 0.1
@@ -163,9 +211,9 @@ compute_scores <- function (
               
               prob_eff <- predict(final_model, new_point, type = "prob")[1]
               
-            }
+            } # end first while
             
-            if (!(data[i, y] - (data[i, y] * incr) < min_value_y)) { # si te pasas de los valores minimos observados 
+            if (!(data[i, y] - (data[i, y] * incr) < min_value_y)) {
               
               # Once the threshold is crossed, make the majority class efficient again
               while (prob_eff < 0.5) {
@@ -178,9 +226,6 @@ compute_scores <- function (
                 colnames(new_point) <- names(data[c(x, y)])
                 
                 prob_eff <- predict(final_model, new_point, type = "prob")[1]
-                
-                print(incr)
-                print(prob_eff)
                 
               }
               
