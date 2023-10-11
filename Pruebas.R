@@ -129,7 +129,7 @@ grid <- expand.grid (
 
 grid$decision <- predict(final_model, grid, type = "raw")
 
-i <- 12
+i <- 5
 
 ggplot(data = data) +
   geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.75, alpha = 0.5) +

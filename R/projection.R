@@ -186,7 +186,6 @@ compute_scores <- function (
               
               scores[i] <- 1 - (incr - 0.005) 
               
-              print(paste("Caso output eficiente", i, sep = " "))
             }
             
           } else {
@@ -214,7 +213,6 @@ compute_scores <- function (
                 
                 prob_eff <- predict(final_model, new_point, type = "prob")[1]
                 
-                print(paste("Caso output ineficiente", i, sep = " "))
               }
               
             }
@@ -237,8 +235,6 @@ compute_scores <- function (
               
               scores[i] <- 1 + (incr + 0.005)
               
-              print(paste("Caso output ineficiente", i, sep = " "))
-                    
             } 
             
           } # end case inefficient
