@@ -85,7 +85,10 @@ reffcy <- function (
 #' @return \code{data.frame} with the simulated data: nX inputs, 1 output (y) and the theoretical frontier (yD).
 #'
 #' @keywords internal
-cobb_douglas_XnY1 <- function(N, nX) {
+
+cobb_douglas_XnY1 <- function (
+    N, nX
+    ) {
 
   if(!(nX %in% c(1, 3, 6, 9, 12, 15))){
     stop(paste(nX, "is not allowed"))
@@ -180,7 +183,11 @@ cobb_douglas_XnY1 <- function(N, nX) {
 #' \insertRef{santin2009}{aces}
 #'
 #' @keywords internal
-translog_X2Y2 <- function(N, border, noise) {
+
+translog_X2Y2 <- function (
+    N, border, noise
+    ) {
+  
   nX <- 2
   nY <- 2
 
@@ -479,7 +486,11 @@ mult_scenario_XnY1 <- function(N, scenario) {
 #' \insertRef{ahn2023}{aces}
 #'
 #' @keywords internal
-cobb_douglas_X3Y3 <- function(N, border, noise, returns) {
+#' 
+cobb_douglas_X3Y3 <- function (
+    N, border, noise, returns
+    ) {
+  
   nX <- 3
   nY <- 3
 
