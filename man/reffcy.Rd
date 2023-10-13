@@ -13,7 +13,7 @@ reffcy(DGP, parms)
    \item{\code{"translog_X2Y2"}}: Translog Data Generation Process for a X2Y2 scenario. Check \code{help("translog_X2Y2")}.
    \item{\code{"add_scenario_XnY1"}}: Additive Data Generation Process for a XnY1 scenario. Check \code{help("add_scenario_XnY1")}.
    \item{\code{"mult_scenario_XnY1"}}: Multiplicative Data Generation Process for a XnY1 scenario. Check \code{help("mult_scenario_XnY1")}.
-   \item{\code{cobb_douglas_X3Y3}}: Cobb-Douglas Data Generation Process for a X3Y3 scenario. Check \code{help("cobb_douglas_X3Y3")}.
+   \item{\code{"cobb_douglas_X3Y3"}}: Cobb-Douglas Data Generation Process for a X3Y3 scenario. Check \code{help("cobb_douglas_X3Y3")}.
  }}
 
 \item{parms}{\code{list} with the parameters of the simulation functions.
