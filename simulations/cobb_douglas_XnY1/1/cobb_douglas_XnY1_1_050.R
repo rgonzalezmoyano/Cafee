@@ -1,28 +1,31 @@
-library(dplyr)
-library(Rglpk)
-library(tictoc)
-library(lpSolveAPI)
-library(quadprog)
+# library(dplyr)
+# library(Rglpk)
+# library(tictoc)
+# library(lpSolveAPI)
+# library(quadprog)
 
-source("/home/PI/vespana/aces/R/ACES.R")
-source("/home/PI/vespana/aces/R/backward_algorithm.R")
-source("/home/PI/vespana/aces/R/C2NLS.R")
-source("/home/PI/vespana/aces/R/efficiency_scores.R")
-source("/home/PI/vespana/aces/R/estimate_coefficients.R")
-source("/home/PI/vespana/aces/R/forward_algorithm.R")
-source("/home/PI/vespana/aces/R/predictions.R")
-source("/home/PI/vespana/aces/R/simulations.R")
-source("/home/PI/vespana/aces/R/smoothing_algorithm.R")
+# source("/home/PI/vespana/aces/R/ACES.R")
+# source("/home/PI/vespana/aces/R/backward_algorithm.R")
+# source("/home/PI/vespana/aces/R/C2NLS.R")
+# source("/home/PI/vespana/aces/R/efficiency_scores.R")
+# source("/home/PI/vespana/aces/R/estimate_coefficients.R")
+# source("/home/PI/vespana/aces/R/forward_algorithm.R")
+# source("/home/PI/vespana/aces/R/predictions.R")
+# source("/home/PI/vespana/aces/R/simulations.R")
+# source("/home/PI/vespana/aces/R/smoothing_algorithm.R")
 
 # ================= #
 # cobb_douglas_XnY1 #
 # ================= #
 
+# libraries
+library(caret)
+
 # ===
 # parameters
 # ===
 DGP <- "cobb_douglas_XnY1"
-N <- 25
+N <- 50
 noise <- c(0, 0.005, 0.01, 0.03)
 # scenario 
 s <- 1
@@ -47,8 +50,16 @@ simulaciones <- data.frame (
   # correlations
   corr_yD_DEA = rep(NA, N),
   corr_yD_cafee = rep(NA, N),
-  corr_DEA_cafee = rep(NA, N)
-)
+  
+  # mse
+  mse_DEA = rep(NA, N),
+  mse_cafee = rep(NA, N),
+  
+  # bias
+  bias_DEA = rep(NA, N),
+  bias_cafee = rep(NA, N)
+  )
+
 
 # ===
 # Generate data
@@ -177,7 +188,6 @@ for (std_dev in noise) {
   # efficiency orientation
   orientation <- "output"
   
-  library(caret)
   # metrics for model evaluation
   MySummary <- function (data, lev = NULL, model = NULL) {
     
@@ -246,15 +256,30 @@ for (std_dev in noise) {
                                              use = "everything", method = "pearson")
   )
   
-  simulaciones$corr_yD_cafee <- as.numeric(cor(simulaciones$score_yD, simulaciones$score_cafee,
+  idx_NA <- which(is.na(simulaciones$score_cafee))
+  
+  filter_data <- simulaciones[-idx_NA, ]
+  
+  simulaciones$corr_yD_cafee <- as.numeric(cor(filter_data$score_yD, filter_data$score_cafee,
                                                use = "everything", method = "pearson")
   )
   
-  simulaciones$corr_DEA_cafee <- as.numeric(cor(simulaciones$score_DEA, simulaciones$score_cafee,
-                                                use = "everything", method = "pearson")
-  ) 
+  # ============ #
+  # MSE and bias #
+  # ============ #
   
-  if (N == 50) {
+  diff_error <- data[, "yD"] - data[, y] * simulaciones$score_DEA
+  simulaciones$mse_DEA <- round(mean(diff_error ^ 2), 3)
+  simulaciones$bias_DEA <- round(mean(diff_error), 3)
+  
+  diff_error <- data[-idx_NA, "yD"] - data[-idx_NA, y] * simulaciones$score_cafee[-idx_NA]
+  simulaciones$mse_cafee <- round(mean(diff_error ^ 2), 3)
+  simulaciones$bias_cafee <- round(mean(diff_error), 3)
+  
+  
+  if (N == 25) {
+    N <- "025"
+  } else if (N == 50) {
     N <- "050"
   } else {
     N <- N
@@ -268,6 +293,8 @@ for (std_dev in noise) {
     noise <- "0.010"
   } else if (std_dev == 0.03) {
     noise <- "0.030"
+  } else {
+    noise <- as.character(noise)
   }
   
   directory <- getwd()
