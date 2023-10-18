@@ -12,11 +12,20 @@ data <- reffcy (
   )
 )
 
-x <- 1
-y <- 2
+data <- reffcy (
+  DGP = "translog_X2Y2",
+  parms = list (
+    N = 25,
+    border = 0,
+    noise = TRUE
+  )
+)
+
+x <- 1:2
+y <- 3:4
 
 # efficiency orientation
-orientation <- "input"
+orientation <- "output"
 
 # metrics for model evaluation
 MySummary <- function (data, lev = NULL, model = NULL) {

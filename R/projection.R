@@ -45,7 +45,7 @@ compute_scores <- function (
             while (prob_eff > 0.5) {
               
               # Check if it exceed the minimum observed values
-              if (data[i, x] + (data[i, x] * incr) > max_value_x) {
+              if (all(data[i, x] + (data[i, x] * incr) > max_value_x)) {
                 
                 # probability of being efficient
                 prob_eff <- predict(final_model, data[i, ], type = "prob")[1]
@@ -61,7 +61,7 @@ compute_scores <- function (
                   
                   prob_eff <- predict(final_model, new_point, type = "prob")[1]
                   
-                  if (data[i, x] + (data[i, x] * incr) > max_value_x) {
+                  if (all(data[i, x] + (data[i, x] * incr) > max_value_x)) {
                     
                     scores[i] <- NA
                     break
@@ -88,7 +88,7 @@ compute_scores <- function (
             } # end first while
               
               # Once the threshold is crossed, make the majority class efficient again
-              if (!(data[i, x] + (data[i, x] * incr) > max_value_x)) {
+              if (!(all(data[i, x] + (data[i, x] * incr) > max_value_x))) {
                   
                 while (prob_eff < 0.5) {
                   
@@ -151,7 +151,7 @@ compute_scores <- function (
                 
               }
               
-              scores[i] <- 1- (incr + 0.005)
+              scores[i] <- 1 - (incr + 0.005)
               
             }
             
@@ -170,7 +170,7 @@ compute_scores <- function (
             while (prob_eff > 0.5) {
               
               # If it exceed the observed minimum values
-              if (data[i, y] - (data[i, y] * incr) < min_value_y) {
+              if (all(data[i, y] - (data[i, y] * incr) < min_value_y)) {
                 
                 # probability of being efficient
                 prob_eff <- predict(final_model, data[i, ], type = "prob")[1]
@@ -187,7 +187,7 @@ compute_scores <- function (
                   
                   prob_eff <- predict(final_model, new_point, type = "prob")[1]
                   
-                  if (data[i, y] - (data[i, y] * incr) < min_value_y) {
+                  if (all(data[i, y] - (data[i, y] * incr) < min_value_y)) {
                     
                     scores[i] <- NA
                     break
@@ -213,7 +213,7 @@ compute_scores <- function (
               
             } # end first while
             
-            if (!(data[i, y] - (data[i, y] * incr) < min_value_y)) {
+            if (!(all(data[i, y] - (data[i, y] * incr) < min_value_y))) {
               
               # Once the threshold is crossed, make the majority class efficient again
               while (prob_eff < 0.5) {
@@ -242,7 +242,7 @@ compute_scores <- function (
             # calculate increments to make not efficient class the minority
             while (prob_eff < 0.5) {
               
-              if (data[i, y] + (data[i, y] * incr) > max_value_y) {
+              if (all(data[i, y] + (data[i, y] * incr) > max_value_y)) {
                 
                 scores[i] <- NA
                 break
@@ -262,7 +262,7 @@ compute_scores <- function (
               
             }
             
-            if (!(data[i, y] + (data[i, y] * incr) > max_value_y)) {
+            if (!(all(data[i, y] + (data[i, y] * incr) > max_value_y))) {
               
               # Once the threshold is crossed, make the majority class non-efficient again
               while (prob_eff > 0.5) {
