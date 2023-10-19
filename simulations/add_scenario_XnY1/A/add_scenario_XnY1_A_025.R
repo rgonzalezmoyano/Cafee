@@ -102,12 +102,8 @@ for (std_dev in noise) {
   # score yD #
   # ======== #
   
-  for (i in 1:N) {
+  simulaciones$score_yD <- data_original[, "yD"] / data[, y]
     
-    simulaciones$score_yD[i] <- data_original[i, "yD"] / data[i, y]
-    
-  }
-  
   # ========= #
   # score DEA #
   # ========= #
