@@ -25,11 +25,11 @@ library(caret)
 # parameters
 # ===
 DGP <- "translog_X2Y2"
-N <- 25
+N <- 300
 noise <- c(0, 0.005, 0.01, 0.03)
 # scenario 
 border <- 0
-s <- TRUE
+s <- FALSE
 
 # ===
 # Table
@@ -73,7 +73,7 @@ data <- reffcy (
   parms = list (
     N = N,
     border = border,
-    noise = TRUE
+    noise = s
   )
 )
   
@@ -104,12 +104,8 @@ for (std_dev in noise) {
   # ======== #
   # score yD #
   # ======== #
-  
-  for (i in 1:N) {
     
-    simulaciones$score_yD[i] <- data_original[i, yD] / data[i, y]
-    
-  }
+  simulaciones$score_yD <- data_original[, yD[1]] / data[, y[1]]
   
   # ========= #
   # score DEA #
@@ -271,11 +267,11 @@ for (std_dev in noise) {
   # MSE and bias #
   # ============ #
   
-  diff_error <- data[, "yD"] - data[, y] * simulaciones$score_DEA
+  diff_error <- data[, yD[1]] - data[, y] * simulaciones$score_DEA
   simulaciones$mse_DEA <- round(mean(diff_error ^ 2), 3)
   simulaciones$bias_DEA <- round(mean(diff_error), 3)
   
-  diff_error <- data[-idx_NA, "yD"] - data[-idx_NA, y] * simulaciones$score_cafee[-idx_NA]
+  diff_error <- data[-idx_NA, yD[1]] - data[-idx_NA, y] * simulaciones$score_cafee[-idx_NA]
   simulaciones$mse_cafee <- round(mean(diff_error ^ 2), 3)
   simulaciones$bias_cafee <- round(mean(diff_error), 3)
   
@@ -309,7 +305,7 @@ for (std_dev in noise) {
   
   setwd(new_directory)
   
-  file <- paste("cob_douglas_XnY1_", s, "_", N, "_", noise, ".RData", sep = "")
+  file <- paste(DGP, s, "_", N, "_", noise, ".RData", sep = "")
   save(simulaciones, file = file)
   
   setwd(directory)

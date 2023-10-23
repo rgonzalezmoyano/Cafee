@@ -24,11 +24,12 @@ library(caret)
 # ===
 # parameters
 # ===
-DGP <- "add_scenario_XnY1"
-N <- 300
+DGP <- "translog_X2Y2"
+N <- 150
 noise <- c(0, 0.005, 0.01, 0.03)
 # scenario 
-s <- "E"
+border <- 0
+s <- FALSE
 
 # ===
 # Table
@@ -68,18 +69,20 @@ simulaciones <- data.frame (
 set.seed(314)
 
 data <- reffcy (
-  DGP = "add_scenario_XnY1",
+  DGP = "translog_X2Y2",
   parms = list (
     N = N,
-    scenario = s
+    border = border,
+    noise = s
   )
 )
-
+  
 data_original <- data
 
 # x and y index
 x <- 1:2
-y <- 3
+y <- 3:4
+yD <- 5:6 
 
 for (std_dev in noise) {
   
@@ -93,7 +96,7 @@ for (std_dev in noise) {
   
   # general informations
   simulaciones$id <- 1:N 
-  simulaciones$scenario <- 1
+  simulaciones$scenario <- s
   simulaciones$N <- N
   simulaciones$noise <- std_dev
   simulaciones$technique <- "svmPoly"
@@ -102,7 +105,7 @@ for (std_dev in noise) {
   # score yD #
   # ======== #
   
-  simulaciones$score_yD <- data_original[, "yD"] / data[, y]
+  simulaciones$score_yD <- data_original[, yD[1]] / data[, y[1]]
   
   # ========= #
   # score DEA #
@@ -264,11 +267,11 @@ for (std_dev in noise) {
   # MSE and bias #
   # ============ #
   
-  diff_error <- data[, "yD"] - data[, y] * simulaciones$score_DEA
+  diff_error <- data[, yD[1]] - data[, y] * simulaciones$score_DEA
   simulaciones$mse_DEA <- round(mean(diff_error ^ 2), 3)
   simulaciones$bias_DEA <- round(mean(diff_error), 3)
   
-  diff_error <- data[-idx_NA, "yD"] - data[-idx_NA, y] * simulaciones$score_cafee[-idx_NA]
+  diff_error <- data[-idx_NA, yD[1]] - data[-idx_NA, y] * simulaciones$score_cafee[-idx_NA]
   simulaciones$mse_cafee <- round(mean(diff_error ^ 2), 3)
   simulaciones$bias_cafee <- round(mean(diff_error), 3)
   
@@ -302,7 +305,7 @@ for (std_dev in noise) {
   
   setwd(new_directory)
   
-  file <- paste("cob_douglas_XnY1_", s, "_", N, "_", noise, ".RData", sep = "")
+  file <- paste(DGP, s, "_", N, "_", noise, ".RData", sep = "")
   save(simulaciones, file = file)
   
   setwd(directory)
