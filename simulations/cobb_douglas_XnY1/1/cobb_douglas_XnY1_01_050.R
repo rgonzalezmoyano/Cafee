@@ -25,9 +25,9 @@ library(caret)
 # parameters
 # ===
 DGP <- "cobb_douglas_XnY1"
-N <- 150
+N <- 50
 noise <- c(0, 0.005, 0.01, 0.03)
-nX <- 9
+nX <- 1
 
 # ===
 # Table
