@@ -264,9 +264,20 @@ for (std_dev in noise) {
                                                use = "everything", method = "pearson")
                                            )
     
-    idx_NA <- which(is.na(scores$score_cafee))
-    
-    filter_data <- scores[-idx_NA, ]
+    # index of NA if there are
+    if (all(is.na(scores$score_cafee)) == TRUE) {
+      
+      # no NA case
+      filter_data <- scores
+      
+    } else {
+      
+      # there are NA
+      idx_NA <- which(is.na(scores$score_cafee))
+      
+      filter_data <- scores[-idx_NA, ]
+      
+    }
     
     simulaciones$corr_yD_cafee[i] <- as.numeric(cor(filter_data$score_yD, filter_data$score_cafee,
                                                  use = "everything", method = "pearson")
@@ -276,11 +287,25 @@ for (std_dev in noise) {
     # MSE and bias #
     # ============ #
     
-    diff_error <- data[, "yD"] - data[, y] * scores$score_DEA
+    # DEA measures
+    diff_error <- scores[, "score_yD"] - scores[, "score_DEA"]
+  
     simulaciones$mse_DEA[i] <- round(mean(diff_error ^ 2), 3)
     simulaciones$bias_DEA[i] <- round(mean(diff_error), 3)
     
-    diff_error <- data[-idx_NA, "yD"] - data[-idx_NA, y] * scores$score_cafee[-idx_NA]
+    # Cafee measures
+    if (all(is.na(scores$score_cafee)) == TRUE) {
+      
+      # no NA case
+      diff_error <- scores[, "score_yD"] - scores[, "score_cafee"]
+      
+    } else {
+      
+      # there are NA
+      diff_error <- scores[-idx_NA, "score_yD"] - scores[-idx_NA, "score_cafee"]
+      
+    }
+    
     simulaciones$mse_cafee[i] <- round(mean(diff_error ^ 2), 3)
     simulaciones$bias_cafee[i] <- round(mean(diff_error), 3)
     
