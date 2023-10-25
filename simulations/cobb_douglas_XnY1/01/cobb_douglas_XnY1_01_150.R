@@ -25,9 +25,9 @@ library(caret)
 # parameters
 # ===
 DGP <- "cobb_douglas_XnY1"
-N <- 25
+N <- 150
 noise <- c(0, 0.005, 0.01, 0.03)
-nX <- 9
+nX <- 1
 
 # ===
 # Table
@@ -77,9 +77,9 @@ set.seed(314)
 
 for (std_dev in noise) {
   
+  simulaciones$noise <- std_dev
+  
   for (i in 1:repl) {
-    
-    simulaciones$noise <- std_dev
     
     # ===
     # Generate data
@@ -265,7 +265,7 @@ for (std_dev in noise) {
                                            )
     
     # index of NA if there are
-    if (all(is.na(scores$score_cafee)) == TRUE) {
+    if (any(is.na(scores$score_cafee)) == FALSE) {
       
       # no NA case
       filter_data <- scores
@@ -294,7 +294,7 @@ for (std_dev in noise) {
     simulaciones$bias_DEA[i] <- round(mean(diff_error), 3)
     
     # Cafee measures
-    if (all(is.na(scores$score_cafee)) == TRUE) {
+    if (any(is.na(scores$score_cafee)) == FALSE) {
       
       # no NA case
       diff_error <- scores[, "score_yD"] - scores[, "score_cafee"]
