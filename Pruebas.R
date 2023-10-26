@@ -7,22 +7,25 @@ set.seed(314)
 data <- reffcy (
   DGP = "cobb_douglas_XnY1",
   parms = list (
-    N = 30,
+    N = 100,
     nX = 1
   )
 )
 
-data <- reffcy (
-  DGP = "translog_X2Y2",
-  parms = list (
-    N = 25,
-    border = 0,
-    noise = TRUE
-  )
-)
+x <- 1
+y <- 2
 
-x <- 1:2
-y <- 3:4
+# data <- reffcy (
+#   DGP = "translog_X2Y2",
+#   parms = list (
+#     N = 25,
+#     border = 0,
+#     noise = TRUE
+#   )
+# )
+# 
+# x <- 1:2
+# y <- 3:4
 
 # efficiency orientation
 orientation <- "output"
@@ -68,9 +71,9 @@ methods <- list (
     sigma = c(0.001, 0.01, 0.1, 1)
     ),
   "svmPoly" = list(
-    "degree" = c(2, 3, 4),
-    "scale" = c(0.0001, 0.001, 0.01, 0.1, 1),
-    "C" = c(seq(0, 100, length.out = 10), seq(200, 1000, length.out = 3))
+    "degree" = c(1, 2, 3, 4, 5),
+    "scale" = c(0.1, 1, 10),
+    "C" = c(0.1, 1, 10, 100)
   ),
   "rf" = list (
     mtry = c(1, 2)
@@ -131,9 +134,14 @@ if (min(data[3] < min(data[2]))) {
 
 rng.y <- range(bottom, top)
 
+# grid <- expand.grid (
+#   x1 = seq(rng.x[1], rng.x[2], length = 150),
+#   y = seq(rng.y[1], rng.y[2], length = 150)
+# )
+
 grid <- expand.grid (
-  x1 = seq(rng.x[1], rng.x[2], length = 150),
-  y = seq(rng.y[1], rng.y[2], length = 150)
+  x1 = seq(1, 20, length = 150),
+  y = seq(1, 20, length = 150)
 )
 
 grid$decision <- predict(final_model, grid, type = "raw")
@@ -141,12 +149,18 @@ grid$decision <- predict(final_model, grid, type = "raw")
 i <- 19
 
 ggplot(data = data) +
+  geom_point(aes(x = x1, y = y)) +
+  geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.75, alpha = 0.8) +
+  theme_bw() +
+  theme(legend.position = "none")
+
+ggplot(data = data) +
   geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.75, alpha = 0.8) +
   geom_line(aes(x = x1, y = yD), linewidth = 1, linetype = "dotted") +
   geom_point(aes(x = x1, y = y), size = 0.75) +
   geom_point(aes(x = x1[i], y = y[i]), colour = "black", size = 3) +
   scale_color_manual(values = c("not_efficient" = "pink", "efficient" = "lightgreen")) +
-  ggtitle(paste("Frontera mejor modelo ", prueba$method, sep = "")) +
+  #ggtitle(paste("Frontera mejor modelo ", prueba$method, sep = "")) +
   theme_bw() +
   theme(
     axis.title.x = element_text (

@@ -220,9 +220,9 @@ for (std_dev in noise) {
     
     methods <- list (
       "svmPoly" = list(
-        "degree" = c(2, 3, 4),
-        "scale" = c(0.0001, 0.001, 0.01, 0.1, 1),
-        "C" = c(seq(0, 100, length.out = 10), seq(200, 1000, length.out = 3))
+        "degree" = c(1, 2, 3, 4, 5),
+        "scale" = c(0.1, 1, 10),
+        "C" = c(0.1, 1, 10, 100, 1000)
       )
     )
     
@@ -263,10 +263,6 @@ for (std_dev in noise) {
     simulaciones$corr_yD_DEA[i] <- as.numeric(cor(scores$score_yD, scores$score_DEA,
                                                use = "everything", method = "pearson")
                                            )
-    
-    if (i == 38) {
-      break
-    }
     
     # index of NA if there are
     if (any(is.na(scores$score_cafee)) == FALSE) {
