@@ -134,25 +134,35 @@ if (min(data[3] < min(data[2]))) {
 
 rng.y <- range(bottom, top)
 
-# grid <- expand.grid (
-#   x1 = seq(rng.x[1], rng.x[2], length = 150),
-#   y = seq(rng.y[1], rng.y[2], length = 150)
-# )
-
 grid <- expand.grid (
-  x1 = seq(1, 20, length = 150),
-  y = seq(1, 20, length = 150)
+  x1 = seq(rng.x[1], rng.x[2], length = 150),
+  y = seq(rng.y[1], rng.y[2], length = 150)
 )
+
+# grid <- expand.grid (
+#   x1 = seq(1, 6, length = 150),
+#   y = seq(1, 8, length = 150)
+# )
 
 grid$decision <- predict(final_model, grid, type = "raw")
 
-i <- 19
+ i <- 4
+# i <- c(12, 13, 15, 16, 17, 18, 23, 24)
+
+scores_r <- scores[scores$score_cafee == 1.095, ]
+r <- rownames(scores_r)
+filter_ggplot_data <- data[r,]
 
 ggplot(data = data) +
   geom_point(aes(x = x1, y = y)) +
   geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.75, alpha = 0.8) +
+  scale_color_manual(values = c("not_efficient" = "pink", "efficient" = "lightgreen")) +
+  geom_point(data = filter_ggplot_data, aes(x = x1, y = y), colour = "orange", size = 1.5) +
   theme_bw() +
   theme(legend.position = "none")
+
+
+
 
 ggplot(data = data) +
   geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.75, alpha = 0.8) +

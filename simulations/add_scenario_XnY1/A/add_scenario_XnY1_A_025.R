@@ -105,6 +105,12 @@ for (std_dev in noise) {
       score_cafee = rep(NA, N)
     )
     
+    #  if (i < 41) {
+    #    print(i)
+    #  } else {
+    # 
+    # stop()
+    
     # ======== #
     # score yD #
     # ======== #
