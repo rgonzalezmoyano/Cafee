@@ -239,6 +239,9 @@ translog_X2Y2 <- function (
       data[index, "y2"] <- data[index, "yD2"] / half_normal
     }
   }
+  
+  data[, "phi"] <- half_normal 
+  
   return(data)
 }
 

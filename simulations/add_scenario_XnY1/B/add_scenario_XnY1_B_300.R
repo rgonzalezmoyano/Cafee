@@ -27,7 +27,7 @@ library(caret)
 DGP <- "add_scenario_XnY1"
 N <- 300
 noise <- c(0, 0.005, 0.01, 0.03)
-scenario <- "A"
+scenario <- "B"
 
 # ===
 # Table

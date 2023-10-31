@@ -146,7 +146,7 @@ grid <- expand.grid (
 
 grid$decision <- predict(final_model, grid, type = "raw")
 
- i <- 4
+ i <- 2
 # i <- c(12, 13, 15, 16, 17, 18, 23, 24)
 
 scores_r <- scores[scores$score_cafee == 1.095, ]
