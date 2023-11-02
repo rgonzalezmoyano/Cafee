@@ -2,7 +2,7 @@
 % Please edit documentation in R/projection.R
 \name{compute_scores}
 \alias{compute_scores}
-\title{Projections}
+\title{Projections to the Hyperplane}
 \usage{
 compute_scores(data, x, y, final_model, orientation)
 }
