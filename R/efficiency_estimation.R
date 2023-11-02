@@ -204,69 +204,6 @@ efficiency_estimation <- function (
     )
   }
   
-  # ============== #
-  # COMPUTE SCORES #
-  # ============== #
-  
-  #scores <- compute_scores (
-  #  data = eval_data,
-  #  x = x, 
-  #  y = y, 
-  #  final_model = final_model, 
-  #  orientation = orientation
-  #  )
-
-  # resume <- data.frame()
-  # 
-  # if (orientation == "output") {
-  # 
-  #   resume <- cbind(data[, c(min(x):max(x), min(y):max(y))], DEA.score = DEA$scores, SVM.Classifier.score = solution$solution_score)
-  # 
-  #   resume <- as.data.frame(resume)
-  # 
-  #   names <- colnames(data)[c(x, y)]
-  # 
-  #   colnames(resume)[c(x, y)] <- names
-  # 
-  #   rownames(resume) <- nameDMUs
-  # 
-  #   long <- max(c(max(resume$DEA.score), max(resume$SVM.Classifier.score)))
-  # 
-  #   graph <- ggplot(resume) +
-  #     geom_point(aes(x = SVM.Classifier.score, y = DEA.score)) +
-  #     scale_y_continuous(limits = c(1, long),
-  #                        breaks = seq(1, long, by = 0.1)) +
-  #     scale_x_continuous(limits = c(1, long),
-  #                        breaks = seq(1, long, by = 0.1)) +
-  #     geom_abline(intercept = 0, slope = 1)
-  # 
-  # } else { # orientation == "input"
-  # 
-  #   resume <- cbind(data[, c(min(x):max(x), min(y):max(y))], DEA.score = DEA$scores, SVM.Classifier.score = solution$solution_score)
-  # 
-  #   name <- colnames(data)[x]
-  # 
-  #   colnames(resume)[x] <- name
-  # 
-  #   rownames(resume) <- nameDMUs
-  # 
-  #   long <- min(c(min(resume$SVM.Classifier.score), min(resume$DEA.score)))
-  # 
-  #   graph <- ggplot(resume) +
-  #     geom_point(aes(x = SVM.Classifier.score, y = DEA.score)) +
-  #     scale_y_continuous(limits = c(long, 1),
-  #                        breaks = seq(0, 1, by = 0.1)) +
-  #     scale_x_continuous(limits = c(long, 1),
-  #                        breaks = seq(0, 1, by = 0.1)) +
-  #     geom_abline(intercept = 0, slope = 1)
-  # 
-  # }
-  # 
-  # correlation <- cor(resume$SVM.Classifier.score, resume$DEA.score , use = "everything",
-  #                    method = "pearson")
-  # 
-  # return(list(data = data, train_models = train_svm, best_model = as.character(selected_SVM_model[1]), best_model_fit = final_model, solution_point = solution[["solution_point"]], score = solution[["solution_score"]], resume = resume, plot = graph, correlation_pearson = correlation))
-  
   return(final_model)
 
 }

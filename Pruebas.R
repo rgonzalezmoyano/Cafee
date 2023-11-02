@@ -1,5 +1,6 @@
 devtools::document() # actualizar manuales de ayuda
 devtools::load_all() # actualizar el codigo
+library("ggplot2")
 
 set.seed(314)
 
@@ -7,7 +8,7 @@ set.seed(314)
 data <- reffcy (
   DGP = "cobb_douglas_XnY1",
   parms = list (
-    N = 100,
+    N = 50,
     nX = 1
   )
 )
@@ -191,3 +192,23 @@ ggplot(data = data) +
 
 scores[i]
 
+data <- cbind(data, scores)
+
+
+ggplot(data = data) +
+  geom_text(aes(x = x1, y = y, label = rownames(data))) +
+  # geom_line(aes(x = x1, y = y * score_yD), color = "red") +
+  # geom_line(aes(x = x1, y = y * score_DEA), color = "green") +
+  # geom_line(aes(x = x1, y = y * score_cafee), color = "blue") +
+  # geom_line(aes(x = x1, y = front_stoned), color = "orange") +
+  theme_bw()
+
+new_data <- new_data[, 1:3]
+
+ggplot(data = new_data) +
+  geom_text(aes(x = x1, y = y, color = efficient, label = rownames(data))) +
+  # geom_line(aes(x = x1, y = y * score_yD), color = "red") +
+  # geom_line(aes(x = x1, y = y * score_DEA), color = "green") +
+  # geom_line(aes(x = x1, y = y * score_cafee), color = "blue") +
+  # geom_line(aes(x = x1, y = front_stoned), color = "orange") +
+  theme_bw()
