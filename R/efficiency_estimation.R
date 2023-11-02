@@ -64,7 +64,7 @@ efficiency_estimation <- function (
   obs_prop <- prop.table(table(data$class_efficiency))
 
   # check presence of imbalanced data
-  if (max(obs_prop[1], obs_prop[2]) > 0.65) {
+  if (max(obs_prop[1], obs_prop[2]) > 0.50) {
     
     data <- balance_data (
       data = data, 
@@ -74,12 +74,13 @@ efficiency_estimation <- function (
     )
       
   }
-
+  
   # Create train and validation data
   valid_index <- createDataPartition (
     data$class_efficiency,
     p = hold_out,
-    list = FALSE)
+    list = FALSE
+    )
 
   valid_data <- data[valid_index, ]
   train_data <- data[- valid_index, ]

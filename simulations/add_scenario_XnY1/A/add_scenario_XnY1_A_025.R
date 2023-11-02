@@ -24,7 +24,7 @@ noise <- c(0, 0.005, 0.01, 0.03)
 scenario <- "A"
 
 # ===
-# Table
+# table
 # ===
 
 repl <- 50
@@ -87,60 +87,9 @@ simulaciones$N <- N
 # technique
 simulaciones$technique <- "svmPoly"
 
-# DEA bcc problem
-rad_out <- function (
-    tech_xmat, tech_ymat, eval_xmat, eval_ymat, convexity, returns
-) {
-  
-  # number of DMUs in the technology
-  tech_dmu <- nrow(tech_xmat)
-  
-  # number of DMUs to be evaluated
-  eval_dmu <- nrow(eval_xmat)
-  
-  # initialize vector of scores
-  scores <- matrix(nrow = eval_dmu, ncol = 1)
-  
-  # number of inputs and outputs
-  nX <- ncol(tech_xmat)
-  nY <- ncol(tech_ymat)
-  
-  for (d in 1:eval_dmu) {
-    
-    objVal <- matrix(ncol = 1 + tech_dmu, nrow = 1)
-    objVal[1] <- 1
-    
-    lps <- make.lp(nrow = 0, ncol = 1 + tech_dmu)
-    lp.control(lps, sense = 'max')
-    set.objfn(lps, objVal)
-    
-    # inputs
-    for (xi in 1:nX) {
-      add.constraint(lps, xt = c(0, tech_xmat[, xi]), "<=",  rhs = eval_xmat[d, xi])
-    }
-    
-    # outputs
-    for (yi in 1:nY) {
-      add.constraint(lps, xt = c(- eval_ymat[d, yi], tech_ymat[, yi]), ">=", rhs = 0)
-    }
-    
-    # technology
-    if (returns == "variable") {
-      if (convexity) {
-        add.constraint(lprec = lps, xt = c(0, rep(1, tech_dmu)), type = "=", rhs = 1)
-      } else {
-        add.constraint(lprec = lps, xt = c(0, rep(1, tech_dmu)), type = "=", rhs = 1)
-        set.type(lps, columns = 1:tech_dmu + 1, type = c("binary"))
-      }
-    }
-    
-    solve(lps)
-    scores[d, ] <- get.objective(lps)
-  }
-  
-  return(scores)
-  
-}
+# ===
+# set seed
+# ===
 
 set.seed(314)
 
@@ -151,7 +100,7 @@ for (std_dev in noise) {
   for (i in 1:repl) {
     
     # ===
-    # Generate data
+    # generate data
     # ===
     
     data <- reffcy (
@@ -165,7 +114,7 @@ for (std_dev in noise) {
     # compute random error
     random_error <- rnorm(n = N, mean = 0, sd = std_dev)
     
-    # compute new vector of outputs
+    # compute new vector of outputs with random error
     data[, y] <- data[, y] * exp(random_error)
     
     scores <- data.frame(
@@ -178,23 +127,7 @@ for (std_dev in noise) {
     # score yD #
     # ======== #
     
-    if (length(y) == 1) {
-      
-      scores$score_yD <- data[, "yD"] / data[, y]
-      
-    } else {
-      
-      if (scenario == FALSE) {
-        
-        scores$score_yD <- data[, "yD1"] / data[, "y1"]
-        
-      } else {
-        
-        scores$score_yD <- data$phi
-        
-      }
-      
-    }
+    scores$score_yD <- data[, "yD"] / data[, y]
     
     # ========= #
     # score DEA #

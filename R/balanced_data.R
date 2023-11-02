@@ -41,7 +41,7 @@ balance_data <- function (
     # ======================= #
     
     # number of dmus to create
-    new_dmus <- ceiling(((-0.65 * n_ineff) + (0.35 * n_eff)) / 0.65)
+    new_dmus <- ceiling(((- 0.50 * n_ineff) + (0.50 * n_eff)) / 0.50)
     
     # indexes of DMUs for worsening
     idx_dmu_change <- sample(1:nrow(data), size = new_dmus)
@@ -143,7 +143,7 @@ balance_data <- function (
     proj_data_inp <- proj_data_inp[- idx_eff, ]
     
     # select the minimum number of additions required to balance the data
-    new_dmus <- ceiling(((- 0.65 * n_eff) + (0.35 * n_ineff)) / 0.65)
+    new_dmus <- ceiling(((- 0.50 * n_eff) + (0.50 * n_ineff)) / 0.50)
 
     # select the index to improve dmus
     idx_eff <- sample(1:nrow(proj_data_out), size = new_dmus)
