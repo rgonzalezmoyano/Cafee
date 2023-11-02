@@ -226,6 +226,11 @@ translog_X2Y2 <- function (
     index <- sample(1:N, N * (1 - border))
     N_sample <- length(index)
     half_normal <- exp(abs(rnorm(N_sample, 0, 0.3 ** (1 / 2))))
+    
+    data_frame <- data.frame(
+      index = index,
+      half_normal = half_normal
+    )
 
     if (noise) {
       normal1 <- exp(rnorm(N_sample, 0, 0.01 ** (1 / 2)))
@@ -240,7 +245,7 @@ translog_X2Y2 <- function (
     }
   }
   
-  data[, "phi"] <- half_normal 
+  data[, "phi"] <- data_frame[order(data_frame$index), ]
   
   return(data)
 }
