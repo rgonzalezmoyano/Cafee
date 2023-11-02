@@ -1,32 +1,26 @@
-# library(dplyr)
-# library(Rglpk)
-# library(tictoc)
-# library(lpSolveAPI)
-# library(quadprog)
+# ===
+# libraries
+# ===
+
+library(caret)
+
+# ===
+# sources
+# ===
 
 # source("/home/PI/vespana/aces/R/ACES.R")
-# source("/home/PI/vespana/aces/R/backward_algorithm.R")
-# source("/home/PI/vespana/aces/R/C2NLS.R")
-# source("/home/PI/vespana/aces/R/efficiency_scores.R")
-# source("/home/PI/vespana/aces/R/estimate_coefficients.R")
-# source("/home/PI/vespana/aces/R/forward_algorithm.R")
-# source("/home/PI/vespana/aces/R/predictions.R")
-# source("/home/PI/vespana/aces/R/simulations.R")
-# source("/home/PI/vespana/aces/R/smoothing_algorithm.R")
-
-# ================= #
-# cobb_douglas_XnY1 #
-# ================= #
-
-# libraries
-library(caret)
 
 # ===
 # parameters
 # ===
+
+# data generation process
 DGP <- "add_scenario_XnY1"
+# sample size
 N <- 25
+# levels of random noise
 noise <- c(0, 0.005, 0.01, 0.03)
+# scenario
 scenario <- "A"
 
 # ===
@@ -36,6 +30,7 @@ scenario <- "A"
 repl <- 50
 
 simulaciones <- data.frame (
+  
   # general
   id = rep(NA, repl),
   DGP = rep(NA, repl),
@@ -62,15 +57,34 @@ simulaciones <- data.frame (
   bias_cafee = rep(NA, repl)
   )
 
-# x and y index
-x <- 1
-y <- 2
+# ===
+# x and y indexes
+# ===
 
+if (scenario %in% c("A", "B")) {
+  x <- 1
+  y <- 2
+} else if (scenario %in% c("C", "E")) {
+  x <- 1:2
+  y <- 3
+} else {
+  x <- 1:3
+  y <- 4
+}
+
+# ===
 # general information
+# ===
+
+# number of experiment
 simulaciones$id <- 1:repl
+# data generating process
 simulaciones$DGP <- DGP
+# type of scenario
 simulaciones$scenario <- scenario
+# sample size
 simulaciones$N <- N
+# technique
 simulaciones$technique <- "svmPoly"
 
 # DEA bcc problem

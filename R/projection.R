@@ -1,4 +1,4 @@
-#' @title Projections
+#' @title Projections to the Hyperplane
 #'
 #' @description This function computes the efficiency scores based on a given model.
 #'
