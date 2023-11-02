@@ -14,9 +14,9 @@
 # source("/home/PI/vespana/aces/R/simulations.R")
 # source("/home/PI/vespana/aces/R/smoothing_algorithm.R")
 
-# ================= #
-# cobb_douglas_XnY1 #
-# ================= #
+# ============= #
+# translog_X2Y2 #
+# ============= #
 
 # libraries
 library(caret)
@@ -27,8 +27,8 @@ library(caret)
 DGP <- "translog_X2Y2"
 N <- 25
 # scenario 
-border <- 0
-#border <- c(0, 0.05, 0.10, 0.20)
+#border <- 0
+border <- c(0, 0.05, 0.10, 0.20)
 scenario <- FALSE
 
 # ===
