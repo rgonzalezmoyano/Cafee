@@ -2,6 +2,9 @@ devtools::document() # actualizar manuales de ayuda
 devtools::load_all() # actualizar el codigo
 library("ggplot2")
 
+#install.packages("MultiplierDEA")
+
+
 set.seed(314)
 
 # Simulated data
@@ -113,6 +116,96 @@ scores <- compute_scores (
   orientation = orientation
   )
 
+# CrossEfficiency: Cross Efficiency Model
+library(MultiplierDEA)
+
+scores_comparation <- data.frame(
+  BCC = rep(NA, 50),
+  agresivo = rep(NA, 50)
+)
+
+tech_xmat <- as.matrix(data[, x])
+tech_ymat <- as.matrix(data[, y])
+eval_xmat <- as.matrix(data[, x])
+eval_ymat <- as.matrix(data[, y])
+
+bcc_scores <- rad_out (
+  tech_xmat = tech_xmat,
+  tech_ymat = tech_ymat,
+  eval_xmat = eval_xmat,
+  eval_ymat = eval_ymat,
+  convexity = TRUE,
+  returns = "variable"
+)
+
+bcc_scores_inp <- rad_inp (
+  tech_xmat = as.matrix(data[, x]),
+  tech_ymat = as.matrix(data[, y]),
+  eval_xmat = as.matrix(data[, x]),
+  eval_ymat = as.matrix(data[, y]),
+  convexity = TRUE,
+  returns = "variable"
+) 
+
+CrossEfficiency <- CrossEfficiency(x = data.frame(data$x1),
+                                   y = data.frame(data$y),
+                                   rts = "vrs",
+                                   orientation = "input")
+
+
+
+prueba <- t(CrossEfficiency$ce_ave)
+
+# DeaR
+library(deaR)
+datadea <- make_deadata(datadea = data, dmus = NULL, inputs = x, outputs = y)
+
+DeaR <- cross_efficiency(datadea,
+                         orientation = "io",
+                         rts = "vrs",
+                         #selfapp = TRUE,
+                         correction = TRUE,
+                         M2 = TRUE,
+                         M3 = TRUE)
+
+m2 <- DeaR[["M2_agg"]][["cross_eff"]]
+m3 <- DeaR[["M3_agg"]][["cross_eff"]]
+colmeans_m2 <- colMeans(m2)
+colmeans_m3 <- colMeans(m3)
+
+
+#scores_comparation$MultiplierDEA <- c(CrossEfficiency$ce_ave)
+scores_comparation$BCC <- bcc_scores_inp
+#scores_comparation$agresivo_m2 <- colmeans_m2
+scores_comparation$agresivo <- colmeans_m3
+
+mean(scores_comparation$BCC)
+mean(scores_comparation$agresivo)
+cor(scores_comparation$agresivo, scores_comparation$BCC)
+
+projections_BCC <- data.frame(
+  x1 = data$x1 * scores_comparation$BCC,
+  y = data$y
+)
+
+projections_agresivo <- data.frame(
+  x1 = data$x1 * scores_comparation$agresivo,
+  y = data$y
+)
+
+# ============= #
+# Generate plot #
+# ============= #
+
+ggplot(data = scores_comparation) +
+  geom_point(aes(x = BCC, y = agresivo)) + 
+  scale_x_continuous(limits = c(0, 1)) +
+  scale_y_continuous(limits = c(0, 1))
+
+ggplot() +
+  geom_point(data = data, aes(x = x1, y = y)) +
+  geom_point(data = projections_BCC, aes(x = x1, y = y), color = "blue") +
+  geom_point(data = projections_agresivo, aes(x = x1, y = y), color = "red")
 
 # ============= #
 # Generate plot #

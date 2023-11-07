@@ -42,11 +42,12 @@ generate_plot <- function (techique, N, std_dev, metric) {
   # Simulated data #
   # ============== #
   
+  # Simulated data
   data <- reffcy (
-    DGP = "add_scenario_XnY1",
+    DGP = "cobb_douglas_XnY1",
     parms = list (
       N = N,
-      scenario = "A"
+      nX = 1
     )
   )
   
