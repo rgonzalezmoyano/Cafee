@@ -60,7 +60,7 @@ simulaciones <- data.frame (
   # bias
   bias_DEA = rep(NA, repl),
   bias_cafee = rep(NA, repl)
-  )
+)
 
 # x and y index
 x <- 1
@@ -114,60 +114,6 @@ for (std_dev in noise) {
     # ========= #
     # score DEA #
     # ========= #
-    
-    rad_out <- function (
-    tech_xmat, tech_ymat, eval_xmat, eval_ymat, convexity, returns
-    ) {
-      
-      # number of DMUs in the technology
-      tech_dmu <- nrow(tech_xmat)
-      
-      # number of DMUs to be evaluated
-      eval_dmu <- nrow(eval_xmat)
-      
-      # initialize vector of scores
-      scores <- matrix(nrow = eval_dmu, ncol = 1)
-      
-      # number of inputs and outputs
-      nX <- ncol(tech_xmat)
-      nY <- ncol(tech_ymat)
-      
-      for (d in 1:eval_dmu) {
-        
-        objVal <- matrix(ncol = 1 + tech_dmu, nrow = 1)
-        objVal[1] <- 1
-        
-        lps <- make.lp(nrow = 0, ncol = 1 + tech_dmu)
-        lp.control(lps, sense = 'max')
-        set.objfn(lps, objVal)
-        
-        # inputs
-        for (xi in 1:nX) {
-          add.constraint(lps, xt = c(0, tech_xmat[, xi]), "<=",  rhs = eval_xmat[d, xi])
-        }
-        
-        # outputs
-        for (yi in 1:nY) {
-          add.constraint(lps, xt = c(- eval_ymat[d, yi], tech_ymat[, yi]), ">=", rhs = 0)
-        }
-        
-        # technology
-        if (returns == "variable") {
-          if (convexity) {
-            add.constraint(lprec = lps, xt = c(0, rep(1, tech_dmu)), type = "=", rhs = 1)
-          } else {
-            add.constraint(lprec = lps, xt = c(0, rep(1, tech_dmu)), type = "=", rhs = 1)
-            set.type(lps, columns = 1:tech_dmu + 1, type = c("binary"))
-          }
-        }
-        
-        solve(lps)
-        scores[d, ] <- get.objective(lps)
-      }
-      
-      return(scores)
-  
-    }
     
     tech_xmat <- as.matrix(data[, x])
     tech_ymat <- as.matrix(data[, y])
@@ -261,8 +207,8 @@ for (std_dev in noise) {
     # ============ #
     
     simulaciones$corr_yD_DEA[i] <- as.numeric(cor(scores$score_yD, scores$score_DEA,
-                                               use = "everything", method = "pearson")
-                                           )
+                                                  use = "everything", method = "pearson")
+    )
     
     # index of NA if there are
     if (any(is.na(scores$score_cafee)) == FALSE) {
@@ -280,8 +226,8 @@ for (std_dev in noise) {
     }
     
     simulaciones$corr_yD_cafee[i] <- as.numeric(cor(filter_data$score_yD, filter_data$score_cafee,
-                                                 use = "everything", method = "pearson")
-                                             )
+                                                    use = "everything", method = "pearson")
+    )
     
     # ============ #
     # MSE and bias #
@@ -289,7 +235,7 @@ for (std_dev in noise) {
     
     # DEA measures
     diff_error <- scores[, "score_yD"] - scores[, "score_DEA"]
-  
+    
     simulaciones$mse_DEA[i] <- round(mean(diff_error ^ 2), 3)
     simulaciones$bias_DEA[i] <- round(mean(diff_error), 3)
     
@@ -319,6 +265,20 @@ for (std_dev in noise) {
     N_char <- N
   }
   
+  if (nX == 1) {
+    scenario_char <- "01"
+  } else if (nX == 3) {
+    scenario_char <- "03"
+  } else if (nX == 6) {
+    nx_scenario_charchar <- "06"
+  } else if (nX == 9) {
+    scenario_char <- "09" 
+  } else if (nX == 12) {
+    scenario_char <- "12"
+  } else {
+    scenario_char <- as.character(nX)
+  }
+  
   if (std_dev == 0) {
     noise_char <- "0.000"
   } else if (std_dev == 0.005) {
@@ -340,7 +300,7 @@ for (std_dev in noise) {
   
   setwd(new_directory)
   
-  file <- paste(DGP, nX, "_", N_char, "_", noise_char, ".RData", sep = "")
+  file <- paste(DGP, "_", scenario_char, "_", N_char, "_", noise_char, ".RData", sep = "")
   save(simulaciones, file = file)
   
   setwd(directory)
