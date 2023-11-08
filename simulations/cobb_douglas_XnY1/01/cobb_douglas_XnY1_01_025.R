@@ -270,7 +270,7 @@ for (std_dev in noise) {
   } else if (nX == 3) {
     scenario_char <- "03"
   } else if (nX == 6) {
-    scenario_charchar <- "06"
+    scenario_char <- "06"
   } else if (nX == 9) {
     scenario_char <- "09" 
   } else if (nX == 12) {
