@@ -66,11 +66,19 @@ simulaciones <- data.frame (
 x <- 1
 y <- 2
 
+# ===
 # general information
+# ===
+
+# number of experiment
 simulaciones$id <- 1:repl
+# data generating process
 simulaciones$DGP <- DGP
+# type of scenario
 simulaciones$scenario <- nX
+# sample size
 simulaciones$N <- N
+# technique
 simulaciones$technique <- "svmPoly"
 
 set.seed(314)
@@ -166,9 +174,9 @@ for (std_dev in noise) {
     
     methods <- list (
       "svmPoly" = list(
-        "degree" = c(2, 3, 4),
-        "scale" = c(0.0001, 0.001, 0.01, 0.1, 1),
-        "C" = c(seq(0, 100, length.out = 10), seq(200, 1000, length.out = 3))
+        "degree" = c(1, 2, 3, 4, 5),
+        "scale" = c(0.1, 1, 10),
+        "C" = c(0.1, 1, 10, 100, 1000)
       )
     )
     

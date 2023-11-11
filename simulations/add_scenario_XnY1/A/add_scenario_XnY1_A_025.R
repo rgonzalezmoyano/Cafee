@@ -24,13 +24,12 @@ noise <- c(0, 0.005, 0.01, 0.03)
 scenario <- "A"
 
 # ===
-# table
+# Table
 # ===
 
 repl <- 50
 
 simulaciones <- data.frame (
-  
   # general
   id = rep(NA, repl),
   DGP = rep(NA, repl),
@@ -55,7 +54,7 @@ simulaciones <- data.frame (
   # bias
   bias_DEA = rep(NA, repl),
   bias_cafee = rep(NA, repl)
-  )
+)
 
 # ===
 # x and y indexes

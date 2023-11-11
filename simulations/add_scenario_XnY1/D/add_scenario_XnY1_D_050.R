@@ -1,32 +1,26 @@
-# library(dplyr)
-# library(Rglpk)
-# library(tictoc)
-# library(lpSolveAPI)
-# library(quadprog)
+# ===
+# libraries
+# ===
+
+library(caret)
+
+# ===
+# sources
+# ===
 
 # source("/home/PI/vespana/aces/R/ACES.R")
-# source("/home/PI/vespana/aces/R/backward_algorithm.R")
-# source("/home/PI/vespana/aces/R/C2NLS.R")
-# source("/home/PI/vespana/aces/R/efficiency_scores.R")
-# source("/home/PI/vespana/aces/R/estimate_coefficients.R")
-# source("/home/PI/vespana/aces/R/forward_algorithm.R")
-# source("/home/PI/vespana/aces/R/predictions.R")
-# source("/home/PI/vespana/aces/R/simulations.R")
-# source("/home/PI/vespana/aces/R/smoothing_algorithm.R")
-
-# ================= #
-# cobb_douglas_XnY1 #
-# ================= #
-
-# libraries
-library(caret)
 
 # ===
 # parameters
 # ===
+
+# data generation process
 DGP <- "add_scenario_XnY1"
+# sample size
 N <- 50
+# levels of random noise
 noise <- c(0, 0.005, 0.01, 0.03)
+# scenario
 scenario <- "D"
 
 # ===
@@ -60,73 +54,41 @@ simulaciones <- data.frame (
   # bias
   bias_DEA = rep(NA, repl),
   bias_cafee = rep(NA, repl)
-  )
+)
 
-# x and y index
-x <- 1:3
-y <- 4
+# ===
+# x and y indexes
+# ===
 
+if (scenario %in% c("A", "B")) {
+  x <- 1
+  y <- 2
+} else if (scenario %in% c("C", "E")) {
+  x <- 1:2
+  y <- 3
+} else {
+  x <- 1:3
+  y <- 4
+}
+
+# ===
 # general information
+# ===
+
+# number of experiment
 simulaciones$id <- 1:repl
+# data generating process
 simulaciones$DGP <- DGP
+# type of scenario
 simulaciones$scenario <- scenario
+# sample size
 simulaciones$N <- N
+# technique
 simulaciones$technique <- "svmPoly"
 
-# DEA bcc problem
-rad_out <- function (
-    tech_xmat, tech_ymat, eval_xmat, eval_ymat, convexity, returns
-) {
-  
-  # number of DMUs in the technology
-  tech_dmu <- nrow(tech_xmat)
-  
-  # number of DMUs to be evaluated
-  eval_dmu <- nrow(eval_xmat)
-  
-  # initialize vector of scores
-  scores <- matrix(nrow = eval_dmu, ncol = 1)
-  
-  # number of inputs and outputs
-  nX <- ncol(tech_xmat)
-  nY <- ncol(tech_ymat)
-  
-  for (d in 1:eval_dmu) {
-    
-    objVal <- matrix(ncol = 1 + tech_dmu, nrow = 1)
-    objVal[1] <- 1
-    
-    lps <- make.lp(nrow = 0, ncol = 1 + tech_dmu)
-    lp.control(lps, sense = 'max')
-    set.objfn(lps, objVal)
-    
-    # inputs
-    for (xi in 1:nX) {
-      add.constraint(lps, xt = c(0, tech_xmat[, xi]), "<=",  rhs = eval_xmat[d, xi])
-    }
-    
-    # outputs
-    for (yi in 1:nY) {
-      add.constraint(lps, xt = c(- eval_ymat[d, yi], tech_ymat[, yi]), ">=", rhs = 0)
-    }
-    
-    # technology
-    if (returns == "variable") {
-      if (convexity) {
-        add.constraint(lprec = lps, xt = c(0, rep(1, tech_dmu)), type = "=", rhs = 1)
-      } else {
-        add.constraint(lprec = lps, xt = c(0, rep(1, tech_dmu)), type = "=", rhs = 1)
-        set.type(lps, columns = 1:tech_dmu + 1, type = c("binary"))
-      }
-    }
-    
-    solve(lps)
-    scores[d, ] <- get.objective(lps)
-  }
-  
-  return(scores)
-  
-}
+# ===
+# set seed
+# ===
 
 set.seed(314)
 
@@ -137,7 +99,7 @@ for (std_dev in noise) {
   for (i in 1:repl) {
     
     # ===
-    # Generate data
+    # generate data
     # ===
     
     data <- reffcy (
@@ -151,7 +113,7 @@ for (std_dev in noise) {
     # compute random error
     random_error <- rnorm(n = N, mean = 0, sd = std_dev)
     
-    # compute new vector of outputs
+    # compute new vector of outputs with random error
     data[, y] <- data[, y] * exp(random_error)
     
     scores <- data.frame(
@@ -164,23 +126,7 @@ for (std_dev in noise) {
     # score yD #
     # ======== #
     
-    if (length(y) == 1) {
-      
-      scores$score_yD <- data[, "yD"] / data[, y]
-      
-    } else {
-      
-      if (scenario == FALSE) {
-        
-        scores$score_yD <- data[, "yD1"] / data[, "y1"]
-        
-      } else {
-        
-        scores$score_yD <- data$phi
-        
-      }
-      
-    }
+    scores$score_yD <- data[, "yD"] / data[, y]
     
     # ========= #
     # score DEA #
@@ -278,8 +224,8 @@ for (std_dev in noise) {
     # ============ #
     
     simulaciones$corr_yD_DEA[i] <- as.numeric(cor(scores$score_yD, scores$score_DEA,
-                                               use = "everything", method = "pearson")
-                                           )
+                                                  use = "everything", method = "pearson")
+    )
     
     # index of NA if there are
     if (any(is.na(scores$score_cafee)) == FALSE) {
@@ -297,8 +243,8 @@ for (std_dev in noise) {
     }
     
     simulaciones$corr_yD_cafee[i] <- as.numeric(cor(filter_data$score_yD, filter_data$score_cafee,
-                                                 use = "everything", method = "pearson")
-                                             )
+                                                    use = "everything", method = "pearson")
+    )
     
     # ============ #
     # MSE and bias #
@@ -306,7 +252,7 @@ for (std_dev in noise) {
     
     # DEA measures
     diff_error <- scores[, "score_yD"] - scores[, "score_DEA"]
-  
+    
     simulaciones$mse_DEA[i] <- round(mean(diff_error ^ 2), 3)
     simulaciones$bias_DEA[i] <- round(mean(diff_error), 3)
     
