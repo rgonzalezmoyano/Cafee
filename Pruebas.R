@@ -61,31 +61,31 @@ trControl <- trainControl (
 hold_out <- 0.15
 
 methods <- list (
-  "knn" = list (
-    k = 5:15
-  ),
-  "gbm" = list (
-    n.trees = c(50, 100, 150),
-    interaction.depth = c(1, 2, 3),
-    shrinkage = c(0.01, 0.1, 0.2),
-    n.minobsinnode = c(1, 3, 5)
-  ),
-  "svmRadial" = list (
-  C = c(0.01, 0.1, 1, 10),
-    sigma = c(0.001, 0.01, 0.1, 1)
-    ),
+  # "knn" = list (
+  #   k = 5:15
+  # ),
+  # "gbm" = list (
+  #   n.trees = c(50, 100, 150),
+  #   interaction.depth = c(1, 2, 3),
+  #   shrinkage = c(0.01, 0.1, 0.2),
+  #   n.minobsinnode = c(1, 3, 5)
+  # ),
+  # "svmRadial" = list (
+  # C = c(0.01, 0.1, 1, 10),
+  #   sigma = c(0.001, 0.01, 0.1, 1)
+  #   ),
   "svmPoly" = list(
     "degree" = c(1, 2, 3, 4, 5),
     "scale" = c(0.1, 1, 10),
     "C" = c(0.1, 1, 10, 100)
-  ),
-  "rf" = list (
-    mtry = c(1, 2)
-    ),
-  "earth" = list (
-    nprune = c(5, 10, 15, 20, 25),
-    degree = c(1)
   )
+  # "rf" = list (
+  #   mtry = c(1, 2)
+  #   ),
+  # "earth" = list (
+  #   nprune = c(5, 10, 15, 20, 25),
+  #   degree = c(1)
+  # )
 )
 
 # https://topepo.github.io/caret/train-models-by-tag.html
@@ -147,6 +147,25 @@ bcc_scores_inp <- rad_inp (
   returns = "variable"
 ) 
 
+fdh_scores_inp <- rad_inp (
+  tech_xmat = as.matrix(data[, x]),
+  tech_ymat = as.matrix(data[, y]),
+  eval_xmat = as.matrix(data[, x]),
+  eval_ymat = as.matrix(data[, y]),
+  convexity = FALSE,
+  returns = "variable"
+) 
+
+ccr_scores_inp <- rad_inp (
+  tech_xmat = as.matrix(data[, x]),
+  tech_ymat = as.matrix(data[, y]),
+  eval_xmat = as.matrix(data[, x]),
+  eval_ymat = as.matrix(data[, y]),
+  convexity = FALSE,
+  returns = "constant"
+) 
+
+
 CrossEfficiency <- CrossEfficiency(x = data.frame(data$x1),
                                    y = data.frame(data$y),
                                    rts = "vrs",
@@ -168,16 +187,40 @@ DeaR <- cross_efficiency(datadea,
                          M2 = TRUE,
                          M3 = TRUE)
 
+DeaR_contstante <- cross_efficiency(datadea,
+                         orientation = "io",
+                         rts = "crs",
+                         #selfapp = TRUE,
+                         correction = TRUE,
+                         M2 = TRUE,
+                         M3 = TRUE)
+
 m2 <- DeaR[["M2_agg"]][["cross_eff"]]
+m2_ben <- DeaR[["M2_ben"]][["cross_eff"]]
 m3 <- DeaR[["M3_agg"]][["cross_eff"]]
-colmeans_m2 <- colMeans(m2)
+m3_ben <- DeaR[["M3_ben"]][["cross_eff"]]
+
+m3_crs <- DeaR_contstante[["M3_agg"]][["cross_eff"]]
+m3_ben_crs <- DeaR_contstante[["M3_ben"]][["cross_eff"]]
+
+colmeans_m2 <- colMeans(m2) # agresivo
+colmeans_m2_ben <- colMeans(m2_ben)
 colmeans_m3 <- colMeans(m3)
+colmeans_m3_ben <- colMeans(m3_ben)
+
+colmeans_m3_crs <- colMeans(m3_crs) # agresivo
+colmeans_m3_ben_crs <- colMeans(m3_ben_crs)
 
 
 #scores_comparation$MultiplierDEA <- c(CrossEfficiency$ce_ave)
 scores_comparation$BCC <- bcc_scores_inp
 #scores_comparation$agresivo_m2 <- colmeans_m2
 scores_comparation$agresivo <- colmeans_m3
+scores_comparation$benevolente <- colmeans_m3_ben
+scores_comparation$FDH <- as.vector(fdh_scores_inp)
+scores_comparation$CCR <- as.vector(ccr_scores_inp)
+# scores_comparation$agresivo_CCR <- as.vector(colmeans_m3_crs)
+# scores_comparation$benevolente_CCR <- as.vector(colmeans_m3_ben_crs)
 
 mean(scores_comparation$BCC)
 mean(scores_comparation$agresivo)
@@ -192,6 +235,22 @@ projections_agresivo <- data.frame(
   x1 = data$x1 * scores_comparation$agresivo,
   y = data$y
 )
+
+# ============= #
+# Generate plot # Grafico de dispersión BCC y diferencias agre y ben
+# ============= #
+
+data_frame_13_11 <- data.frame(
+  diferencias = colmeans_m3_ben - colmeans_m3,
+  BCC = bcc_scores_inp
+)
+
+
+ggplot(data = data_frame_13_11) +
+  geom_point(aes(x = BCC, y = diferencias))
+
+cor(data_frame_13_11$diferencias, data_frame_13_11$BCC)
+
 
 # ============= #
 # Generate plot #

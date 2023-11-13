@@ -110,6 +110,18 @@ for (std_dev in noise) {
       )
     )
     
+    if (nrow(data) != N) {
+      
+      data <- reffcy (
+        DGP = DGP,
+        parms = list (
+          N = N,
+          scenario = scenario
+        )
+      )
+      
+    }
+    
     # compute random error
     random_error <- rnorm(n = N, mean = 0, sd = std_dev)
     
