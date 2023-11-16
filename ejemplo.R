@@ -8,7 +8,7 @@ set.seed(314)
 data <- reffcy (
   DGP = "cobb_douglas_XnY1",
   parms = list (
-    N = 100,
+    N = 50,
     nX = 1
   )
 )
@@ -54,6 +54,8 @@ methods <- list (
 
 metric = "F1"
 
+devtools::load_all()
+
 # Result
 final_model <- efficiency_estimation (
   data = data,
@@ -81,7 +83,7 @@ ggplot() +
   geom_line(data = data, aes(x = x1, y = yD), color = "red") +
   scale_fill_gradientn (
     colours = c("pink", "white", "lightgreen"),
-    values = scales::rescale(c(0, 0.8, 1))
+    values = scales::rescale(c(0, 0.9, 1))
     ) +
   theme_bw() +
   ylim(c(min(data$y), max(data$y))) +
