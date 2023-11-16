@@ -2,9 +2,6 @@ devtools::document() # actualizar manuales de ayuda
 devtools::load_all() # actualizar el codigo
 library("ggplot2")
 
-#install.packages("MultiplierDEA")
-
-
 set.seed(314)
 
 # Simulated data
@@ -93,7 +90,7 @@ methods <- list (
 metric = "F1"
 
 # Result
-prueba <- efficiency_estimation (
+modelo <- efficiency_estimation (
   data = data,
   x = x,
   y = y,
@@ -104,9 +101,7 @@ prueba <- efficiency_estimation (
   hold_out = hold_out
   )
 
-prueba
-
-final_model <- prueba
+data$prob <- round(predict(modelo, data[, 1:2], type = "prob")$efficient, 2)
 
 scores <- compute_scores (
   data = data,
@@ -116,125 +111,6 @@ scores <- compute_scores (
   orientation = orientation
   )
 
-# CrossEfficiency: Cross Efficiency Model
-library(MultiplierDEA)
-
-scores_comparation <- data.frame(
-  BCC = rep(NA, 50),
-  agresivo = rep(NA, 50)
-)
-
-tech_xmat <- as.matrix(data[, x])
-tech_ymat <- as.matrix(data[, y])
-eval_xmat <- as.matrix(data[, x])
-eval_ymat <- as.matrix(data[, y])
-
-bcc_scores <- rad_out (
-  tech_xmat = tech_xmat,
-  tech_ymat = tech_ymat,
-  eval_xmat = eval_xmat,
-  eval_ymat = eval_ymat,
-  convexity = TRUE,
-  returns = "variable"
-)
-
-bcc_scores_inp <- rad_inp (
-  tech_xmat = as.matrix(data[, x]),
-  tech_ymat = as.matrix(data[, y]),
-  eval_xmat = as.matrix(data[, x]),
-  eval_ymat = as.matrix(data[, y]),
-  convexity = TRUE,
-  returns = "variable"
-) 
-
-fdh_scores_inp <- rad_inp (
-  tech_xmat = as.matrix(data[, x]),
-  tech_ymat = as.matrix(data[, y]),
-  eval_xmat = as.matrix(data[, x]),
-  eval_ymat = as.matrix(data[, y]),
-  convexity = FALSE,
-  returns = "variable"
-) 
-
-ccr_scores_inp <- rad_inp (
-  tech_xmat = as.matrix(data[, x]),
-  tech_ymat = as.matrix(data[, y]),
-  eval_xmat = as.matrix(data[, x]),
-  eval_ymat = as.matrix(data[, y]),
-  convexity = FALSE,
-  returns = "constant"
-) 
-
-
-CrossEfficiency <- CrossEfficiency(x = data.frame(data$x1),
-                                   y = data.frame(data$y),
-                                   rts = "vrs",
-                                   orientation = "input")
-
-
-
-prueba <- t(CrossEfficiency$ce_ave)
-
-# DeaR
-library(deaR)
-datadea <- make_deadata(datadea = data, dmus = NULL, inputs = x, outputs = y)
-
-DeaR <- cross_efficiency(datadea,
-                         orientation = "io",
-                         rts = "vrs",
-                         #selfapp = TRUE,
-                         correction = TRUE,
-                         M2 = TRUE,
-                         M3 = TRUE)
-
-DeaR_contstante <- cross_efficiency(datadea,
-                         orientation = "io",
-                         rts = "crs",
-                         #selfapp = TRUE,
-                         correction = TRUE,
-                         M2 = TRUE,
-                         M3 = TRUE)
-
-m2 <- DeaR[["M2_agg"]][["cross_eff"]]
-m2_ben <- DeaR[["M2_ben"]][["cross_eff"]]
-m3 <- DeaR[["M3_agg"]][["cross_eff"]]
-m3_ben <- DeaR[["M3_ben"]][["cross_eff"]]
-
-m3_crs <- DeaR_contstante[["M3_agg"]][["cross_eff"]]
-m3_ben_crs <- DeaR_contstante[["M3_ben"]][["cross_eff"]]
-
-colmeans_m2 <- colMeans(m2) # agresivo
-colmeans_m2_ben <- colMeans(m2_ben)
-colmeans_m3 <- colMeans(m3)
-colmeans_m3_ben <- colMeans(m3_ben)
-
-colmeans_m3_crs <- colMeans(m3_crs) # agresivo
-colmeans_m3_ben_crs <- colMeans(m3_ben_crs)
-
-
-#scores_comparation$MultiplierDEA <- c(CrossEfficiency$ce_ave)
-scores_comparation$BCC <- bcc_scores_inp
-#scores_comparation$agresivo_m2 <- colmeans_m2
-scores_comparation$agresivo <- colmeans_m3
-scores_comparation$benevolente <- colmeans_m3_ben
-scores_comparation$FDH <- as.vector(fdh_scores_inp)
-scores_comparation$CCR <- as.vector(ccr_scores_inp)
-# scores_comparation$agresivo_CCR <- as.vector(colmeans_m3_crs)
-# scores_comparation$benevolente_CCR <- as.vector(colmeans_m3_ben_crs)
-
-mean(scores_comparation$BCC)
-mean(scores_comparation$agresivo)
-cor(scores_comparation$agresivo, scores_comparation$BCC)
-
-projections_BCC <- data.frame(
-  x1 = data$x1 * scores_comparation$BCC,
-  y = data$y
-)
-
-projections_agresivo <- data.frame(
-  x1 = data$x1 * scores_comparation$agresivo,
-  y = data$y
-)
 
 # ============= #
 # Generate plot # Grafico de dispersión BCC y diferencias agre y ben
