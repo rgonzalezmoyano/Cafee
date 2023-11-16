@@ -1,4 +1,4 @@
-#' @title Create New DMUs to Balance Data
+#' @title Create New DMUs to reach 150 dmus
 #'
 #' @description This function creates new DMUs to address data imbalances. If the majority class is efficient, it generates new inefficient DMUs by worsering the observed units. Conversely, if the majority class is inefficient, it projects inefficient DMUs to the frontier. Finally, a random selection if performed to keep a proportion of 0.65 for the majority class and 0.35 for the minority class.
 #' 
@@ -9,129 +9,9 @@
 #'
 #' @return It returns a \code{data.frame} with the newly created set of DMUs incorporated.
 
-balance_data <- function (
-      data, x, y, obs_prop
-    ) {
-  
-  # number of inputs
-  nX <- length(x)
-  
-  # number of outputs
-  nY <- length(y)
-  
-  # proportion of dmus efficient
-  prop_eff <- obs_prop["efficient"]
-  
-  # proportion of dmus not efficient
-  prop_ineff <- obs_prop["not_efficient"]
-  
-  # number of dmus efficient
-  n_eff <- prop_eff * nrow(data)
-  
-  # number of dmus not efficient
-  n_ineff <- prop_ineff * nrow(data)
-  
-  # index of dmus efficient
-  idx_eff <- which(data$class_efficiency == "efficient")
-  
-  # number of samples
-  N <- nrow(data)
-  
-  # ================== #
-  # enough sample size #
-  # ================== #
-  
-  if (N < 150) {
-    # create new "n" observations
-    n <- 150 - N
-    
-    browser()
-    
-    # create new inefficient observations
-    ineff_dmu <- create_dmu (
-      data = data,
-      x = x,
-      y = y,
-      N = n / 2,
-      type = "inefficient"
-    )
-    
-    
-    # create efficiency observations
-    eff_dmu <- create_dmu (
-      data = data,
-      x = x,
-      y = y,
-      N = n / 2,
-      type = "efficient"
-    )
-    
-    data <- rbind(data, ineff_dmu, eff_dmu)
-  }
-
-  if (prop_eff > prop_ineff) {
-    
-    # ======================= #
-    # create inefficient DMUs #
-    # ======================= #
-    
-    # number of dmus to create
-    new_dmus <- ceiling(((- 0.50 * n_ineff) + (0.50 * n_eff)) / 0.50)
-    
-    # create new inefficient observations
-    ineff_dmu <- create_dmu (
-      data = data,
-      x = x,
-      y = y,
-      N = new_dmus,
-      type = "inefficient"
-    )
-
-    
-  } else {
-    
-    # ===================== #
-    # create efficient DMUs #
-    # ===================== #
-    
-    # number of dmus to create
-    new_dmus <- ceiling(((- 0.50 * n_ineff) + (0.50 * n_eff)) / 0.50)
-    
-    # create new efficient observations
-    eff_dmu <- create_dmu (
-      data = data,
-      x = x,
-      y = y,
-      N = new_dmus,
-      type = "inefficient"
-    )
-    
-  }
-
-  return(data)
-}
-
-#' @title Create New DMUs to reach 150 dmus
-#'
-#' @description This function adds DMUs to reach a size of 150.
-#' 
-#' @param data A \code{data.frame} containing the variables used in the model.
-#' @param x number of inputs in the \code{data}.
-#' @param y number of outputs in the \code{data}.
-#' @param N number of dmus to create \code{data}.
-#' @param type class of dmu to create \code{data}.
-#'
-#' @return It returns a \code{data.frame} with the newly created set of DMUs incorporated.
-
 create_dmu <- function (
-    data, x, y, N, type
+  data, nX, nY, N, type
 ) {
-  
-  # number of inputs
-  nX <- length(x)
-  
-  # number of outputs
-  nY <- length(y)
   
   if (type == "inefficient") {
     
@@ -139,10 +19,8 @@ create_dmu <- function (
     # create inefficient DMUs #
     # ======================= #
     
-    new_dmus <- N
-    
     # indexes of DMUs for worsening
-    idx_dmu_change <- sample(1:nrow(data), size = new_dmus)
+    idx_dmu_change <- sample(1:nrow(data), size = N)
     
     # create a new matrix of data
     new_dmu_values <- matrix(data = NA, nrow = new_dmus, ncol = nX + nY)  
@@ -154,7 +32,7 @@ create_dmu <- function (
     
     # alteration of inputs
     # maximum values of inputs
-    max_value_x <- apply(X = data[x], MARGIN = 2, FUN = max)
+    max_value_x <- apply(X = data[, x], MARGIN = 2, FUN = max)
     
     for (i in 1:new_dmus) {
       
@@ -197,6 +75,9 @@ create_dmu <- function (
     # classification of the new dmus as "inefficient"
     new_dmu_values$class_efficiency <- "not_efficient"
     
+    # add the new set of DMUs to the original data
+    data <- rbind(data, new_dmu_values)
+    
   } else {
     
     # ===================== #
@@ -204,7 +85,7 @@ create_dmu <- function (
     # ===================== #
     
     # select the minimum number of additions required to balance the data
-    new_dmus <- N
+    new_dmus <- ceiling(((- 0.50 * n_eff) + (0.50 * n_ineff)) / 0.50)
     
     # create efficiency observations
     eff_dmu <- create_dmu (
@@ -297,7 +178,8 @@ create_dmu <- function (
         new_dmu_values[i, ] <- proj_data_inp[dmu, ]
       }
     }
+    
+    # add proj_data to original data
+    data <- as.data.frame(rbind(data, new_dmu_values))
   }
-  
-  return(new_dmu_values)
 }
