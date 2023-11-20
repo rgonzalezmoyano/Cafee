@@ -64,13 +64,12 @@ efficiency_estimation <- function (
   obs_prop <- prop.table(table(data$class_efficiency))
 
   # check presence of imbalanced data
-  if (max(obs_prop[1], obs_prop[2]) > 0.50) {
+  if (max(obs_prop[1], obs_prop[2]) > 0.50 | nrow(data) < 150) {
     
     data <- balance_data (
       data = data, 
       x = x, 
-      y = y,
-      obs_prop = obs_prop
+      y = y
     )
       
   }

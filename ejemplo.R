@@ -88,3 +88,7 @@ ggplot() +
   theme_bw() +
   ylim(c(min(data$y), max(data$y))) +
   theme(panel.background = element_blank())
+
+ggplot() +
+  geom_point(data = data, aes(x = x1, y = y, color = class_efficiency)) +
+  theme_bw()
