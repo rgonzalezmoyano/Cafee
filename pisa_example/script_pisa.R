@@ -18,6 +18,10 @@ region <- read_excel (
   sheet = "codificacion",
   range = "A1:B18")
 
+# library(haven)
+# CY07_MSU_STU_QQQ <- read_sav("C:/Users/Ricardo/Downloads/SPSS_STU_QQQ/STU/CY07_MSU_STU_QQQ.sav")
+
+
 info_SCHLTYPE <- read_excel (
   "pisa_example/Data_Spain_PISA_2018.xlsx", 
   sheet = "codificacion",

@@ -45,8 +45,6 @@ balance_data <- function (
     # create new "n" observations
     n <- 150 - N
     
-    browser()
-    
     # create new inefficient observations
     ineff_dmu <- create_dmu (
       data = data,
