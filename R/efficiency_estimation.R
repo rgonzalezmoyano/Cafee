@@ -64,17 +64,14 @@ efficiency_estimation <- function (
   obs_prop <- prop.table(table(data$class_efficiency))
 
   # check presence of imbalanced data
-  if (max(obs_prop[1], obs_prop[2]) > 0.50) {
-    
+  if (max(obs_prop[1], obs_prop[2]) > 0.50 | nrow(data) < 150) {
     data <- balance_data (
       data = data, 
       x = x, 
-      y = y,
-      obs_prop = obs_prop
+      y = y
     )
-      
   }
-  
+
   # Create train and validation data
   valid_index <- createDataPartition (
     data$class_efficiency,
@@ -124,7 +121,7 @@ efficiency_estimation <- function (
     verb_methods <- c("gbm", "svmPoly")
     
     if (names(methods[i]) %in% verb_methods) {
-      # Tune models
+      # tune models
       best_ml_model <- train (
         form = class_efficiency ~.,
         data = train_data,
@@ -132,6 +129,7 @@ efficiency_estimation <- function (
         tuneGrid = parms_vals[[i]],
         verbose = FALSE
       )
+      
     } else {
       # Tune models
       best_ml_model <- train (
@@ -203,7 +201,64 @@ efficiency_estimation <- function (
       trControl = trainControl(classProbs = TRUE)
     )
   }
+
+  cut_off <- select_cut_off (
+    data = valid_data,
+    final_model = final_model
+  )
+  
+  final_model$cut_off <- cut_off
   
   return(final_model)
+}
 
+#' @title Select cut-off point in Classification Algorithm
+#'
+#' @description This function selects the cut-off point that minimizes the sum of false positives and false negatives.
+#' 
+#' @param data A \code{data.frame} or \code{matrix} containing the variables in the model.
+#' @param final_model The best \code{train} object from \code{caret}.
+#'
+#' @return It returns the best cut-off point.
+
+select_cut_off <- function (
+    data, final_model
+    ) {
+  
+  # cut-off points
+  df_cp <- data.frame (
+    cut_off_points = seq(0, 1, by = 0.01),
+    false_pred = NA
+  )
+  
+  # predictions
+  y_hat <- predict(final_model, data, type = "prob")
+  
+  for (i in 1:nrow(df_cp)) {
+    
+    # cut-off point
+    cp_point <- df_cp[i, "cut_off_points"]
+    
+    # predictions for a given cut-off point
+    y_hat_cp <- ifelse(y_hat$efficient >= cp_point, "efficient", "not_efficient")
+    y_hat_cp <- factor(y_hat_cp, levels = c("efficient", "not_efficient"))
+    
+    # confusion matrix
+    cm_cp <- confusionMatrix (
+      data = y_hat_cp,
+      reference = data$class_efficiency,
+      mode = "everything",
+      positive = "efficient"
+    )[["table"]]
+    
+    # compute false positive and false negative
+    df_cp[i, "false_pred"] <- cm_cp[2, 1] + cm_cp[1, 2]
+  }
+
+  # minimum cost for the cut-off point
+  min_value <- min(df_cp$false_pred)
+  min_index <- which(df_cp$false_pred == min_value)
+  cut_point <- df_cp[max(min_index), "cut_off_points"]
+  
+  return(cut_point)
 }

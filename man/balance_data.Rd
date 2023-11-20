@@ -4,7 +4,7 @@
 \alias{balance_data}
 \title{Create New DMUs to Balance Data}
 \usage{
-balance_data(data, x, y, obs_prop)
+balance_data(data, x, y)
 }
 \arguments{
 \item{data}{A \code{data.frame} containing the variables used in the model.}
@@ -12,8 +12,6 @@ balance_data(data, x, y, obs_prop)
 \item{x}{Column indexes of the input variables in the \code{data}.}
 
 \item{y}{Column indexes of the output variables in the \code{data}.}
-
-\item{obs_prop}{A \code{table} with the observed proportions of efficient and inefficient DMUs.}
 }
 \value{
 It returns a \code{data.frame} with the newly created set of DMUs incorporated.
