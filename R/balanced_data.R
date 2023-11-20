@@ -25,10 +25,10 @@ balance_data <- function (
   # enough sample size #
   # ================== #
   
-  if (N < 150) {
+  if (N < 100) {
     
     # create new "n" observations
-    grow_n <- 150 - N
+    grow_n <- 100 - N
     
     # create new inefficient observations
     ineff_dmu <- create_dmu (
@@ -52,6 +52,27 @@ balance_data <- function (
     data <- data[complete.cases(data), ]
   }
   
+  # ============== #
+  # sub - frontier #
+  # ============== #
+  
+  # frontier
+  eff_data <- data[data$class_efficiency == "efficient", ]
+  
+  # perturbations
+  perturbations <- data.frame(matrix(runif(nrow(eff_data) * (ncol(eff_data) - 1), 0, 0.1), nrow = nrow(eff_data)))
+  
+  # sub - frontier data
+  sfd_data <- data.frame (
+    eff_data[, x] + eff_data[, x] * perturbations[, x],
+    eff_data[, y] - eff_data[, y] * perturbations[, y],
+    "class_efficiency" = "not_efficient"
+  )
+  
+  colnames(sfd_data) <- colnames(data)
+  
+  data <- rbind(data, sfd_data)
+
   # =================== #
   # balance proportions #
   # =================== #
@@ -145,9 +166,14 @@ create_dmu <- function (
     # ======================= #
     
     new_dmus <- N
-    
+  
     # indexes of DMUs for worsening
-    idx_dmu_change <- sample(1:nrow(data), size = new_dmus)
+    if (new_dmus > nrow(data)) {
+      replace <- TRUE
+    } else {
+      replace <- FALSE
+    }
+    idx_dmu_change <- sample(1:nrow(data), size = new_dmus, replace = replace)
     
     # create a new matrix of data
     new_dmu_values <- matrix(data = NA, nrow = new_dmus, ncol = nX + nY)  

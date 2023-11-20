@@ -6,10 +6,10 @@ set.seed(314)
 
 # Simulated data
 data <- reffcy (
-  DGP = "cobb_douglas_XnY1",
+  DGP = "add_scenario_XnY1",
   parms = list (
-    N = 50,
-    nX = 1
+    N = 10,
+    scenario = "A"
   )
 )
 
@@ -74,7 +74,6 @@ grid <- expand.grid (
 )
 
 prob <- round(predict(final_model, grid, type = "prob")[1], 2)
-
 grid$prob <- prob$efficient
 
 ggplot() +
@@ -83,12 +82,13 @@ ggplot() +
   geom_line(data = data, aes(x = x1, y = yD), color = "red") +
   scale_fill_gradientn (
     colours = c("pink", "white", "lightgreen"),
-    values = scales::rescale(c(0, 0.9, 1))
+    values = scales::rescale(c(0, final_model[["cut_off"]], 1))
     ) +
   theme_bw() +
-  ylim(c(min(data$y), max(data$y))) +
   theme(panel.background = element_blank())
+
 
 ggplot() +
   geom_point(data = data, aes(x = x1, y = y, color = class_efficiency)) +
+  # geom_point(data = eval_data, aes(x = x1, y = y)) +
   theme_bw()
