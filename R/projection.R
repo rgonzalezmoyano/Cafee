@@ -175,10 +175,10 @@ compute_scores <- function (
               break
                     
             }
-                  
-            scores[i] <- 1 - (incr + 0.005)
               
-          } 
+          } # end while
+          
+          scores[i] <- 1 - (incr + 0.005)
             
         } else {
             
