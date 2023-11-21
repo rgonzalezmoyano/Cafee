@@ -157,7 +157,6 @@ compute_scores <- function (
             # case dmu super-efficient #
             # ======================== #
             
-            h <- 0
             # calculate increments to make the efficient class the minority
             while (prob_eff > 0.5) {
               
@@ -169,10 +168,7 @@ compute_scores <- function (
               colnames(new_point) <- names(data[c(x, y)])
                   
               prob_eff <- predict(final_model, new_point, type = "prob")[1]
-              # h <- h + 1 
-              # print(h)
-              # print(incr)
-              # print(prob_eff)
+
               if (any(data[i, y] - (data[i, y] * incr) < 0)) {
                 
                 scores[i] <- NA
