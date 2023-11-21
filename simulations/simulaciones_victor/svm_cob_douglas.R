@@ -26,7 +26,7 @@ x <- 1
 y <- 2
 
 for (rep in reps) {
-  assign(paste0("df_cobb_douglas_XnY1_", N, "_", rep), simulaciones)
+  #assign(paste0("df_cobb_douglas_XnY1_", N, "_", rep), simulaciones)
   
   name <- paste0("df_cobb_douglas_XnY1_", N, "_", rep)
   
@@ -78,7 +78,7 @@ for (rep in reps) {
   # =========== #
   
   # efficiency orientation
-  orientation <- "output"
+  orientation <- "input"
   
   # metrics for model evaluation
   MySummary <- function (data, lev = NULL, model = NULL) {
