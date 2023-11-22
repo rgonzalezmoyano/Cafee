@@ -78,7 +78,7 @@ for (rep in reps) {
   # =========== #
   
   # efficiency orientation
-  orientation <- "input"
+  orientation <- "output"
   
   # metrics for model evaluation
   MySummary <- function (data, lev = NULL, model = NULL) {
@@ -198,7 +198,6 @@ for (rep in reps) {
   # ===
   # Crear data.frame
   # ===
-  
   assign(paste0("df_cobb_douglas_XnY1_", N, "_", rep), data)
   
 }
