@@ -13,6 +13,7 @@
 #'
 #' @importFrom caret trainControl train createDataPartition defaultSummary prSummary
 #' @importFrom dplyr select_if %>% arrange top_n sample_n
+#' @importFrom Benchmarking dea.boot
 #'
 #' @return A \code{"cafee"} object.
 #'
@@ -38,9 +39,29 @@ efficiency_estimation <- function (
   nX <- length(x)
   nY <- length(y)
   
+  # compute DEA scores through bootstrapping
+  # bootstrapping_dea <- dea.boot (
+  #   as.matrix(data[, x]), 
+  #   as.matrix(data[, y]), 
+  #   NREP = 200
+  # )
+  # 
+  # new_inp <- data[, x] * bootstrapping_dea[["eff.bc"]]
+  # 
+  # # no overfitted data
+  # no_data <- as.data.frame (
+  #   matrix (
+  #     c(new_inp, data[, y]), 
+  #     nrow = nrow(data),
+  #     ncol = length(x) + length(y)
+  #     )
+  # )
+  # 
+  # colnames(no_data) <- colnames(data)
+  
   # compute DEA scores through an additive model
   add_scores <- compute_scores_additive (
-    data = data, 
+    data = no_data, 
     x = x, 
     y = y
     )
