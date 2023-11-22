@@ -8,7 +8,7 @@ set.seed(314)
 data <- reffcy (
   DGP = "add_scenario_XnY1",
   parms = list (
-    N = 10,
+    N = 100,
     scenario = "A"
   )
 )
