@@ -5,7 +5,8 @@
 #' @param data A \code{data.frame} or \code{matrix} containing the variables in the model.
 #' @param x Column indexes of input variables in \code{data}.
 #' @param y Column indexes of output variables in \code{data}.
-#' @param orientation A \code{string}, equal to \code{"input"} (input-oriented) or \code{"output} (output-oriented)
+#' @param orientation A \code{string}, equal to \code{"input"} (input-oriented) or \code{"output} (output-oriented).
+#' @param target_method Methodology for labeling the data.
 #' @param trControl Parameters for controlling the training process (from the \code{'caret'} package).
 #' @param methods A \code{list} of selected machine learning models and their hyperparameters.
 #' @param metric A \code{string} specifying the summary metric for classification to select the optimal model. Default includes \code{"Balanced_accuracy"} due to (normally) unbalanced data.
@@ -20,7 +21,7 @@
 #' @export
 
 efficiency_estimation <- function (
-    data, x, y, orientation,
+    data, x, y, orientation, target_method,
     trControl, methods, metric, hold_out
     ) {
 
@@ -39,44 +40,66 @@ efficiency_estimation <- function (
   nX <- length(x)
   nY <- length(y)
   
-  # compute DEA scores through bootstrapping
-  # bootstrapping_dea <- dea.boot (
-  #   as.matrix(data[, x]), 
-  #   as.matrix(data[, y]), 
-  #   NREP = 200
-  # )
-  # 
-  # new_inp <- data[, x] * bootstrapping_dea[["eff.bc"]]
-  # 
-  # # no overfitted data
-  # no_data <- as.data.frame (
-  #   matrix (
-  #     c(new_inp, data[, y]), 
-  #     nrow = nrow(data),
-  #     ncol = length(x) + length(y)
-  #     )
-  # )
-  # 
-  # colnames(no_data) <- colnames(data)
-  
-  # compute DEA scores through an additive model
-  add_scores <- compute_scores_additive (
-    data = no_data, 
-    x = x, 
-    y = y
+  if (target_method == "bootstrapping_dea") {
+    
+    # ========================== #
+    # Label by bootstrapping_dea #
+    # ========================== #
+    
+    # 1 compute DEA scores through bootstrapping
+    bootstrapping_dea <- dea.boot (
+      X = as.matrix(data[, x]),
+      Y = as.matrix(data[, y]),
+      NREP = 200,
+      ORIENTATION = "out",
+      alpha = 0.01
     )
-  
-  # determine efficient and inefficient DMUs
-  class_efficiency <- ifelse(add_scores[, 1] <= 0.0001, 1, 0)
-  
-  data <- cbind(data, class_efficiency) %>% as.data.frame()
-  data$class_efficiency <- factor(data$class_efficiency)
-  data$class_efficiency <- factor (
-    data$class_efficiency, 
-    levels = rev(levels(data$class_efficiency))
-  )
-  
-  levels(data$class_efficiency) <- c("efficient", "not_efficient")
+    
+    # 2 confidence interval bootstrapping_dea
+    conf_int <- bootstrapping_dea[["conf.int"]]
+    
+    data <- as.data.frame(data)
+    # 3 labeling as not efficient
+    data$class_efficiency <- "not_efficient"
+    
+    # labeling as efficient
+    data_opt <- as.data.frame(cbind(data[, x], bootstrapping_dea[["eff.bc"]] * data[, y]))
+    data_opt$class_efficiency <- "efficient"
+    names(data_opt) <- names(data)
+    
+    # join data
+    data <- rbind(data, data_opt)
+    data$class_efficiency <- as.factor(data$class_efficiency)
+    
+    # class_efficiency as factor
+    levels(data$class_efficiency) <- c("efficient", "not_efficient")
+    
+  } else if (label_by == "additive") {
+    
+    # ============================ #
+    # Label by additive modelo DEA #
+    # ============================ #
+    
+    # compute DEA scores through an additive model
+     add_scores <- compute_scores_additive (
+       data = data,
+       x = x,
+       y = y
+     )
+     
+    # determine efficient and inefficient DMUs
+    class_efficiency <- ifelse(add_scores[, 1] <= 0.0001, 1, 0)
+
+    data <- cbind(data, class_efficiency) %>% as.data.frame()
+    data$class_efficiency <- factor(data$class_efficiency)
+    data$class_efficiency <- factor (
+      data$class_efficiency,
+      levels = rev(levels(data$class_efficiency))
+    )
+
+    levels(data$class_efficiency) <- c("efficient", "not_efficient")
+    
+  }
   
   # save a copy of the original data
   eval_data <- data
@@ -84,22 +107,23 @@ efficiency_estimation <- function (
   # observed proportion of efficient and inefficient DMUs.
   obs_prop <- prop.table(table(data$class_efficiency))
 
-  # check presence of imbalanced data
-  if (max(obs_prop[1], obs_prop[2]) > 0.50 | nrow(data) < 150) {
-    data <- balance_data (
-      data = data, 
-      x = x, 
-      y = y
-    )
-  }
+  ##### Importante descomentar ETIQUETEDO NORMAL
+  # # check presence of imbalanced data
+  # if (max(obs_prop[1], obs_prop[2]) > 0.50 | nrow(data) < 150) {
+  #   data <- balance_data (
+  #     data = data, 
+  #     x = x, 
+  #     y = y
+  #   )
+  # }
 
   # Create train and validation data
   valid_index <- createDataPartition (
     data$class_efficiency,
     p = hold_out,
     list = FALSE
-    )
-
+  )
+  
   valid_data <- data[valid_index, ]
   train_data <- data[- valid_index, ]
   
@@ -163,7 +187,7 @@ efficiency_estimation <- function (
     
     y_obs <- valid_data$class_efficiency
     y_hat <- predict(best_ml_model, valid_data)
-    
+
     #create confusion matrix and calculate metrics related to confusion matrix
     confusion_matrix[[i]] <- confusionMatrix (
       data = y_hat,
@@ -204,14 +228,14 @@ efficiency_estimation <- function (
   # avoid messages for some methods
   verb_methods <- c("gbm", "svmPoly")
   
-  if (names(methods[i]) %in% verb_methods) {
+  if (names(methods[best_model_index]) %in% verb_methods) {
     final_model <- train (
       form = class_efficiency ~.,
       data = data,
       method = row.names(selected_model),
       tuneGrid = parms_vals[[best_model_index]],
       verbose = FALSE,
-      trControl = trainControl(classProbs = TRUE)
+      trControl = trainControl(method = "none", classProbs = TRUE)
     )
   } else {
     final_model <- train (
@@ -219,7 +243,7 @@ efficiency_estimation <- function (
       data = data,
       method = row.names(selected_model),
       tuneGrid = parms_vals[[best_model_index]],
-      trControl = trainControl(classProbs = TRUE)
+      trControl = trainControl(method = "none", classProbs = TRUE)
     )
   }
 

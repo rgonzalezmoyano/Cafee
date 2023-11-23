@@ -8,7 +8,7 @@ set.seed(314)
 data <- reffcy (
   DGP = "add_scenario_XnY1",
   parms = list (
-    N = 100,
+    N = 50,
     scenario = "A"
   )
 )
@@ -53,6 +53,7 @@ methods <- list (
 )
 
 metric = "F1"
+target_method <- "bootstrapping_dea"
 
 devtools::load_all()
 
@@ -62,9 +63,10 @@ final_model <- efficiency_estimation (
   x = x,
   y = y,
   orientation = orientation,
+  target_method = target_method,
   trControl = trControl,
   method = methods,
-  metric = "F1",
+  metric = metric,
   hold_out = hold_out
 )
 

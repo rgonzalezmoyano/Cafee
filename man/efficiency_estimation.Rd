@@ -9,6 +9,7 @@ efficiency_estimation(
   x,
   y,
   orientation,
+  target_method,
   trControl,
   methods,
   metric,
@@ -22,7 +23,9 @@ efficiency_estimation(
 
 \item{y}{Column indexes of output variables in \code{data}.}
 
-\item{orientation}{A \code{string}, equal to \code{"input"} (input-oriented) or \code{"output} (output-oriented)}
+\item{orientation}{A \code{string}, equal to \code{"input"} (input-oriented) or \code{"output} (output-oriented).}
+
+\item{target_method}{Methodology for labeling the data.}
 
 \item{trControl}{Parameters for controlling the training process (from the \code{'caret'} package).}
 

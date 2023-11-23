@@ -88,20 +88,22 @@ methods <- list (
 # https://topepo.github.io/caret/train-models-by-tag.html
 
 metric = "F1"
+target_method <- "bootstrapping_dea"
 
 # Result
-modelo <- efficiency_estimation (
+final_model <- efficiency_estimation (
   data = data,
   x = x,
   y = y,
   orientation = orientation,
   trControl = trControl,
   method = methods,
-  metric = "F1",
+  target_method = target_method,
+  metric = metric,
   hold_out = hold_out
-  )
+)
 
-data$prob <- round(predict(modelo, data[, 1:2], type = "prob")$efficient, 2)
+data$prob <- round(predict(final_model, data[, 1:2], type = "prob")$efficient, 2)
 
 scores <- compute_scores (
   data = data,
@@ -126,6 +128,14 @@ ggplot(data = data_frame_13_11) +
   geom_point(aes(x = BCC, y = diferencias))
 
 cor(data_frame_13_11$diferencias, data_frame_13_11$BCC)
+
+
+# ============= #
+# Generate plot #
+# ============= #
+
+ggplot(data = data) +
+  geom_point(aes(x = x1, y = y))
 
 
 # ============= #
@@ -186,7 +196,6 @@ ggplot(data = data) +
   geom_point(aes(x = x1, y = y)) +
   geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.75, alpha = 0.8) +
   scale_color_manual(values = c("not_efficient" = "pink", "efficient" = "lightgreen")) +
-  geom_point(data = filter_ggplot_data, aes(x = x1, y = y), colour = "orange", size = 1.5) +
   theme_bw() +
   theme(legend.position = "none")
 
