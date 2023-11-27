@@ -192,6 +192,7 @@ for (std_dev in noise) {
     # https://topepo.github.io/caret/train-models-by-tag.html
     
     metric = "F1"
+    target_method <- "bootstrapping_dea"
     
     # Result
     final_model <- efficiency_estimation (
@@ -199,9 +200,10 @@ for (std_dev in noise) {
       x = x,
       y = y,
       orientation = orientation,
+      target_method = target_method,
       trControl = trControl,
       method = methods,
-      metric = "F1",
+      metric = metric,
       hold_out = hold_out
     )
     
