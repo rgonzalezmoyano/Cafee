@@ -73,7 +73,7 @@ efficiency_estimation <- function (
     
     # class_efficiency as factor
     levels(data$class_efficiency) <- c("efficient", "not_efficient")
-    
+
   } else if (label_by == "additive") {
     
     # ============================ #
@@ -98,7 +98,6 @@ efficiency_estimation <- function (
     )
 
     levels(data$class_efficiency) <- c("efficient", "not_efficient")
-    
   }
   
   # save a copy of the original data
@@ -107,15 +106,14 @@ efficiency_estimation <- function (
   # observed proportion of efficient and inefficient DMUs.
   obs_prop <- prop.table(table(data$class_efficiency))
 
-  ##### Importante descomentar ETIQUETEDO NORMAL
-  # # check presence of imbalanced data
-  # if (max(obs_prop[1], obs_prop[2]) > 0.50 | nrow(data) < 150) {
-  #   data <- balance_data (
-  #     data = data, 
-  #     x = x, 
-  #     y = y
-  #   )
-  # }
+  # check presence of imbalanced data
+  if (max(obs_prop[1], obs_prop[2]) > 0.50 | nrow(data) < 300) {
+    data <- balance_data (
+      data = data,
+      x = x,
+      y = y
+    )
+  }
 
   # Create train and validation data
   valid_index <- createDataPartition (

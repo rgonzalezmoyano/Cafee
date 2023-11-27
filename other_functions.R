@@ -1,6 +1,6 @@
-# Otras funciones
-
-# create grid of data
+# ============== #
+#  grid of data  #
+# ============== #
 grid <- matrix(ncol = nX + nY)
 
 for (v in 1:nX) {
@@ -20,3 +20,5 @@ for (v in 1:nX) {
 
 colnames(grid) <- names(data)[1:(ncol(data) - 1)]
 grid <- rbind(grid[- 1, ], data[, - ncol(data)])
+
+

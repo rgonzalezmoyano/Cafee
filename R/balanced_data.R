@@ -25,10 +25,10 @@ balance_data <- function (
   # enough sample size #
   # ================== #
   
-  if (N < 100) {
+  if (N < 300) {
     
     # create new "n" observations
-    grow_n <- 100 - N
+    grow_n <- 300 - N
     
     # create new inefficient observations
     ineff_dmu <- create_dmu (
@@ -71,69 +71,70 @@ balance_data <- function (
   
   colnames(sfd_data) <- colnames(data)
   
+  # add to data
   data <- rbind(data, sfd_data)
-
-  # =================== #
-  # balance proportions #
-  # =================== #
-
-  # proportions
-  props <- prop.table(table(data$class_efficiency))
   
-  # proportion of dmus efficient
-  prop_eff <- props["efficient"]
+  # # =================== #
+  # # balance proportions #
+  # # =================== #
+  # 
+  # # proportions
+  # props <- prop.table(table(data$class_efficiency))
+  # 
+  # # proportion of dmus efficient
+  # prop_eff <- props["efficient"]
+  # 
+  # # proportion of dmus not efficient
+  # prop_ineff <- props["not_efficient"]
+  # 
+  # # number of dmus efficient
+  # n_eff <- prop_eff * nrow(data)
+  # 
+  # # number of dmus not efficient
+  # n_ineff <- prop_ineff * nrow(data)
+  # 
+  # if (prop_eff > prop_ineff) {
+  #   
+  #   # ======================= #
+  #   # create inefficient DMUs #
+  #   # ======================= #
+  #   
+  #   # number of dmus to create
+  #   new_dmus <- ceiling(((- 0.50 * n_ineff) + (0.50 * n_eff)) / 0.50)
+  #   
+  #   # create new inefficient observations
+  #   ineff_dmu <- create_dmu (
+  #     data = data,
+  #     x = x,
+  #     y = y,
+  #     N = new_dmus,
+  #     type = "inefficient"
+  #   )
+  #   
+  #   data <- rbind(data, ineff_dmu)
+  #   
+  # } else {
+  #   
+  #   # ===================== #
+  #   # create efficient DMUs #
+  #   # ===================== #
+  #   
+  #   # number of dmus to create
+  #   new_dmus <- ceiling(((- 0.50 * n_eff) + (0.50 * n_ineff)) / 0.50)
+  #   
+  #   # create new efficient observations
+  #   eff_dmu <- create_dmu (
+  #     data = data,
+  #     x = x,
+  #     y = y,
+  #     N = new_dmus,
+  #     type = "efficient"
+  #   )
+  #   
+  #   data <- rbind(data, eff_dmu)
+  #   
+  # }
   
-  # proportion of dmus not efficient
-  prop_ineff <- props["not_efficient"]
-  
-  # number of dmus efficient
-  n_eff <- prop_eff * nrow(data)
-  
-  # number of dmus not efficient
-  n_ineff <- prop_ineff * nrow(data)
-  
-  if (prop_eff > prop_ineff) {
-    
-    # ======================= #
-    # create inefficient DMUs #
-    # ======================= #
-    
-    # number of dmus to create
-    new_dmus <- ceiling(((- 0.50 * n_ineff) + (0.50 * n_eff)) / 0.50)
-    
-    # create new inefficient observations
-    ineff_dmu <- create_dmu (
-      data = data,
-      x = x,
-      y = y,
-      N = new_dmus,
-      type = "inefficient"
-    )
-    
-    data <- rbind(data, ineff_dmu)
-
-  } else {
-    
-    # ===================== #
-    # create efficient DMUs #
-    # ===================== #
-    
-    # number of dmus to create
-    new_dmus <- ceiling(((- 0.50 * n_eff) + (0.50 * n_ineff)) / 0.50)
-    
-    # create new efficient observations
-    eff_dmu <- create_dmu (
-      data = data,
-      x = x,
-      y = y,
-      N = new_dmus,
-      type = "efficient"
-    )
-    
-    data <- rbind(data, eff_dmu)
-    
-  }
-
   return(data)
 }
 
@@ -173,6 +174,7 @@ create_dmu <- function (
     } else {
       replace <- FALSE
     }
+    
     idx_dmu_change <- sample(1:nrow(data), size = new_dmus, replace = replace)
     
     # create a new matrix of data
@@ -273,8 +275,8 @@ create_dmu <- function (
     idx_inp <- setdiff(rows_fst_dec, idx_eff)
     
     # select the indexes to output projection
-    size = min(length(setdiff(c(1:nrow(data)), c(idx_inp, idx_eff))), new_dmus - length(idx_inp))
-    
+    size <- min(length(setdiff(c(1:nrow(data)), c(idx_inp, idx_eff))), new_dmus - length(idx_inp))
+
     idx_out <- sample(setdiff(c(1:nrow(data)), c(idx_inp, idx_eff)), size = size)
     
     # project inefficient data 
