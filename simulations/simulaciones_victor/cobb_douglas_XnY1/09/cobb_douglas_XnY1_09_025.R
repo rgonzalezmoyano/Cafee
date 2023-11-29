@@ -353,6 +353,7 @@ for (std_dev in noise) {
     
   }
   
+  # to character to save name
   if (N == 25) {
     N_char <- "025"
   } else if (N == 50) {
@@ -377,28 +378,36 @@ for (std_dev in noise) {
   
   if (std_dev == 0) {
     noise_char <- "0.000"
-  } else if (std_dev == 0.005) {
-    noise_char <- "0.005"
-  } else if (std_dev == 0.01) {
-    noise_char <- "0.010"
-  } else if (std_dev == 0.03) {
-    noise_char <- "0.030"
+  }  else if (std_dev == 0.02) {
+    noise_char <- "0.020"
+  } else if (std_dev == 0.05) {
+    noise_char <- "0.050"
   } else {
-    noise_char <- as.character(noise)
+    noise_char <- as.character(std_dev)
   }
   
-  directory <- getwd()
-  
-  # Nombre de la carpeta en la que deseas guardar el objeto
-  folder <- paste("/simulations/", DGP, sep = "")
-  
-  new_directory <- paste(directory, folder, sep ="")
-  
-  setwd(new_directory)
+  # ====== #
+  # server #
+  # ====== #
   
   file <- paste(DGP, "_", scenario_char, "_", N_char, "_", noise_char, ".RData", sep = "")
   save(simulaciones, file = file)
   
-  setwd(directory)
+  # ========== #
+  # local save #
+  # ========== #
   
+  # directory <- getwd()
+  # 
+  # # Nombre de la carpeta en la que deseas guardar el objeto
+  # folder <- paste("/simulations/", DGP, sep = "")
+  # 
+  # new_directory <- paste(directory, folder, sep ="")
+  # 
+  # setwd(new_directory)
+  # 
+  # file <- paste(DGP, "_", scenario_char, "_", N_char, "_", noise_char, ".RData", sep = "")
+  # save(simulaciones, file = file)
+  # 
+  # setwd(directory)
 }
