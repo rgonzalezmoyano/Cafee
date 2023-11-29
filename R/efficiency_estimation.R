@@ -74,7 +74,7 @@ efficiency_estimation <- function (
     # class_efficiency as factor
     levels(data$class_efficiency) <- c("efficient", "not_efficient")
 
-  } else if (label_by == "additive") {
+  } else if (target_method == "additive") {
     
     # ============================ #
     # Label by additive modelo DEA #
@@ -107,7 +107,7 @@ efficiency_estimation <- function (
   obs_prop <- prop.table(table(data$class_efficiency))
 
   # check presence of imbalanced data
-  if (max(obs_prop[1], obs_prop[2]) > 0.50 | nrow(data) < 300) {
+  if (max(obs_prop[1], obs_prop[2]) > 0.50 | nrow(data) < 150) {
     data <- balance_data (
       data = data,
       x = x,

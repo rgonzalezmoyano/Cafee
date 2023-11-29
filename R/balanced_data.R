@@ -25,10 +25,10 @@ balance_data <- function (
   # enough sample size #
   # ================== #
   
-  if (N < 300) {
+  if (N < 150) {
     
     # create new "n" observations
-    grow_n <- 300 - N
+    grow_n <- 150 - N
     
     # create new inefficient observations
     ineff_dmu <- create_dmu (
