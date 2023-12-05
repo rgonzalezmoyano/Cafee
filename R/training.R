@@ -6,7 +6,8 @@
 #' @param trControl Parameters for controlling the training process (from the \code{'caret'} package).
 #' @param methods A \code{list} of selected machine learning models and their hyperparameters.
 #'
-#' @importFrom caret train twoClassSummary
+#' @importFrom caret train twoClassSummary 
+#' @importFrom magrittr arrange 
 #'
 #' @return It returns a \code{list} with the chosen model.
 

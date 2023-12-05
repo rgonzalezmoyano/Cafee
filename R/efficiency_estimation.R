@@ -90,7 +90,10 @@ efficiency_estimation <- function (
     # determine efficient and inefficient DMUs
     class_efficiency <- ifelse(add_scores[, 1] <= 0.0001, 1, 0)
 
-    data <- cbind(data, class_efficiency) %>% as.data.frame()
+    data <- as.data.frame (
+      cbind(data, class_efficiency)
+    )
+    
     data$class_efficiency <- factor(data$class_efficiency)
     data$class_efficiency <- factor (
       data$class_efficiency,

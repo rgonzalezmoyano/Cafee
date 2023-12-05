@@ -14,10 +14,13 @@ source("/home/PI/ricardo.gonzalezm/cafee/R/training.R")
 # libraries
 library(caret)
 library(Benchmarking)
+library(magrittr)
+library(dplyr)
 
 # ===
 # parameters
 # ===
+
 DGP <- "cobb_douglas_XnY1"
 N <- 25
 noise <- c(0, 0.02, 0.05)

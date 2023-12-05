@@ -14,6 +14,8 @@ source("/home/PI/ricardo.gonzalezm/cafee/R/training.R")
 # libraries
 library(caret)
 library(Benchmarking)
+library(magrittr)
+library(dplyr)
 
 # ===
 # parameters

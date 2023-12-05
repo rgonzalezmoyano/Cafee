@@ -79,7 +79,6 @@ reffcy <- function (
 #' @param N Sample size.
 #' @param nX Number of inputs. Possible values: \code{1}, \code{3}, \code{6}, \code{9}, \code{12} and \code{15}.
 #'
-#' @importFrom dplyr %>%
 #' @importFrom stats runif rnorm
 #'
 #' @return \code{data.frame} with the simulated data: nX inputs, 1 output (y) and the theoretical frontier (yD).
@@ -96,11 +95,13 @@ cobb_douglas_XnY1 <- function (
 
   colnames <- c(paste("x", 1:nX, sep = ""), "y")
 
-  data <- matrix(
-    ncol = length(colnames),
-    nrow = N,
-    dimnames = list(NULL, colnames)
-  ) %>% as.data.frame()
+  data <- as.data.frame (
+    matrix (
+      ncol = length(colnames),
+      nrow = N,
+      dimnames = list(NULL, colnames)
+      )
+    )
 
   # Input generation
   for (x in 1:nX){
