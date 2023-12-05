@@ -59,11 +59,12 @@ efficiency_estimation <- function (
     conf_int <- bootstrapping_dea[["conf.int"]]
     
     data <- as.data.frame(data)
+    
     # 3 labeling as not efficient
     data$class_efficiency <- "not_efficient"
     
     # labeling as efficient
-    data_opt <- as.data.frame(cbind(data[, x], bootstrapping_dea[["eff.bc"]] * data[, y]))
+    data_opt <- as.data.frame(cbind(data[, x], y = bootstrapping_dea[["eff.bc"]] * data[, y]))
     data_opt$class_efficiency <- "efficient"
     names(data_opt) <- names(data)
     

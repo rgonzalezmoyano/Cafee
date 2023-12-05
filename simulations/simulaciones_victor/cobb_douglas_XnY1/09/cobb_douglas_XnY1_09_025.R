@@ -352,7 +352,7 @@ for (std_dev in noise) {
     
     # round results
     simulaciones[, 7:ncol(simulaciones)] <- round(simulaciones[, 7:ncol(simulaciones)], 3)
-    
+  
   }
   
   # to character to save name
