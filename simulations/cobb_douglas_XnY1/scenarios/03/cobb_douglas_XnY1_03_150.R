@@ -11,7 +11,10 @@ source("/home/PI/ricardo.gonzalezm/cafee/R/training.R")
 # cobb_douglas_XnY1 #
 # ================= #
 
+# ===
 # libraries
+# ===
+
 library(caret)
 library(Benchmarking)
 library(magrittr)
@@ -20,6 +23,7 @@ library(dplyr)
 # ===
 # parameters
 # ===
+
 DGP <- "cobb_douglas_XnY1"
 N <- 150
 noise <- c(0, 0.02, 0.05)
@@ -60,7 +64,8 @@ simulaciones <- data.frame (
   
 )
 
-# x and y index
+# x and y indexes
+
 if (nX == 1) {
   x <- 1
   y <- 2
@@ -87,12 +92,16 @@ if (nX == 1) {
 
 # number of experiment
 simulaciones$id <- 1:repl
+
 # data generating process
 simulaciones$DGP <- DGP
+
 # type of scenario
 simulaciones$scenario <- nX
+
 # sample size
 simulaciones$N <- N
+
 # technique
 simulaciones$technique <- "svmPoly"
 
@@ -107,71 +116,85 @@ for (std_dev in noise) {
   
   for (i in 1:repl) {
     
-    # ===
-    # Generate data
-    # ===
-    
-    data <- reffcy (
-      DGP = "cobb_douglas_XnY1",
-      parms = list (
-        N = N,
-        nX = nX
+    repeat {
+      
+      # ===
+      # Generate data
+      # ===
+      
+      data <- reffcy (
+        DGP = "cobb_douglas_XnY1",
+        parms = list (
+          N = N,
+          nX = nX
+        )
       )
-    )
-    
-    # compute random error
-    random_error <- rnorm(n = N, mean = 0, sd = std_dev)
-    
-    # compute new vector of outputs
-    data[, y] <- data[, y] * exp(random_error)
-    
-    scores <- data.frame(
-      score_yD = rep(NA, N),
-      score_DEA = rep(NA, N),
-      score_BDEA = rep(NA, N),
-      score_cafee_DEA = rep(NA, N),
-      score_cafee_BDEA = rep(NA, N)
-    )
-    
-    # ======== #
-    # score yD #
-    # ======== #
-    
-    scores$score_yD <- data[, "yD"] / data[, y]
-    
-    # ========= #
-    # score DEA #
-    # ========= #
-    
-    tech_xmat <- as.matrix(data[, x])
-    tech_ymat <- as.matrix(data[, y])
-    eval_xmat <- as.matrix(data[, x])
-    eval_ymat <- as.matrix(data[, y])
-    
-    bcc_scores <- rad_out (
-      tech_xmat = tech_xmat,
-      tech_ymat = tech_ymat,
-      eval_xmat = eval_xmat,
-      eval_ymat = eval_ymat,
-      convexity = TRUE,
-      returns = "variable"
-    )
-    
-    scores$score_DEA <- as.vector(bcc_scores)
-    
-    # =========================== #
-    # score BD (Bootstraping DEA) #
-    # =========================== #
-    
-    bootstrapping_dea <- dea.boot (
-      tech_xmat, 
-      tech_ymat, 
-      NREP = 200,
-      ORIENTATION = "out",
-      alpha = 0.01
-    )[["eff.bc"]]
-    
-    scores$score_BDEA <- as.vector(bootstrapping_dea)
+      
+      # compute random error
+      random_error <- rnorm(n = N, mean = 0, sd = std_dev)
+      
+      # compute new vector of outputs
+      data[, y] <- data[, y] * exp(random_error)
+      
+      scores <- data.frame (
+        score_yD = rep(NA, N),
+        score_DEA = rep(NA, N),
+        score_BDEA = rep(NA, N),
+        score_cafee_DEA = rep(NA, N),
+        score_cafee_BDEA = rep(NA, N)
+      )
+      
+      # ======== #
+      # score yD #
+      # ======== #
+      
+      scores$score_yD <- data[, "yD"] / data[, y]
+      
+      # ========= #
+      # score DEA #
+      # ========= #
+      
+      tech_xmat <- as.matrix(data[, x])
+      tech_ymat <- as.matrix(data[, y])
+      eval_xmat <- as.matrix(data[, x])
+      eval_ymat <- as.matrix(data[, y])
+      
+      bcc_scores <- rad_out (
+        tech_xmat = tech_xmat,
+        tech_ymat = tech_ymat,
+        eval_xmat = eval_xmat,
+        eval_ymat = eval_ymat,
+        convexity = TRUE,
+        returns = "variable"
+      )
+      
+      scores$score_DEA <- as.vector(bcc_scores)
+      
+      # =========================== #
+      # score BD (Bootstraping DEA) #
+      # =========================== #
+      
+      try_bdea <- tryCatch (
+        {
+          dea.boot (
+            tech_xmat, 
+            tech_ymat, 
+            NREP = 200,
+            ORIENTATION = "out",
+            alpha = 0.01
+          )[["eff.bc"]]
+        }, 
+        error = function(e) NULL
+      )
+      
+      if (!is.null(try_bdea)) {
+        
+        bootstrapping_dea <- try_bdea
+        scores$score_BDEA <- as.vector(bootstrapping_dea)
+        
+        break
+      }
+    }
     
     # =========== #
     # score cafee #
@@ -243,6 +266,7 @@ for (std_dev in noise) {
       
       if (target_method == "additive") {
         scores["score_cafee_DEA"] <- as.vector(scores_cafee)
+        
       } else if (target_method == "bootstrapping_dea") {
         scores["score_cafee_BDEA"] <- as.vector(scores_cafee)
       }
@@ -254,52 +278,73 @@ for (std_dev in noise) {
     # ============ #
     
     # corr yD vs score_DEA
+    
     simulaciones$corr_yD_DEA[i] <- as.numeric (
-      cor(scores$score_yD, scores$score_DEA, use = "everything", method = "pearson")
+      cor (
+        scores$score_yD, 
+        scores$score_DEA, 
+        use = "everything", 
+        method = "pearson"
+      )
     )
     
     # corr yD vs score_BDEA
+    
     simulaciones$corr_yD_BDEA[i] <- as.numeric (
-      cor(scores$score_yD, scores$score_BDEA,use = "everything", method = "pearson")
+      cor (
+        scores$score_yD, 
+        scores$score_BDEA,
+        use = "everything", 
+        method = "pearson"
+      )
     )
     
+    browser()
+    
     # corr yD vs score_cafee_DEA
+    
     if (any(is.na(scores$score_cafee_DEA)) == FALSE) {
       
-      # no NA case
-      filter_data <- scores
+      # there are not NA cases
+      filtered_data <- scores
       
     } else {
       
-      # there are NA
+      # there are NA cases
       idx_NA_cafee_DEA <- which(is.na(scores$score_cafee_DEA))
-      
-      filter_data <- scores[-idx_NA_cafee_DEA, ]
+      filtered_data <- scores[- idx_NA_cafee_DEA, ]
       
     }
     
     simulaciones$corr_yD_cafee_DEA[i] <- as.numeric (
-      cor(filter_data$score_yD, filter_data$score_cafee_DEA, use = "everything", method = "pearson")
+      cor (
+        filtered_data$score_yD, 
+        filtered_data$score_cafee_DEA, 
+        use = "everything", 
+        method = "pearson")
     )
     
     # corr yD vs score_cafee_BDEA
-    # index of NA if there are
+    
     if (any(is.na(scores$score_cafee_BDEA)) == FALSE) {
       
-      # no NA case
-      filter_data <- scores
+      # there are not NA cases
+      filtered_data <- scores
       
     } else {
       
-      # there are NA
+      # there are NA cases
       idx_NA_cafee_BDEA <- which(is.na(scores$score_cafee_BDEA))
-      
-      filter_data <- scores[-idx_NA_cafee_BDEA, ]
+      filtered_data <- scores[- idx_NA_cafee_BDEA, ]
       
     }
     
     simulaciones$corr_yD_cafee_BDEA[i] <- as.numeric (
-      cor(filter_data$score_yD, filter_data$score_cafee_BDEA, use = "everything", method = "pearson")
+      cor (
+        filtered_data$score_yD, 
+        filtered_data$score_cafee_BDEA, 
+        use = "everything", 
+        method = "pearson")
     )
     
     # ============ #
@@ -319,15 +364,16 @@ for (std_dev in noise) {
     simulaciones$bias_BDEA[i] <- round(mean(diff_error), 3)
     
     # cafee_DEA measures
+    
     if (any(is.na(scores$score_cafee_DEA)) == FALSE) {
       
-      # no NA case
+      # there are not NA cases
       diff_error <- scores[, "score_yD"] - scores[, "score_cafee_DEA"]
       
     } else {
       
-      # there are NA
-      diff_error <- scores[-idx_NA_cafee_DEA, "score_yD"] - scores[-idx_NA_cafee_DEA, "score_cafee_DEA"]
+      # there are NA cases
+      diff_error <- scores[- idx_NA_cafee_DEA, "score_yD"] - scores[- idx_NA_cafee_DEA, "score_cafee_DEA"]
       
     }
     
@@ -335,15 +381,16 @@ for (std_dev in noise) {
     simulaciones$bias_cafee_DEA[i] <- round(mean(diff_error), 3)
     
     # cafee_BDEA measures
+    
     if (any(is.na(scores$score_cafee_BDEA)) == FALSE) {
       
-      # no NA case
+      # there are not NA cases
       diff_error <- scores[, "score_yD"] - scores[, "score_cafee_BDEA"]
       
     } else {
       
-      # there are NA
-      diff_error <- scores[-idx_NA_cafee_BDEA, "score_yD"] - scores[-idx_NA_cafee_BDEA, "score_cafee_BDEA"]
+      # there are NA cases
+      diff_error <- scores[- idx_NA_cafee_BDEA, "score_yD"] - scores[- idx_NA_cafee_BDEA, "score_cafee_BDEA"]
       
     }
     
@@ -352,9 +399,9 @@ for (std_dev in noise) {
     
     # round results
     simulaciones[, 7:ncol(simulaciones)] <- round(simulaciones[, 7:ncol(simulaciones)], 3)
-    
   }
   
+  # to character to save name
   if (N == 25) {
     N_char <- "025"
   } else if (N == 50) {
@@ -379,28 +426,36 @@ for (std_dev in noise) {
   
   if (std_dev == 0) {
     noise_char <- "0.000"
-  } else if (std_dev == 0.005) {
-    noise_char <- "0.005"
-  } else if (std_dev == 0.01) {
-    noise_char <- "0.010"
-  } else if (std_dev == 0.03) {
-    noise_char <- "0.030"
+  }  else if (std_dev == 0.02) {
+    noise_char <- "0.020"
+  } else if (std_dev == 0.05) {
+    noise_char <- "0.050"
   } else {
-    noise_char <- as.character(noise)
+    noise_char <- as.character(std_dev)
   }
   
-  directory <- getwd()
-  
-  # Nombre de la carpeta en la que deseas guardar el objeto
-  folder <- paste("/simulations/", DGP, sep = "")
-  
-  new_directory <- paste(directory, folder, sep ="")
-  
-  setwd(new_directory)
+  # ====== #
+  # server #
+  # ====== #
   
   file <- paste(DGP, "_", scenario_char, "_", N_char, "_", noise_char, ".RData", sep = "")
   save(simulaciones, file = file)
   
-  setwd(directory)
+  # ========== #
+  # local save #
+  # ========== #
   
+  # directory <- getwd()
+  # 
+  # # Nombre de la carpeta en la que deseas guardar el objeto
+  # folder <- paste("/simulations/", DGP, sep = "")
+  # 
+  # new_directory <- paste(directory, folder, sep ="")
+  # 
+  # setwd(new_directory)
+  # 
+  # file <- paste(DGP, "_", scenario_char, "_", N_char, "_", noise_char, ".RData", sep = "")
+  # save(simulaciones, file = file)
+  # 
+  # setwd(directory)
 }
