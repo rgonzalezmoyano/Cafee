@@ -244,31 +244,44 @@ for (std_dev in noise) {
     for (target_method in label_type) {
       
       # Result
-      final_model <- efficiency_estimation (
-        data = data,
-        x = x,
-        y = y,
-        orientation = orientation,
-        trControl = trControl,
-        method = methods,
-        target_method = target_method,
-        metric = "F1",
-        hold_out = hold_out
+      try_final_model <- tryCatch (
+        {
+          final_model <- efficiency_estimation (
+            data = data,
+            x = x,
+            y = y,
+            orientation = orientation,
+            trControl = trControl,
+            method = methods,
+            target_method = target_method,
+            metric = "F1",
+            hold_out = hold_out
+          )
+          
+          scores_cafee <- compute_scores (
+            data = data,
+            x = x,
+            y = y,
+            final_model = final_model,
+            orientation = orientation
+          )
+          
+          if (target_method == "additive") {
+            scores["score_cafee_DEA"] <- as.vector(scores_cafee)
+            
+          } else if (target_method == "bootstrapping_dea") {
+            scores["score_cafee_BDEA"] <- as.vector(scores_cafee)
+          }
+        },
+        error = function(e) NULL
       )
       
-      scores_cafee <- compute_scores (
-        data = data,
-        x = x,
-        y = y,
-        final_model = final_model,
-        orientation = orientation
-      )
-      
-      if (target_method == "additive") {
-        scores["score_cafee_DEA"] <- as.vector(scores_cafee)
+      if (is.null(try_final_model)) {
         
-      } else if (target_method == "bootstrapping_dea") {
-        scores["score_cafee_BDEA"] <- as.vector(scores_cafee)
+        file <- paste("Error_", i, ".RData", sep = "")
+        save(data, file = file)
+        
+        stop()
       }
       
     }
@@ -298,8 +311,6 @@ for (std_dev in noise) {
         method = "pearson"
       )
     )
-    
-    browser()
     
     # corr yD vs score_cafee_DEA
     
