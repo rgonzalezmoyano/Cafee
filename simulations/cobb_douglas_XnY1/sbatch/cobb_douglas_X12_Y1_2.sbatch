@@ -14,6 +14,6 @@ export OMP_NUM_THREADS=${SLURM_CPUS_ON_NODE}
 module load R/4.2.2
 cd /home/PI/ricardo.gonzalezm/cafee/nX_12
 
-Rscript cobb_douglas_XnY1_12_025.R
-#Rscript cobb_douglas_XnY1_12_050.R
+#Rscript cobb_douglas_XnY1_12_025.R
+Rscript cobb_douglas_XnY1_12_050.R
 #Rscript cobb_douglas_XnY1_12_150.R
