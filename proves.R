@@ -13,8 +13,8 @@ data <- reffcy (
   )
 )
 
-x <- 1
-y <- 2
+x <- 1:9
+y <- 10
 
 # data <- reffcy (
 #   DGP = "translog_X2Y2",
@@ -74,7 +74,7 @@ methods <- list (
   "svmPoly" = list(
     "degree" = c(1, 2, 3, 4, 5),
     "scale" = c(0.1, 1, 10),
-    "C" = c(0.1, 1, 10, 100)
+    "C" = c(0.1, 1, 10, 100, 1000)
   )
   # "rf" = list (
   #   mtry = c(1, 2)

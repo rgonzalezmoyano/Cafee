@@ -52,7 +52,8 @@ efficiency_estimation <- function (
       Y = as.matrix(data[, y]),
       NREP = 200,
       ORIENTATION = "out",
-      alpha = 0.01
+      alpha = 0.01,
+      CONTROL = list(scaling = c("curtisreid", "equilibrate"))
     )
     
     # 2 confidence interval bootstrapping dea
