@@ -277,10 +277,10 @@ for (std_dev in noise) {
       )
       
       if (is.null(try_final_model)) {
-        
-        file <- paste("Error_", i, ".RData", sep = "")
+
+        file <- paste("Error_", std_dev, "_", i, ".RData", sep = "")
         save(data, file = file)
-        
+
         stop()
       }
       
