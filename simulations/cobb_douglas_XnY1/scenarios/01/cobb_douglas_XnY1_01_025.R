@@ -227,7 +227,7 @@ for (std_dev in noise) {
       savePredictions = "all"
     )
     
-    hold_out <- 0.15
+    hold_out <- 0.10
     
     methods <- list (
       "svmPoly" = list(
@@ -319,7 +319,8 @@ for (std_dev in noise) {
         filtered_data$score_yD, 
         filtered_data$score_cafee_DEA, 
         use = "everything", 
-        method = "pearson")
+        method = "pearson"
+        )
     )
     
     # corr yD vs score_cafee_BDEA
@@ -342,7 +343,8 @@ for (std_dev in noise) {
         filtered_data$score_yD, 
         filtered_data$score_cafee_BDEA, 
         use = "everything", 
-        method = "pearson")
+        method = "pearson"
+        )
     )
     
     # ============ #
