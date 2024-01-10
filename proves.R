@@ -55,7 +55,7 @@ trControl <- trainControl (
   savePredictions = "all"
 )
 
-hold_out <- 0.15
+hold_out <- 0.10
 
 methods <- list (
   # "knn" = list (
