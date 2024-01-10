@@ -25,9 +25,9 @@ library(dplyr)
 # ===
 
 DGP <- "cobb_douglas_XnY1"
-N <- 50
+N <- 200
 noise <- c(0, 0.02, 0.05)
-nX <- 1
+nX <- 12
 
 # ===
 # Table

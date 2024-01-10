@@ -25,9 +25,9 @@ library(dplyr)
 # ===
 
 DGP <- "cobb_douglas_XnY1"
-N <- 50
+N <- 200
 noise <- c(0, 0.02, 0.05)
-nX <- 1
+nX <- 6
 
 # ===
 # Table
@@ -106,7 +106,7 @@ simulaciones$N <- N
 simulaciones$technique <- "svmPoly"
 
 # different types to label
-label_type <- c("additive") # "bootstrapping_dea"
+label_type <- c("additive") # , "bootstrapping_dea"
 
 set.seed(314)
 
@@ -227,7 +227,7 @@ for (std_dev in noise) {
       savePredictions = "all"
     )
     
-    hold_out <- 0.10
+    hold_out <- 0.15
     
     methods <- list (
       "svmPoly" = list(
@@ -292,9 +292,9 @@ for (std_dev in noise) {
     # 
     # simulaciones$corr_yD_BDEA[i] <- as.numeric (
     #   cor (
-    #     scores$score_yD, 
+    #     scores$score_yD,
     #     scores$score_BDEA,
-    #     use = "everything", 
+    #     use = "everything",
     #     method = "pearson"
     #   )
     # )
@@ -319,8 +319,7 @@ for (std_dev in noise) {
         filtered_data$score_yD, 
         filtered_data$score_cafee_DEA, 
         use = "everything", 
-        method = "pearson"
-        )
+        method = "pearson")
     )
     
     # # corr yD vs score_cafee_BDEA
@@ -343,8 +342,7 @@ for (std_dev in noise) {
     #     filtered_data$score_yD, 
     #     filtered_data$score_cafee_BDEA, 
     #     use = "everything", 
-    #     method = "pearson"
-    #     )
+    #     method = "pearson")
     # )
     
     # ============ #
@@ -380,8 +378,8 @@ for (std_dev in noise) {
     simulaciones$mse_cafee_DEA[i] <- round(mean(diff_error ^ 2), 3)
     simulaciones$bias_cafee_DEA[i] <- round(mean(diff_error), 3)
     
-    # # cafee_BDEA measures
-    # 
+    # cafee_BDEA measures
+    
     # if (any(is.na(scores$score_cafee_BDEA)) == FALSE) {
     #   
     #   # there are not NA cases

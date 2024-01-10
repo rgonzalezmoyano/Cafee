@@ -106,7 +106,7 @@ simulaciones$N <- N
 simulaciones$technique <- "svmPoly"
 
 # different types to label
-label_type <- c("additive", "bootstrapping_dea")
+label_type <- c("additive") # "bootstrapping_dea"
 
 set.seed(314)
 
@@ -227,7 +227,7 @@ for (std_dev in noise) {
       savePredictions = "all"
     )
     
-    hold_out <- 0.15
+    hold_out <- 0.10
     
     methods <- list (
       "svmPoly" = list(
@@ -244,44 +244,31 @@ for (std_dev in noise) {
     for (target_method in label_type) {
       
       # Result
-      try_final_model <- tryCatch (
-        {
-          final_model <- efficiency_estimation (
-            data = data,
-            x = x,
-            y = y,
-            orientation = orientation,
-            trControl = trControl,
-            method = methods,
-            target_method = target_method,
-            metric = "F1",
-            hold_out = hold_out
-          )
-          
-          scores_cafee <- compute_scores (
-            data = data,
-            x = x,
-            y = y,
-            final_model = final_model,
-            orientation = orientation
-          )
-          
-          if (target_method == "additive") {
-            scores["score_cafee_DEA"] <- as.vector(scores_cafee)
-            
-          } else if (target_method == "bootstrapping_dea") {
-            scores["score_cafee_BDEA"] <- as.vector(scores_cafee)
-          }
-        },
-        error = function(e) NULL
+      final_model <- efficiency_estimation (
+        data = data,
+        x = x,
+        y = y,
+        orientation = orientation,
+        trControl = trControl,
+        method = methods,
+        target_method = target_method,
+        metric = "F1",
+        hold_out = hold_out
       )
       
-      if (is.null(try_final_model)) {
-
-        file <- paste("Error_", std_dev, "_", i, ".RData", sep = "")
-        save(data, file = file)
-
-        stop()
+      scores_cafee <- compute_scores (
+        data = data,
+        x = x,
+        y = y,
+        final_model = final_model,
+        orientation = orientation
+      )
+      
+      if (target_method == "additive") {
+        scores["score_cafee_DEA"] <- as.vector(scores_cafee)
+        
+      } else if (target_method == "bootstrapping_dea") {
+        scores["score_cafee_BDEA"] <- as.vector(scores_cafee)
       }
       
     }
@@ -301,16 +288,16 @@ for (std_dev in noise) {
       )
     )
     
-    # corr yD vs score_BDEA
-    
-    simulaciones$corr_yD_BDEA[i] <- as.numeric (
-      cor (
-        scores$score_yD, 
-        scores$score_BDEA,
-        use = "everything", 
-        method = "pearson"
-      )
-    )
+    # # corr yD vs score_BDEA
+    # 
+    # simulaciones$corr_yD_BDEA[i] <- as.numeric (
+    #   cor (
+    #     scores$score_yD, 
+    #     scores$score_BDEA,
+    #     use = "everything", 
+    #     method = "pearson"
+    #   )
+    # )
     
     # corr yD vs score_cafee_DEA
     
@@ -332,31 +319,33 @@ for (std_dev in noise) {
         filtered_data$score_yD, 
         filtered_data$score_cafee_DEA, 
         use = "everything", 
-        method = "pearson")
+        method = "pearson"
+        )
     )
     
-    # corr yD vs score_cafee_BDEA
-    
-    if (any(is.na(scores$score_cafee_BDEA)) == FALSE) {
-      
-      # there are not NA cases
-      filtered_data <- scores
-      
-    } else {
-      
-      # there are NA cases
-      idx_NA_cafee_BDEA <- which(is.na(scores$score_cafee_BDEA))
-      filtered_data <- scores[- idx_NA_cafee_BDEA, ]
-      
-    }
-    
-    simulaciones$corr_yD_cafee_BDEA[i] <- as.numeric (
-      cor (
-        filtered_data$score_yD, 
-        filtered_data$score_cafee_BDEA, 
-        use = "everything", 
-        method = "pearson")
-    )
+    # # corr yD vs score_cafee_BDEA
+    # 
+    # if (any(is.na(scores$score_cafee_BDEA)) == FALSE) {
+    #   
+    #   # there are not NA cases
+    #   filtered_data <- scores
+    #   
+    # } else {
+    #   
+    #   # there are NA cases
+    #   idx_NA_cafee_BDEA <- which(is.na(scores$score_cafee_BDEA))
+    #   filtered_data <- scores[- idx_NA_cafee_BDEA, ]
+    #   
+    # }
+    # 
+    # simulaciones$corr_yD_cafee_BDEA[i] <- as.numeric (
+    #   cor (
+    #     filtered_data$score_yD, 
+    #     filtered_data$score_cafee_BDEA, 
+    #     use = "everything", 
+    #     method = "pearson"
+    #     )
+    # )
     
     # ============ #
     # MSE and bias #
@@ -368,11 +357,11 @@ for (std_dev in noise) {
     simulaciones$mse_DEA[i] <- round(mean(diff_error ^ 2), 3)
     simulaciones$bias_DEA[i] <- round(mean(diff_error), 3)
     
-    # BDEA measures
-    diff_error <- scores[, "score_yD"] - scores[, "score_BDEA"]
-    
-    simulaciones$mse_BDEA[i] <- round(mean(diff_error ^ 2), 3)
-    simulaciones$bias_BDEA[i] <- round(mean(diff_error), 3)
+    # # BDEA measures
+    # diff_error <- scores[, "score_yD"] - scores[, "score_BDEA"]
+    # 
+    # simulaciones$mse_BDEA[i] <- round(mean(diff_error ^ 2), 3)
+    # simulaciones$bias_BDEA[i] <- round(mean(diff_error), 3)
     
     # cafee_DEA measures
     
@@ -391,22 +380,22 @@ for (std_dev in noise) {
     simulaciones$mse_cafee_DEA[i] <- round(mean(diff_error ^ 2), 3)
     simulaciones$bias_cafee_DEA[i] <- round(mean(diff_error), 3)
     
-    # cafee_BDEA measures
-    
-    if (any(is.na(scores$score_cafee_BDEA)) == FALSE) {
-      
-      # there are not NA cases
-      diff_error <- scores[, "score_yD"] - scores[, "score_cafee_BDEA"]
-      
-    } else {
-      
-      # there are NA cases
-      diff_error <- scores[- idx_NA_cafee_BDEA, "score_yD"] - scores[- idx_NA_cafee_BDEA, "score_cafee_BDEA"]
-      
-    }
-    
-    simulaciones$mse_cafee_BDEA[i] <- round(mean(diff_error ^ 2), 3)
-    simulaciones$bias_cafee_BDEA[i] <- round(mean(diff_error), 3)
+    # # cafee_BDEA measures
+    # 
+    # if (any(is.na(scores$score_cafee_BDEA)) == FALSE) {
+    #   
+    #   # there are not NA cases
+    #   diff_error <- scores[, "score_yD"] - scores[, "score_cafee_BDEA"]
+    #   
+    # } else {
+    #   
+    #   # there are NA cases
+    #   diff_error <- scores[- idx_NA_cafee_BDEA, "score_yD"] - scores[- idx_NA_cafee_BDEA, "score_cafee_BDEA"]
+    #   
+    # }
+    # 
+    # simulaciones$mse_cafee_BDEA[i] <- round(mean(diff_error ^ 2), 3)
+    # simulaciones$bias_cafee_BDEA[i] <- round(mean(diff_error), 3)
     
     # round results
     simulaciones[, 7:ncol(simulaciones)] <- round(simulaciones[, 7:ncol(simulaciones)], 3)
