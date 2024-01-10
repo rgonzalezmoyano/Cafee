@@ -33,7 +33,7 @@ nX <- 1
 # Table
 # ===
 
-repl <- 50
+repl <- 100
 
 simulaciones <- data.frame (
   # general
@@ -177,21 +177,21 @@ for (std_dev in noise) {
       try_bdea <- tryCatch (
         {
           dea.boot (
-            tech_xmat, 
-            tech_ymat, 
+            tech_xmat,
+            tech_ymat,
             NREP = 200,
             ORIENTATION = "out",
             alpha = 0.01
           )[["eff.bc"]]
-        }, 
+        },
         error = function(e) NULL
       )
-      
+
       if (!is.null(try_bdea)) {
-        
+
         bootstrapping_dea <- try_bdea
         scores$score_BDEA <- as.vector(bootstrapping_dea)
-        
+
         break
       }
     }
@@ -288,16 +288,16 @@ for (std_dev in noise) {
       )
     )
     
-    # # corr yD vs score_BDEA
-    # 
-    # simulaciones$corr_yD_BDEA[i] <- as.numeric (
-    #   cor (
-    #     scores$score_yD, 
-    #     scores$score_BDEA,
-    #     use = "everything", 
-    #     method = "pearson"
-    #   )
-    # )
+    # corr yD vs score_BDEA
+
+    simulaciones$corr_yD_BDEA[i] <- as.numeric (
+      cor (
+        scores$score_yD,
+        scores$score_BDEA,
+        use = "everything",
+        method = "pearson"
+      )
+    )
     
     # corr yD vs score_cafee_DEA
     
@@ -357,11 +357,11 @@ for (std_dev in noise) {
     simulaciones$mse_DEA[i] <- round(mean(diff_error ^ 2), 3)
     simulaciones$bias_DEA[i] <- round(mean(diff_error), 3)
     
-    # # BDEA measures
-    # diff_error <- scores[, "score_yD"] - scores[, "score_BDEA"]
-    # 
-    # simulaciones$mse_BDEA[i] <- round(mean(diff_error ^ 2), 3)
-    # simulaciones$bias_BDEA[i] <- round(mean(diff_error), 3)
+    # BDEA measures
+    diff_error <- scores[, "score_yD"] - scores[, "score_BDEA"]
+
+    simulaciones$mse_BDEA[i] <- round(mean(diff_error ^ 2), 3)
+    simulaciones$bias_BDEA[i] <- round(mean(diff_error), 3)
     
     # cafee_DEA measures
     
