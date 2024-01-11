@@ -14,6 +14,7 @@
 # save file in new format
 #save(dataset, file = "pisa/data/1_student_questionannaire_data_file/INT_STU12_DEC03.RData")
 
+# PC CIO
 load("C:/Users/Ricardo/Desktop/cafee/pisa/data/1_student_questionannaire_data_file/INT_STU12_DEC03.RData")
 
 sortBD <- function(
