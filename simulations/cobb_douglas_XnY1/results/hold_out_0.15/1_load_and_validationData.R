@@ -3,7 +3,7 @@ archivos <- list.files()
 
 archivos <- archivos[grep("^cobb", archivos)]
 
-repl <- 27
+repl <- 47
 
 data <- data.frame (
   # general
