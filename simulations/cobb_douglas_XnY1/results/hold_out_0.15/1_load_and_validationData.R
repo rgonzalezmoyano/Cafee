@@ -59,7 +59,3 @@ for (i in 1:length(archivos)) {
     data[i, 16] <- mean(simulaciones$bias_cafee_DEA)
     data[i, 17] <- mean(simulaciones$bias_cafee_BDEA)
 }
-
-write.table(data, file = "Ejemplo1.xls")
-library(readxl)
-write.xlsx(data, "T2 en xls_2.xlsx")
