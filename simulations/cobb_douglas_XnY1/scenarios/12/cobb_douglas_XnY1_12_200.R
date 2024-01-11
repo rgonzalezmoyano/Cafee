@@ -194,7 +194,7 @@ for (std_dev in noise) {
     # 
     #     break
     #   }
-    # }
+     }
     
     # =========== #
     # score cafee #
