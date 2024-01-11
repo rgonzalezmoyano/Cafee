@@ -106,7 +106,7 @@ simulaciones$N <- N
 simulaciones$technique <- "svmPoly"
 
 # different types to label
-label_type <- c("additive") # "bootstrapping_dea"
+label_type <- c("bootstrapping_dea") # "additive"
 
 set.seed(314)
 
