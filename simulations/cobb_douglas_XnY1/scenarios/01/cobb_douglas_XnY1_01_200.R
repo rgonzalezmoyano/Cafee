@@ -106,7 +106,7 @@ simulaciones$N <- N
 simulaciones$technique <- "svmPoly"
 
 # different types to label
-label_type <- c("bootstrapping_dea") # "additive"
+label_type <- c("additive", "bootstrapping_dea")
 
 set.seed(314)
 
@@ -333,7 +333,6 @@ for (std_dev in noise) {
     )
     
     # corr yD vs score_cafee_BDEA
-
     if (any(is.na(scores$score_cafee_BDEA)) == FALSE) {
 
       # there are not NA cases
@@ -344,16 +343,16 @@ for (std_dev in noise) {
       # there are NA cases
       # all are missing
       if (length(which(is.na(scores$score_cafee_DEA))) == N) {
-        
+
         filtered_data <- scores
-        
+
       } else {
-        
+
         idx_NA_cafee_BDEA <- which(is.na(scores$score_cafee_BDEA))
         filtered_data <- scores[- idx_NA_cafee_BDEA, ]
-        
+
       }
-  
+
     }
 
     simulaciones$corr_yD_cafee_BDEA[i] <- as.numeric (
@@ -382,7 +381,6 @@ for (std_dev in noise) {
     simulaciones$bias_BDEA[i] <- round(mean(diff_error), 3)
     
     # cafee_DEA measures
-    
     if (any(is.na(scores$score_cafee_DEA)) == FALSE) {
       
       # there are not NA cases
@@ -419,13 +417,13 @@ for (std_dev in noise) {
       # there are NA cases
       # all are missing
       if (length(which(is.na(scores$score_cafee_DEA))) == N) {
-        
+
         diff_error <- as.vector(matrix(NA, nrow = N, ncol = 1))
-        
+
       } else {
-        
+
         diff_error <- scores[- idx_NA_cafee_BDEA, "score_yD"] - scores[- idx_NA_cafee_BDEA, "score_cafee_BDEA"]
-        
+
       }
 
     }
