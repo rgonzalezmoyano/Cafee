@@ -60,6 +60,12 @@ for (i in 1:length(archivos)) {
     data[i, 17] <- mean(simulaciones$bias_cafee_BDEA)
 }
 
+<<<<<<< HEAD
 library("openxlsx")
 #install.packages("openxlsx")
 write.xlsx(data, file = "recopilacion_datos.xlsx")
+=======
+install.packages("openxlsx")
+install.packages("Rtools")
+library(open)
+>>>>>>> 74da1cd152472c0d27d3468faaaf8caaeaa4d3a1
