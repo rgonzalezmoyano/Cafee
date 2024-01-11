@@ -59,3 +59,7 @@ for (i in 1:length(archivos)) {
     data[i, 16] <- mean(simulaciones$bias_cafee_DEA)
     data[i, 17] <- mean(simulaciones$bias_cafee_BDEA)
 }
+
+install.packages("openxlsx")
+install.packages("Rtools")
+library(open)
