@@ -3,7 +3,7 @@ archivos <- list.files()
 
 archivos <- archivos[grep("^cobb", archivos)]
 
-repl <- 3
+repl <- 18
 
 data <- data.frame (
   # general
@@ -38,6 +38,10 @@ for (i in 1:length(archivos)) {
     
     # Cargar el archivo y asignarlo al entorno de trabajo con su nombre de archivo como variable
     load(archivos[i])
+    
+    if (nrow(simulaciones) != 100) {
+      print(paste("Error en i ==", i))
+    } 
 
     data[i, 1:5] <- simulaciones[i, 2:6]
     
