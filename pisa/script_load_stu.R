@@ -17,6 +17,9 @@
 # PC CIO
 load("C:/Users/Ricardo/Desktop/cafee/pisa/data/1_student_questionannaire_data_file/INT_STU12_DEC03.RData")
 
+# Surface
+load("C:/Users/Ricardo/Desktop/Data Pisa 2012/INT_STU12_DEC03.RData")
+
 sortBD <- function(
     data) {
   
