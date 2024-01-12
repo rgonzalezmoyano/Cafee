@@ -115,7 +115,7 @@ for (std_dev in noise) {
   simulaciones$noise <- std_dev
   
   for (i in 1:repl) {
-    
+    print(i)
     repeat {
       
       # ===
@@ -244,6 +244,8 @@ for (std_dev in noise) {
     for (target_method in label_type) {
       
       # Result
+      try_final_model <- tryCatch (
+        {
           final_model <- efficiency_estimation (
             data = data,
             x = x,
@@ -255,22 +257,32 @@ for (std_dev in noise) {
             metric = "F1",
             hold_out = hold_out
           )
+        },
+        error = function(e) NULL
+      )
           
-          scores_cafee <- compute_scores (
-            data = data,
-            x = x,
-            y = y,
-            final_model = final_model,
-            orientation = orientation
-          )
-          
-          if (target_method == "additive") {
-            scores["score_cafee_DEA"] <- as.vector(scores_cafee)
+          if (!is.null(try_final_model)) {
             
-          } else if (target_method == "bootstrapping_dea") {
-            scores["score_cafee_BDEA"] <- as.vector(scores_cafee)
+            scores_cafee <- compute_scores (
+              data = data,
+              x = x,
+              y = y,
+              final_model = final_model,
+              orientation = orientation
+            )
+            
+            if (target_method == "additive") {
+              scores["score_cafee_DEA"] <- as.vector(scores_cafee)
+              
+            } else if (target_method == "bootstrapping_dea") {
+              scores["score_cafee_BDEA"] <- as.vector(scores_cafee)
+            }
+            
+          } else {
+            
+            next
           }
-      
+
     }
     
     # ============ #
