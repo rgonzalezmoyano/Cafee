@@ -29,8 +29,10 @@ data <- data.frame (
   bias_DEA = rep(NA, repl),
   bias_BDEA = rep(NA, repl),
   bias_cafee_DEA = rep(NA, repl),
-  bias_cafee_BDEA = rep(NA, repl)
+  bias_cafee_BDEA = rep(NA, repl),
   
+  # dataset error
+  num_error_cafee = rep(0, repl)
 )
 
 # Iterar sobre cada archivo
@@ -62,6 +64,9 @@ for (i in 1:length(archivos)) {
     data[i, 15] <- mean(simulaciones$bias_BDEA)
     data[i, 16] <- mean(simulaciones$bias_cafee_DEA)
     data[i, 17] <- mean(simulaciones$bias_cafee_BDEA)
+    
+    # dataset error
+    data[i, 18] <- colSums(is.na(simulaciones$corr_yD_cafee_DEA))
 }
 
 library("openxlsx")
