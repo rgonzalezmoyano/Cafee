@@ -206,6 +206,18 @@ sortBD <- function(
   names[index, 1] <- "ST11Q04"
   names[index, 2] <- "At Home - Sisters"
   
+  db$ST11Q05 <- substr(data[, 1], start = 63, stop = 63)
+  index <- which(names(db) == "ST11Q05")
+  
+  names[index, 1] <- "ST11Q05"
+  names[index, 2] <- "At Home - Grandparents"
+  
+  db$ST11Q06 <- substr(data[, 1], start = 64, stop = 64)
+  index <- which(names(db) == "ST11Q06")
+  
+  names[index, 1] <- "ST11Q06"
+  names[index, 2] <- "At Home - Others"
+  
   
     
     
