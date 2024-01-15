@@ -35,8 +35,10 @@ data <- data.frame (
   
   # dataset error NA
   num_error_cafee_DEA = rep(0, repl),
-  num_error_cafee_BDEA = rep(0, repl)
+  num_error_cafee_BDEA = rep(0, repl),
 
+  # Error data
+  num_error_DEA = rep(0, repl)
 )
 
 # Iterar sobre cada archivo
@@ -61,6 +63,19 @@ for (i in 1:length(archivos)) {
   
   simulaciones <- simulaciones %>%
     mutate_at(c("mse_DEA", "mse_BDEA", "mse_cafee_DEA", "mse_cafee_BDEA"), ~ifelse(. > 1000, NA, .))
+  
+  # data error in mse
+  # NA by cafee
+  error_cafee <- length(which(apply(simulaciones[, c("mse_DEA", "mse_BDEA", "mse_cafee_DEA", "mse_cafee_BDEA")], 1, function(row) any(is.na(row)))))
+  
+  # error total
+  error_total <- data[i, 18] + data[i, 19]
+  
+  # NA by data
+  error_data <- error_cafee - error_total
+  data[i, 20] <- error_data
+  
+  
   
   # filter Na scenarios
   NA_values <- any(is.na(simulaciones))
