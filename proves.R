@@ -13,8 +13,8 @@ data <- reffcy (
   )
 )
 
-x <- 1:9
-y <- 10
+x <- 1
+y <- 2
 
 # data <- reffcy (
 #   DGP = "translog_X2Y2",
@@ -88,7 +88,7 @@ methods <- list (
 # https://topepo.github.io/caret/train-models-by-tag.html
 
 metric = "F1"
-target_method <- "bootstrapping_dea"
+target_method <- "additive"
 
 # Result
 final_model <- efficiency_estimation (
@@ -135,7 +135,10 @@ cor(data_frame_13_11$diferencias, data_frame_13_11$BCC)
 # ============= #
 
 ggplot(data = data) +
-  geom_point(aes(x = x1, y = y))
+  geom_point(aes(x = x1, y = y)) +
+  #geom_text(aes(x = x1, y = y, label = rownames(data))) +
+  theme_bw()
+  
 
 
 # ============= #
@@ -185,12 +188,12 @@ grid <- expand.grid (
 
 grid$decision <- predict(final_model, grid, type = "raw")
 
- i <- 2
+# i <- 2
 # i <- c(12, 13, 15, 16, 17, 18, 23, 24)
 
-scores_r <- scores[scores$score_cafee == 1.095, ]
-r <- rownames(scores_r)
-filter_ggplot_data <- data[r,]
+# scores_r <- scores[scores$score_cafee == 1.095, ]
+# r <- rownames(scores_r)
+# filter_ggplot_data <- data[r,]
 
 ggplot(data = data) +
   geom_point(aes(x = x1, y = y)) +
@@ -206,7 +209,7 @@ ggplot(data = data) +
   geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.75, alpha = 0.8) +
   geom_line(aes(x = x1, y = yD), linewidth = 1, linetype = "dotted") +
   geom_point(aes(x = x1, y = y), size = 0.75) +
-  geom_point(aes(x = x1[i], y = y[i]), colour = "black", size = 3) +
+  #geom_point(aes(x = x1[i], y = y[i]), colour = "black", size = 3) +
   scale_color_manual(values = c("not_efficient" = "pink", "efficient" = "lightgreen")) +
   #ggtitle(paste("Frontera mejor modelo ", prueba$method, sep = "")) +
   theme_bw() +

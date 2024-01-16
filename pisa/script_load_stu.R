@@ -218,9 +218,129 @@ sortBD <- function(
   names[index, 1] <- "ST11Q06"
   names[index, 2] <- "At Home - Others"
   
+  db$ST13Q01 <- substr(data[, 1], start = 65, stop = 65)
+  index <- which(names(db) == "ST13Q01")
   
-    
-    
+  names[index, 1] <- "ST13Q01"
+  names[index, 2] <- "Mother<Highest Schooling>"
+  
+  db$ST14Q01 <- substr(data[, 1], start = 66, stop = 66)
+  index <- which(names(db) == "ST14Q01")
+  
+  names[index, 1] <- "ST14Q01"
+  names[index, 2] <- "Mother Qualifications - <ISCED level 6>"
+  
+  db$ST14Q02 <- substr(data[, 1], start = 67, stop = 67)
+  index <- which(names(db) == "ST14Q02")
+  
+  names[index, 1] <- "ST14Q02"
+  names[index, 2] <- "Mother Qualifications - <ISCED level 5A>"
+  
+  db$ST14Q03 <- substr(data[, 1], start = 68, stop = 68)
+  index <- which(names(db) == "ST14Q03")
+  
+  names[index, 1] <- "ST14Q03"
+  names[index, 2] <- "Mother Qualifications - <ISCED level 5B>"
+  
+  db$ST14Q04 <- substr(data[, 1], start = 69, stop = 69)
+  index <- which(names(db) == "ST14Q04")
+  
+  names[index, 1] <- "ST14Q04"
+  names[index, 2] <- "Mother Qualifications - <ISCED level 4>"
+  
+  db$ST15Q01 <- substr(data[, 1], start = 70, stop = 70)
+  index <- which(names(db) == "ST15Q01")
+  
+  names[index, 1] <- "ST15Q01"
+  names[index, 2] <- "Mother Current Job Status"
+  
+  db$ST17Q01 <- substr(data[, 1], start = 71, stop = 71)
+  index <- which(names(db) == "ST17Q01")
+  
+  names[index, 1] <- "ST17Q01"
+  names[index, 2] <- "Father<Highest Schooling>"
+  
+  db$ST18Q01 <- substr(data[, 1], start = 72, stop = 72)
+  index <- which(names(db) == "ST18Q01")
+  
+  names[index, 1] <- "ST18Q01"
+  names[index, 2] <- "Father Qualifications - <ISCED level 6>"
+  
+  db$ST18Q02 <- substr(data[, 1], start = 73, stop = 73)
+  index <- which(names(db) == "ST18Q02")
+  
+  names[index, 1] <- "ST18Q02"
+  names[index, 2] <- "Father Qualifications - <ISCED level 5A>"
+  
+  db$ST18Q03 <- substr(data[, 1], start = 74, stop = 74)
+  index <- which(names(db) == "ST18Q03")
+  
+  names[index, 1] <- "ST18Q03"
+  names[index, 2] <- "Father Qualifications - <ISCED level 5B>"
+  
+  db$ST18Q04 <- substr(data[, 1], start = 75, stop = 75)
+  index <- which(names(db) == "ST18Q04")
+  
+  names[index, 1] <- "ST18Q04"
+  names[index, 2] <- "Father Qualifications - <ISCED level 4>"
+  
+  db$ST19Q01 <- substr(data[, 1], start = 76, stop = 76)
+  index <- which(names(db) == "ST19Q01")
+  
+  names[index, 1] <- "ST19Q01"
+  names[index, 2] <- "Father Current Job Status"
+  
+  db$ST20Q01 <- substr(data[, 1], start = 77, stop = 77)
+  index <- which(names(db) == "ST20Q01")
+  
+  names[index, 1] <- "ST20Q01"
+  names[index, 2] <- "Father Current Job Status"
+  
+  db$ST20Q02 <- substr(data[, 1], start = 78, stop = 78)
+  index <- which(names(db) == "ST20Q02")
+  
+  names[index, 1] <- "ST20Q02"
+  names[index, 2] <- "Country of Birth International - Mother"
+  
+  db$ST20Q03 <- substr(data[, 1], start = 79, stop = 79)
+  index <- which(names(db) == "ST20Q03")
+  
+  names[index, 1] <- "ST20Q03"
+  names[index, 2] <- "Country of Birth International - Father"
+  
+  db$ST21Q01 <- substr(data[, 1], start = 80, stop = 83)
+  index <- which(names(db) == "ST21Q01")
+  
+  names[index, 1] <- "ST21Q01"
+  names[index, 2] <- "Age of arrival in <country of test>"
+  
+  db$ST25Q01 <- substr(data[, 1], start = 84, stop = 84)
+  index <- which(names(db) == "ST25Q01")
+  
+  names[index, 1] <- "ST25Q01"
+  names[index, 2] <- "International Language at Home"
+  
+  db$ST26Q01 <- substr(data[, 1], start = 85, stop = 85)
+  index <- which(names(db) == "ST26Q01")
+  
+  names[index, 1] <- "ST26Q01"
+  names[index, 2] <- "Possessions - desk"
+  
+  db$ST26Q02 <- substr(data[, 1], start = 86, stop = 86)
+  index <- which(names(db) == "ST26Q02")
+  
+  names[index, 1] <- "ST26Q02"
+  names[index, 2] <- "Possessions - own room"
+  
+  db$ST26Q03 <- substr(data[, 1], start = 87, stop = 87)
+  index <- which(names(db) == "ST26Q03")
+  
+  names[index, 1] <- "ST26Q03"
+  names[index, 2] <- "Possessions - study place"
+  
+  db$ST26Q04 <- 
+  
+  
   
   return(list(data = db, names = names))
   
