@@ -572,7 +572,530 @@ sortBD <- function(
   names[index, 1] <- "ST37Q04"
   names[index, 2] <- "Maths Self-Efficacy - Understanding Graphs in Newspapers"
   
+  db$ST37Q05 <- substr(data[, 1], start = 144, stop = 144)
+  index <- which(names(db) == "ST37Q05")
+  
+  names[index, 1] <- "ST37Q05"
+  names[index, 2] <- "Maths Self-Efficacy - Solving Equation 1"
+  
+  db$ST37Q06 <- substr(data[, 1], start = 145, stop = 145)
+  index <- which(names(db) == "ST37Q06")
+  
+  names[index, 1] <- "ST37Q06"
+  names[index, 2] <- "Maths Self-Efficacy - Distance to Scale"
+  
+  db$ST37Q07 <- substr(data[, 1], start = 146, stop = 146)
+  index <- which(names(db) == "ST37Q07")
+  
+  names[index, 1] <- "ST37Q07"
+  names[index, 2] <- "Maths Self-Efficacy - Solving Equation 2"
+  
+  db$ST37Q08 <- substr(data[, 1], start = 147, stop = 147)
+  index <- which(names(db) == "ST37Q08")
+  
+  names[index, 1] <- "ST37Q08"
+  names[index, 2] <- "Maths Self-Efficacy - Calculate Petrol Consumption Rate"
+  
+  db$ST42Q01 <- substr(data[, 1], start = 148, stop = 148)
+  index <- which(names(db) == "ST42Q01")
+  
+  names[index, 1] <- "ST42Q01"
+  names[index, 2] <- "Maths Anxiety - Worry That It Will Be Difficult"
+  
+  db$ST42Q02 <- substr(data[, 1], start = 149, stop = 149)
+  index <- which(names(db) == "ST42Q02")
+  
+  names[index, 1] <- "ST42Q02"
+  names[index, 2] <- "Maths Self-Concept - Not Good at Maths"
+  
+  db$ST42Q03 <- substr(data[, 1], start = 150, stop = 150)
+  index <- which(names(db) == "ST42Q03")
+  
+  names[index, 1] <- "ST42Q03"
+  names[index, 2] <- "Maths Anxiety - Get Very Tense"
+  
+  db$ST42Q04 <- substr(data[, 1], start = 151, stop = 151)
+  index <- which(names(db) == "ST42Q04")
+  
+  names[index, 1] <- "ST42Q04"
+  names[index, 2] <- "Maths Self-Concept - Get Good <Grades>"
+  
+  db$ST42Q05 <- substr(data[, 1], start = 152, stop = 152)
+  index <- which(names(db) == "ST42Q05")
+
+  names[index, 1] <- "ST42Q05"
+  names[index, 2] <- "Maths Anxiety - Get Very Nervous"
+  
+  db$ST42Q06 <- substr(data[, 1], start = 153, stop = 153)
+  index <- which(names(db) == "ST42Q06")
+  
+  names[index, 1] <- "ST42Q06"
+  names[index, 2] <- "Maths Self-Concept - Learn Quickly"
+
+  db$ST42Q07 <- substr(data[, 1], start = 154, stop = 154)
+  index <- which(names(db) == "ST42Q07")
+  
+  names[index, 1] <- "ST42Q07"
+  names[index, 2] <- "Maths Self-Concept - One of Best Subjects"
+  
+  db$ST42Q08 <- substr(data[, 1], start = 155, stop = 155)
+  index <- which(names(db) == "ST42Q08")
+  
+  names[index, 1] <- "ST42Q08"
+  names[index, 2] <- "Maths Anxiety - Feel Helplesss"
+  
+  db$ST42Q09 <- substr(data[, 1], start = 156, stop = 156)
+  index <- which(names(db) == "ST42Q09")
+  
+  names[index, 1] <- "ST42Q09"
+  names[index, 2] <- "Maths Self-Concept - Understand Difficult Work"
+  
+  db$ST42Q10 <- substr(data[, 1], start = 157, stop = 157)
+  index <- which(names(db) == "ST42Q10")
+  
+  names[index, 1] <- "ST42Q10"
+  names[index, 2] <- "Maths Anxiety - Worry About Getting Poor <Grades>"
+  
+  db$ST43Q01 <- substr(data[, 1], start = 158, stop = 158)
+  index <- which(names(db) == "ST43Q01")
+  
+  names[index, 1] <- "ST43Q01"
+  names[index, 2] <- "Perceived Control - Can Succeed with Enough Effort"
+  
+  db$ST43Q02 <- substr(data[, 1], start = 159, stop = 159)
+  index <- which(names(db) == "ST43Q02")
+  
+  names[index, 1] <- "ST43Q02"
+  names[index, 2] <- "Perceived Control - Doing Well is Completely Up to Me"
+  
+  db$ST43Q03 <- substr(data[, 1], start = 160, stop = 160)
+  index <- which(names(db) == "ST43Q03")
+  
+  names[index, 1] <- "ST43Q03"
+  names[index, 2] <- "Perceived Control - Family Demands and Problems"
+  
+  db$ST43Q04 <- substr(data[, 1], start = 161, stop = 161)
+  index <- which(names(db) == "ST43Q04")
+  
+  names[index, 1] <- "ST43Q04"
+  names[index, 2] <- "Perceived Control - Different Teachers"
+  
+  db$ST43Q05 <- substr(data[, 1], start = 162, stop = 162)
+  index <- which(names(db) == "ST43Q05")
+  
+  names[index, 1] <- "ST43Q05"
+  names[index, 2] <- "Perceived Control - If I Wanted I Could Perform Well"
+  
+  db$ST43Q06 <- substr(data[, 1], start = 163, stop = 163)
+  index <- which(names(db) == "ST43Q06")
+  
+  names[index, 1] <- "ST43Q06"
+  names[index, 2] <- "Perceived Control - Perform Poorly Regardless"
+  
+  db$ST44Q01 <- substr(data[, 1], start = 164, stop = 164)
+  index <- which(names(db) == "ST44Q01")
+  
+  names[index, 1] <- "ST44Q01"
+  names[index, 2] <- "Attributions to Failure - Not Good at Maths Problems"
+  
+  db$ST44Q03 <- substr(data[, 1], start = 165, stop = 165)
+  index <- which(names(db) == "ST44Q03")
+  
+  names[index, 1] <- "ST44Q03"
+  names[index, 2] <- "Attributions to Failure - Teacher Did Not Explain Well"
+  
+  db$ST44Q04 <- substr(data[, 1], start = 166, stop = 166)
+  index <- which(names(db) == "ST44Q04")
+  
+  names[index, 1] <- "ST44Q04"
+  names[index, 2] <- "Attributions to Failure - Teacher Did Not Explain Well"
+  
+  db$ST44Q05 <- substr(data[, 1], start = 167, stop = 167)
+  index <- which(names(db) == "ST44Q05")
+  
+  names[index, 1] <- "ST44Q05"
+  names[index, 2] <- "Attributions to Failure - Material Too Hard"
+  
+  db$ST44Q07 <- substr(data[, 1], start = 168, stop = 168)
+  index <- which(names(db) == "ST44Q07")
+  
+  names[index, 1] <- "ST44Q07"
+  names[index, 2] <- "Attributions to Failure - Teacher Didnt Get Students Interested"
+  
+  db$ST44Q08 <- substr(data[, 1], start = 169, stop = 169)
+  index <- which(names(db) == "ST44Q08")
+  
+  names[index, 1] <- "ST44Q08"
+  names[index, 2] <- "Attributions to Failure - Unlucky"
+  
+  db$ST44Q08 <- substr(data[, 1], start = 169, stop = 169)
+  index <- which(names(db) == "ST44Q08")
+  
+  names[index, 1] <- "ST44Q08"
+  names[index, 2] <- "Attributions to Failure - Unlucky"
+  
+  db$ST46Q01 <- substr(data[, 1], start = 170, stop = 170)
+  index <- which(names(db) == "ST46Q01")
+  
+  names[index, 1] <- "ST46Q01"
+  names[index, 2] <- "Attributions to Failure - Unlucky"
+  
+  db$ST46Q02 <- substr(data[, 1], start = 171, stop = 171)
+  index <- which(names(db) == "ST46Q02")
+  
+  names[index, 1] <- "ST46Q02"
+  names[index, 2] <- "Maths Work Ethic - Work Hard on Homework"
+  
+  db$ST46Q03 <- substr(data[, 1], start = 172, stop = 172)
+  index <- which(names(db) == "ST46Q03")
+  
+  names[index, 1] <- "ST46Q03"
+  names[index, 2] <- "Maths Work Ethic - Prepared for Exams"
+  
+  db$ST46Q04 <- substr(data[, 1], start = 173, stop = 173)
+  index <- which(names(db) == "ST46Q04")
+  
+  names[index, 1] <- "ST46Q04"
+  names[index, 2] <- "Maths Work Ethic - Study Hard for Quizzes"
+  
+  db$ST46Q05 <- substr(data[, 1], start = 174, stop = 174)
+  index <- which(names(db) == "ST46Q05")
+  
+  names[index, 1] <- "ST46Q05"
+  names[index, 2] <- "Maths Work Ethic - Study Until I Understand Everything"
+  
+  db$ST46Q06 <- substr(data[, 1], start = 175, stop = 175)
+  index <- which(names(db) == "ST46Q06")
+  
+  names[index, 1] <- "ST46Q06"
+  names[index, 2] <- "Maths Work Ethic - Pay Attention in Classes"
+  
+  db$ST46Q07 <- substr(data[, 1], start = 176, stop = 176)
+  index <- which(names(db) == "ST46Q07")
+  
+  names[index, 1] <- "ST46Q07"
+  names[index, 2] <- "Maths Work Ethic - Listen in Classes"
+  
+  db$ST46Q08 <- substr(data[, 1], start = 177, stop = 177)
+  index <- which(names(db) == "ST46Q08")
+  
+  names[index, 1] <- "ST46Q08"
+  names[index, 2] <- "Maths Work Ethic - Avoid Distractions When Studying"
+  
+  db$ST46Q09 <- substr(data[, 1], start = 178, stop = 178)
+  index <- which(names(db) == "ST46Q09")
+  
+  names[index, 1] <- "ST46Q09"
+  names[index, 2] <- "Maths Work Ethic - Keep Work Organized"
+  
+  db$ST48Q01 <- substr(data[, 1], start = 179, stop = 179)
+  index <- which(names(db) == "ST48Q01")
+  
+  names[index, 1] <- "ST48Q01"
+  names[index, 2] <- "Maths Work Ethic - Keep Work Organized"
+  
+  db$ST48Q02 <- substr(data[, 1], start = 180, stop = 180)
+  index <- which(names(db) == "ST48Q02")
+  
+  names[index, 1] <- "ST48Q02"
+  names[index, 2] <- "Maths Intentions - Mathematics vs. Science Related Major in College"
+  
+  db$ST48Q03 <- substr(data[, 1], start = 181, stop = 181)
+  index <- which(names(db) == "ST48Q03")
+  
+  names[index, 1] <- "ST48Q03"
+  names[index, 2] <- "Maths Intentions - Study Harder in Mathematics vs. Language Classes"
+  
+  db$ST48Q04 <- substr(data[, 1], start = 182, stop = 182)
+  index <- which(names(db) == "ST48Q04")
+  
+  names[index, 1] <- "ST48Q04"
+  names[index, 2] <- "Maths Intentions - Take Maximum Number of Mathematics vs. Science Classes"
+  
+  db$ST48Q05 <- substr(data[, 1], start = 183, stop = 183)
+  index <- which(names(db) == "ST48Q05")
+  
+  names[index, 1] <- "ST48Q05"
+  names[index, 2] <- "Maths Intentions - Pursuing a Career That Involves Mathematics vs. Science"
+  
+  db$ST49Q01 <- substr(data[, 1], start = 184, stop = 184)
+  index <- which(names(db) == "ST49Q01")
+  
+  names[index, 1] <- "ST49Q01"
+  names[index, 2] <- "Maths Behaviour - Talk about Maths with Friends"
+  
+  db$ST49Q02 <- substr(data[, 1], start = 185, stop = 185)
+  index <- which(names(db) == "ST49Q02")
+  
+  names[index, 1] <- "ST49Q02"
+  names[index, 2] <- "Maths Behaviour - Help Friends with Maths"
+  
+  db$ST49Q03 <- substr(data[, 1], start = 186, stop = 186)
+  index <- which(names(db) == "ST49Q03")
+  
+  names[index, 1] <- "ST49Q03"
+  names[index, 2] <- "Maths Behaviour - <Extracurricular> Activity"
+  
+  db$ST49Q04 <- substr(data[, 1], start = 187, stop = 187)
+  index <- which(names(db) == "ST49Q04")
+  
+  names[index, 1] <- "ST49Q04"
+  names[index, 2] <- "Maths Behaviour - Participate in Competitions"
+  
+  db$ST49Q05 <- substr(data[, 1], start = 188, stop = 188)
+  index <- which(names(db) == "ST49Q05")
+  
+  names[index, 1] <- "ST49Q05"
+  names[index, 2] <- "Maths Behaviour - Study More Than 2 Extra Hours a Day"
+  
+  db$ST49Q06 <- substr(data[, 1], start = 189, stop = 189)
+  index <- which(names(db) == "ST49Q06")
+  
+  names[index, 1] <- "ST49Q06"
+  names[index, 2] <- "Maths Behaviour - Play Chess"
+  
+  db$ST49Q07 <- substr(data[, 1], start = 190, stop = 190)
+  index <- which(names(db) == "ST49Q07")
+  
+  names[index, 1] <- "ST49Q07"
+  names[index, 2] <- "Maths Behaviour - Computer programming"
+  
+  db$ST49Q09 <- substr(data[, 1], start = 191, stop = 191)
+  index <- which(names(db) == "ST49Q09")
+  
+  names[index, 1] <- "ST49Q09"
+  names[index, 2] <- "Maths Behaviour - Participate in Maths Club"
+  
+  db$ST53Q01 <- substr(data[, 1], start = 192, stop = 192)
+  index <- which(names(db) == "ST53Q01")
+  
+  names[index, 1] <- "ST53Q01"
+  names[index, 2] <- "Learning Strategies - Important Parts vs. Existing Knowledge vs. Learn by Heart"
+  
+  db$ST53Q02 <- substr(data[, 1], start = 193, stop = 193)
+  index <- which(names(db) == "ST53Q02")
+  
+  names[index, 1] <- "ST53Q02"
+  names[index, 2] <- "Learning Strategies - Improve Understanding vs. New Ways vs. Memory"
+  
+  db$ST53Q03 <- substr(data[, 1], start = 194, stop = 194)
+  index <- which(names(db) == "ST53Q03")
+  
+  names[index, 1] <- "ST53Q03"
+  names[index, 2] <- "Learning Strategies - Improve Understanding vs. New Ways vs. Memory"
+  
+  db$ST53Q04 <- substr(data[, 1], start = 195, stop = 195)
+  index <- which(names(db) == "ST53Q04")
+  
+  names[index, 1] <- "ST53Q04"
+  names[index, 2] <- "Learning Strategies - Improve Understanding vs. New Ways vs. Memory"
+  
+  db$ST55Q01 <- substr(data[, 1], start = 196, stop = 196)
+  index <- which(names(db) == "ST55Q01")
+  
+  names[index, 1] <- "ST55Q01"
+  names[index, 2] <- "Out of school lessons - <test lang>"
+  
+  db$ST55Q02 <- substr(data[, 1], start = 197, stop = 197)
+  index <- which(names(db) == "ST55Q02")
+  
+  names[index, 1] <- "ST55Q02"
+  names[index, 2] <- "Out of school lessons - <maths>"
+  
+  db$ST55Q03 <- substr(data[, 1], start = 198, stop = 198)
+  index <- which(names(db) == "ST55Q03")
+  
+  names[index, 1] <- "ST55Q03"
+  names[index, 2] <- "Out of school lessons - <maths>"
+  
+  db$ST55Q04 <- substr(data[, 1], start = 199, stop = 199)
+  index <- which(names(db) == "ST55Q04")
+  
+  names[index, 1] <- "ST55Q04"
+  names[index, 2] <- "Out of school lessons - other"
+  
+  db$ST57Q01 <- substr(data[, 1], start = 200, stop = 203)
+  index <- which(names(db) == "ST57Q01")
+  
+  names[index, 1] <- "ST57Q01"
+  names[index, 2] <- "Out-of-School Study Time - Homework"
+  
+  db$ST57Q02 <- substr(data[, 1], start = 204, stop = 207)
+  index <- which(names(db) == "ST57Q02")
+  
+  names[index, 1] <- "ST57Q02"
+  names[index, 2] <- "Out-of-School Study Time - Guided Homework"
+  
+  db$ST57Q03 <- substr(data[, 1], start = 208, stop = 211)
+  index <- which(names(db) == "ST57Q03")
+  
+  names[index, 1] <- "ST57Q03"
+  names[index, 2] <- "Out-of-School Study Time - Guided Homework"
+  
+  db$ST57Q04 <- substr(data[, 1], start = 212, stop = 215)
+  index <- which(names(db) == "ST57Q04")
+  
+  names[index, 1] <- "ST57Q04"
+  names[index, 2] <- "Out-of-School Study Time - Commercial Company"
+  
+  db$ST57Q05 <- substr(data[, 1], start = 216, stop = 219)
+  index <- which(names(db) == "ST57Q05")
+  
+  names[index, 1] <- "ST57Q05"
+  names[index, 2] <- "Out-of-School Study Time - With Parent"
+  
+  db$ST57Q06 <- substr(data[, 1], start = 220, stop = 223)
+  index <- which(names(db) == "ST57Q06")
+  
+  names[index, 1] <- "ST57Q06"
+  names[index, 2] <- "Out-of-School Study Time - Computer"
+  
+  db$ST61Q01 <- substr(data[, 1], start = 224, stop = 224)
+  index <- which(names(db) == "ST61Q01")
+  
+  names[index, 1] <- "ST61Q01"
+  names[index, 2] <- "Experience with Applied Maths Tasks - Use <Train Timetable>"
+  
+  db$ST61Q02 <- substr(data[, 1], start = 225, stop = 225)
+  index <- which(names(db) == "ST61Q02")
+  
+  names[index, 1] <- "ST61Q02"
+  names[index, 2] <- "Experience with Applied Maths Tasks - Calculate Price including Tax"
+  
+  db$ST61Q02 <- substr(data[, 1], start = 226, stop = 226)
+  index <- which(names(db) == "ST61Q02")
+  
+  names[index, 1] <- "ST61Q02"
+  names[index, 2] <- "Experience with Applied Maths Tasks - Calculate Square Metres"
+  
+  db$ST61Q04 <- substr(data[, 1], start = 227, stop = 227)
+  index <- which(names(db) == "ST61Q04")
+  
+  names[index, 1] <- "ST61Q04"
+  names[index, 2] <- "Experience with Applied Maths Tasks - Understand Scientific Tables"
+  
+  db$ST61Q05 <- substr(data[, 1], start = 228, stop = 228)
+  index <- which(names(db) == "ST61Q05")
+  
+  names[index, 1] <- "ST61Q05"
+  names[index, 2] <- "Experience with Pure Maths Tasks - Solve Equation 1"
+  
+  db$ST61Q06 <- substr(data[, 1], start = 229, stop = 229)
+  index <- which(names(db) == "ST61Q06")
+  
+  names[index, 1] <- "ST61Q06"
+  names[index, 2] <- "Experience with Applied Maths Tasks - Use a Map to Calculate Distance"
+  
+  db$ST61Q07 <- substr(data[, 1], start = 230, stop = 230)
+  index <- which(names(db) == "ST61Q07")
+  
+  names[index, 1] <- "ST61Q07"
+  names[index, 2] <- "Experience with Pure Maths Tasks - Solve Equation 2"
+  
+  db$ST61Q08 <- substr(data[, 1], start = 231, stop = 231)
+  index <- which(names(db) == "ST61Q08")
+  
+  names[index, 1] <- "ST61Q08"
+  names[index, 2] <- "Experience with Applied Maths Tasks - Calculate Power Consumption Rate"
+  
+  db$ST61Q09 <- substr(data[, 1], start = 232, stop = 232)
+  index <- which(names(db) == "ST61Q09")
+  
+  names[index, 1] <- "ST61Q09"
+  names[index, 2] <- "Experience with Applied Maths Tasks - Solve Equation 3"
+  
+  db$ST62Q01 <- substr(data[, 1], start = 233, stop = 233)
+  index <- which(names(db) == "ST62Q01")
+  
+  names[index, 1] <- "ST62Q01"
+  names[index, 2] <- "Familiarity with Maths Concepts - Exponential Function"
+  
+  db$ST62Q02 <- substr(data[, 1], start = 234, stop = 234)
+  index <- which(names(db) == "ST62Q02")
+  
+  names[index, 1] <- "ST62Q02"
+  names[index, 2] <- "Familiarity with Maths Concepts - Divisor"
+  
+  db$ST62Q03 <- substr(data[, 1], start = 235, stop = 235)
+  index <- which(names(db) == "ST62Q03")
+  
+  names[index, 1] <- "ST62Q03"
+  names[index, 2] <- "Familiarity with Maths Concepts - Quadratic Function"
+  
+  db$ST62Q04 <- substr(data[, 1], start = 236, stop = 236)
+  index <- which(names(db) == "ST62Q04")
+  
+  names[index, 1] <- "ST62Q04"
+  names[index, 2] <- "Overclaiming - Proper Number"
+  
+  db$ST62Q06 <- substr(data[, 1], start = 237, stop = 237)
+  index <- which(names(db) == "ST62Q06")
+  
+  names[index, 1] <- "ST62Q06"
+  names[index, 2] <- "Familiarity with Maths Concepts - Linear Equation"
+  
+  db$ST62Q07 <- substr(data[, 1], start = 238, stop = 238)
+  index <- which(names(db) == "ST62Q07")
+  
+  names[index, 1] <- "ST62Q07"
+  names[index, 2] <- "Familiarity with Maths Concepts - Vectors"
+  
+  db$ST62Q08 <- substr(data[, 1], start = 239, stop = 239)
+  index <- which(names(db) == "ST62Q08")
+  
+  names[index, 1] <- "ST62Q08"
+  names[index, 2] <- "Familiarity with Maths Concepts - Complex Number"
+  
+  db$ST62Q09 <- substr(data[, 1], start = 240, stop = 240)
+  index <- which(names(db) == "ST62Q09")
+  
+  names[index, 1] <- "ST62Q09"
+  names[index, 2] <- "Familiarity with Maths Concepts - Rational Number"
+  
+  db$ST62Q10 <- substr(data[, 1], start = 241, stop = 241)
+  index <- which(names(db) == "ST62Q10")
+  
+  names[index, 1] <- "ST62Q10"
+  names[index, 2] <- "Familiarity with Maths Concepts - Radicals"
+  
+  db$ST62Q11 <- substr(data[, 1], start = 242, stop = 242)
+  index <- which(names(db) == "ST62Q11")
+  
+  names[index, 1] <- "ST62Q11"
+  names[index, 2] <- "Overclaiming - Subjunctive Scaling"
+  
+  db$ST62Q12 <- substr(data[, 1], start = 243, stop = 243)
+  index <- which(names(db) == "ST62Q12")
+  
+  names[index, 1] <- "ST62Q12"
+  names[index, 2] <- "Familiarity with Maths Concepts - Polygon"
+  
+  db$ST62Q13 <- substr(data[, 1], start = 244, stop = 244)
+  index <- which(names(db) == "ST62Q13")
+  
+  names[index, 1] <- "ST62Q13"
+  names[index, 2] <- "Overclaiming - Declarative Fraction"
+  
+  db$ST62Q15 <- substr(data[, 1], start = 245, stop = 245)
+  index <- which(names(db) == "ST62Q15")
+  
+  names[index, 1] <- "ST62Q15"
+  names[index, 2] <- "Familiarity with Maths Concepts - Congruent Figure"
+  
+  db$ST62Q16 <- substr(data[, 1], start = 246, stop = 246)
+  index <- which(names(db) == "ST62Q16")
+  
+  names[index, 1] <- "ST62Q16"
+  names[index, 2] <- "Familiarity with Maths Concepts - Cosine"
+  
+  db$ST62Q17 <- substr(data[, 1], start = 247, stop = 247)
+  index <- which(names(db) == "ST62Q17")
+  
+  names[index, 1] <- "ST62Q17"
+  names[index, 2] <- "Familiarity with Maths Concepts - Arithmetic Mean"
+  
   return(list(data = db, names = names))
+  
   
 }
 
