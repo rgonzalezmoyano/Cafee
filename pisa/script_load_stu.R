@@ -338,9 +338,239 @@ sortBD <- function(
   names[index, 1] <- "ST26Q03"
   names[index, 2] <- "Possessions - study place"
   
-  db$ST26Q04 <- 
+  db$ST26Q04 <- substr(data[, 1], start = 88, stop = 88)
+  index <- which(names(db) == "ST26Q04")
   
+  names[index, 1] <- "ST26Q04"
+  names[index, 2] <- "Possessions - computer"
   
+  db$ST26Q05 <- substr(data[, 1], start = 89, stop = 89)
+  index <- which(names(db) == "ST26Q05")
+  
+  names[index, 1] <- "ST26Q05"
+  names[index, 2] <- "Possessions - software"
+  
+  db$ST26Q06 <- substr(data[, 1], start = 90, stop = 90)
+  index <- which(names(db) == "ST26Q06")
+  
+  names[index, 1] <- "ST26Q06"
+  names[index, 2] <- "Possessions - software"
+  
+  db$ST26Q07 <- substr(data[, 1], start = 91, stop = 91)
+  index <- which(names(db) == "ST26Q07")
+  
+  names[index, 1] <- "ST26Q07"
+  names[index, 2] <- "Possessions - literature"
+  
+  db$ST26Q07 <- substr(data[, 1], start = 91, stop = 91)
+  index <- which(names(db) == "ST26Q07")
+  
+  names[index, 1] <- "ST26Q07"
+  names[index, 2] <- "Possessions - literature"
+  
+  db$ST26Q08 <- substr(data[, 1], start = 92, stop = 92)
+  index <- which(names(db) == "ST26Q08")
+  
+  names[index, 1] <- "ST26Q08"
+  names[index, 2] <- "Possessions - poetry"
+  
+  db$ST26Q09 <- substr(data[, 1], start = 93, stop = 93)
+  index <- which(names(db) == "ST26Q09")
+  
+  names[index, 1] <- "ST26Q09"
+  names[index, 2] <- "Possessions - art"
+  
+  db$ST26Q10 <- substr(data[, 1], start = 94, stop = 94)
+  index <- which(names(db) == "ST26Q10")
+  
+  names[index, 1] <- "ST26Q10"
+  names[index, 2] <- "Possessions - textbooks"
+  
+  db$ST26Q11 <- substr(data[, 1], start = 95, stop = 95)
+  index <- which(names(db) == "ST26Q11")
+  
+  names[index, 1] <- "ST26Q11"
+  names[index, 2] <- "Possessions - <technical reference books>"
+  
+  db$ST26Q12 <- substr(data[, 1], start = 96, stop = 96)
+  index <- which(names(db) == "ST26Q12")
+  
+  names[index, 1] <- "ST26Q12"
+  names[index, 2] <- "Possessions - dictionary"
+  
+  db$ST26Q13 <- substr(data[, 1], start = 97, stop = 97)
+  index <- which(names(db) == "ST26Q13")
+  
+  names[index, 1] <- "ST26Q13"
+  names[index, 2] <- "Possessions - dishwasher"
+  
+  db$ST26Q14 <- substr(data[, 1], start = 98, stop = 98)
+  index <- which(names(db) == "ST26Q14")
+  
+  names[index, 1] <- "ST26Q14"
+  names[index, 2] <- "Possessions - <DVD>"
+  
+  db$ST26Q15 <- substr(data[, 1], start = 99, stop = 105)
+  index <- which(names(db) == "ST26Q15")
+  
+  names[index, 1] <- "ST26Q15"
+  names[index, 2] <- "Possessions - <Country item 1>"
+  
+  db$ST26Q16 <- substr(data[, 1], start = 106, stop = 112)
+  index <- which(names(db) == "ST26Q16")
+  
+  names[index, 1] <- "ST26Q16"
+  names[index, 2] <- "Possessions - <Country item 2>"
+  
+  db$ST26Q17 <- substr(data[, 1], start = 113, stop = 119)
+  index <- which(names(db) == "ST26Q17")
+  
+  names[index, 1] <- "ST26Q17"
+  names[index, 2] <- "Possessions - <Country item 3>"
+  
+  db$ST27Q01 <- substr(data[, 1], start = 120, stop = 120)
+  index <- which(names(db) == "ST27Q01")
+  
+  names[index, 1] <- "ST27Q01"
+  names[index, 2] <- "How many - cellular phones"
+  
+  db$ST27Q02 <- substr(data[, 1], start = 121, stop = 121)
+  index <- which(names(db) == "ST27Q02")
+  
+  names[index, 1] <- "ST27Q02"
+  names[index, 2] <- "How many - televisions"
+  
+  db$ST27Q03 <- substr(data[, 1], start = 122, stop = 122)
+  index <- which(names(db) == "ST27Q03")
+  
+  names[index, 1] <- "ST27Q03"
+  names[index, 2] <- "How many - computers"
+  
+  db$ST27Q04 <- substr(data[, 1], start = 123, stop = 123)
+  index <- which(names(db) == "ST27Q04")
+  
+  names[index, 1] <- "ST27Q04"
+  names[index, 2] <- "How many - cars"
+  
+  db$ST27Q05 <- substr(data[, 1], start = 124, stop = 124)
+  index <- which(names(db) == "ST27Q05")
+  
+  names[index, 1] <- "ST27Q05"
+  names[index, 2] <- "How many - rooms bath or shower"
+  
+  db$ST28Q01 <- substr(data[, 1], start = 125, stop = 125)
+  index <- which(names(db) == "ST28Q01")
+  
+  names[index, 1] <- "ST28Q01"
+  names[index, 2] <- "How many books at home"
+  
+  db$ST29Q01 <- substr(data[, 1], start = 126, stop = 126)
+  index <- which(names(db) == "ST29Q01")
+  
+  names[index, 1] <- "ST29Q01"
+  names[index, 2] <- "Maths Interest - Enjoy Reading"
+  
+  db$ST29Q02 <- substr(data[, 1], start = 127, stop = 127)
+  index <- which(names(db) == "ST29Q02")
+  
+  names[index, 1] <- "ST29Q02"
+  names[index, 2] <- "Instrumental Motivation - Worthwhile for Work"
+  
+  db$ST29Q03 <- substr(data[, 1], start = 128, stop = 128)
+  index <- which(names(db) == "ST29Q03")
+  
+  names[index, 1] <- "ST29Q03"
+  names[index, 2] <- "Maths Interest - Look Forward to Lessons"
+  
+  db$ST29Q04 <- substr(data[, 1], start = 129, stop = 129)
+  index <- which(names(db) == "ST29Q04")
+  
+  names[index, 1] <- "ST29Q04"
+  names[index, 2] <- "Maths Interest - Enjoy Maths"
+  
+  db$ST29Q05 <- substr(data[, 1], start = 130, stop = 130)
+  index <- which(names(db) == "ST29Q05")
+  
+  names[index, 1] <- "ST29Q05"
+  names[index, 2] <- "Instrumental Motivation - Worthwhile for Career Chances"
+  
+  db$ST29Q06 <- substr(data[, 1], start = 131, stop = 131)
+  index <- which(names(db) == "ST29Q06")
+  
+  names[index, 1] <- "ST29Q06"
+  names[index, 2] <- "Maths Interest - Interested"
+  
+  db$ST29Q07 <- substr(data[, 1], start = 132, stop = 132)
+  index <- which(names(db) == "ST29Q07")
+  
+  names[index, 1] <- "ST29Q07"
+  names[index, 2] <- "Instrumental Motivation - Important for Future Study"
+  
+  db$ST29Q08 <- substr(data[, 1], start = 133, stop = 133)
+  index <- which(names(db) == "ST29Q08")
+  
+  names[index, 1] <- "ST29Q08"
+  names[index, 2] <- "Instrumental Motivation - Helps to Get a Job"
+  
+  db$ST35Q01 <- substr(data[, 1], start = 134, stop = 134)
+  index <- which(names(db) == "ST35Q01")
+  
+  names[index, 1] <- "ST35Q01"
+  names[index, 2] <- "Subjective Norms - Friends Do Well in Mathematics"
+  
+  db$ST35Q02 <- substr(data[, 1], start = 135, stop = 135)
+  index <- which(names(db) == "ST35Q02")
+  
+  names[index, 1] <- "ST35Q02"
+  names[index, 2] <- "Subjective Norms - Friends Work Hard on Mathematics"
+  
+  db$ST35Q03 <- substr(data[, 1], start = 136, stop = 136)
+  index <- which(names(db) == "ST35Q03")
+  
+  names[index, 1] <- "ST35Q03"
+  names[index, 2] <- "Subjective Norms - Friends Enjoy Mathematics Tests"
+  
+  db$ST35Q04 <- substr(data[, 1], start = 137, stop = 137)
+  index <- which(names(db) == "ST35Q04")
+  
+  names[index, 1] <- "ST35Q04"
+  names[index, 2] <- "Subjective Norms - Parents Believe Studying Mathematics Is Important"
+  
+  db$ST35Q05 <- substr(data[, 1], start = 138, stop = 138)
+  index <- which(names(db) == "ST35Q05")
+  
+  names[index, 1] <- "ST35Q05"
+  names[index, 2] <- "Subjective Norms - Parents Believe Mathematics Is Important for Career"
+  
+  db$ST35Q06 <- substr(data[, 1], start = 139, stop = 139)
+  index <- which(names(db) == "ST35Q06")
+  
+  names[index, 1] <- "ST35Q06"
+  names[index, 2] <- "Subjective Norms - Parents Like Mathematics"
+  
+  db$ST37Q01 <- substr(data[, 1], start = 140, stop = 140)
+  index <- which(names(db) == "ST37Q01")
+  
+  names[index, 1] <- "ST37Q01"
+  names[index, 2] <- "Maths Self-Efficacy - Using a <Train Timetable>"
+  
+  db$ST37Q02 <- substr(data[, 1], start = 141, stop = 141)
+  index <- which(names(db) == "ST37Q02")
+  
+  names[index, 1] <- "ST37Q02"
+  names[index, 2] <- "Maths Self-Efficacy - Calculating TV Discount"
+  
+  db$ST37Q03 <- substr(data[, 1], start = 142, stop = 142)
+  index <- which(names(db) == "ST37Q03")
+  
+  names[index, 1] <- "ST37Q03"
+  names[index, 2] <- "Maths Self-Efficacy - Calculating Square Metres of Tiles"
+  
+  db$ST37Q04 <- substr(data[, 1], start = 143, stop = 143)
+  index <- which(names(db) == "ST37Q04")
+  
+  names[index, 1] <- "ST37Q04"
+  names[index, 2] <- "Maths Self-Efficacy - Understanding Graphs in Newspapers"
   
   return(list(data = db, names = names))
   
