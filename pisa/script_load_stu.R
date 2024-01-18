@@ -1094,6 +1094,680 @@ sortBD <- function(
   names[index, 1] <- "ST62Q17"
   names[index, 2] <- "Familiarity with Maths Concepts - Arithmetic Mean"
   
+  db$ST62Q19 <- substr(data[, 1], start = 248, stop = 248)
+  index <- which(names(db) == "ST62Q19")
+  
+  names[index, 1] <- "ST62Q19"
+  names[index, 2] <- "Familiarity with Maths Concepts - Probability"
+  
+  db$ST69Q01 <- substr(data[, 1], start = 249, stop = 252)
+  index <- which(names(db) == "ST69Q01")
+  
+  names[index, 1] <- "ST69Q01"
+  names[index, 2] <- "Min in <class period> - <test lang>"
+  
+  db$ST69Q02 <- substr(data[, 1], start = 253, stop = 256)
+  index <- which(names(db) == "ST69Q02")
+  
+  names[index, 1] <- "ST69Q02"
+  names[index, 2] <- "Min in <class period> - <Maths>"
+  
+  db$ST69Q03 <- substr(data[, 1], start = 257, stop = 260)
+  index <- which(names(db) == "ST69Q03")
+  
+  names[index, 1] <- "ST69Q03"
+  names[index, 2] <- "Min in <class period> - <Science>"
+  
+  db$ST70Q01 <- substr(data[, 1], start = 261, stop = 264)
+  index <- which(names(db) == "ST70Q01")
+  
+  names[index, 1] <- "ST70Q01"
+  names[index, 2] <- "No of <class period> p/wk - <test lang>"
+  
+  db$ST70Q02 <- substr(data[, 1], start = 265, stop = 268)
+  index <- which(names(db) == "ST70Q02")
+  
+  names[index, 1] <- "ST70Q02"
+  names[index, 2] <- "No of <class period> p/wk - <Maths>"
+  
+  db$ST70Q03 <- substr(data[, 1], start = 269, stop = 272)
+  index <- which(names(db) == "ST70Q03")
+  
+  names[index, 1] <- "ST70Q03"
+  names[index, 2] <- "No of <class period> p/wk - <Science>"
+  
+  db$ST71Q01 <- substr(data[, 1], start = 273, stop = 276)
+  index <- which(names(db) == "ST71Q01")
+  
+  names[index, 1] <- "ST71Q01"
+  names[index, 2] <- "No of ALL <class period> a week"
+  
+  db$ST72Q01 <- substr(data[, 1], start = 277, stop = 280)
+  index <- which(names(db) == "ST72Q01")
+  
+  names[index, 1] <- "ST72Q01"
+  names[index, 2] <- "Class Size - No of Students in <Test Language> Class"
+  
+  db$ST73Q01 <- substr(data[, 1], start = 281, stop = 281)
+  index <- which(names(db) == "ST73Q01")
+  
+  names[index, 1] <- "ST73Q01"
+  names[index, 2] <- "OTL - Algebraic Word Problem in Maths Lesson"
+  
+  db$ST73Q02 <- substr(data[, 1], start = 282, stop = 282)
+  index <- which(names(db) == "ST73Q02")
+  
+  names[index, 1] <- "ST73Q02"
+  names[index, 2] <- "OTL - Algebraic Word Problem in Tests"
+  
+  db$ST74Q01 <- substr(data[, 1], start = 283, stop = 283)
+  index <- which(names(db) == "ST74Q01")
+  
+  names[index, 1] <- "ST74Q01"
+  names[index, 2] <- "OTL - Procedural Task in Maths Lesson"
+  
+  db$ST74Q02 <- substr(data[, 1], start = 284, stop = 284)
+  index <- which(names(db) == "ST74Q02")
+  
+  names[index, 1] <- "ST74Q02"
+  names[index, 2] <- "OTL - Procedural Task in Tests"
+  
+  db$ST75Q01 <- substr(data[, 1], start = 285, stop = 285)
+  index <- which(names(db) == "ST75Q01")
+  
+  names[index, 1] <- "ST75Q01"
+  names[index, 2] <- "OTL - Pure Maths Reasoning in Maths Lesson"
+  
+  db$ST75Q02 <- substr(data[, 1], start = 286, stop = 286)
+  index <- which(names(db) == "ST75Q02")
+  
+  names[index, 1] <- "ST75Q02"
+  names[index, 2] <- "OTL - Pure Maths Reasoning in Tests"
+  
+  db$ST76Q01 <- substr(data[, 1], start = 287, stop = 287)
+  index <- which(names(db) == "ST76Q01")
+  
+  names[index, 1] <- "ST76Q01"
+  names[index, 2] <- "OTL - Applied Maths Reasoning in Maths Lesson"
+  
+  db$ST76Q02 <- substr(data[, 1], start = 288, stop = 288)
+  index <- which(names(db) == "ST76Q02")
+  
+  names[index, 1] <- "ST76Q02"
+  names[index, 2] <- "OTL - Applied Maths Reasoning in Tests"
+  
+  db$ST77Q01 <- substr(data[, 1], start = 289, stop = 289)
+  index <- which(names(db) == "ST77Q01")
+  
+  names[index, 1] <- "ST77Q01"
+  names[index, 2] <- "Maths Teaching - Teacher shows interest"
+  
+  db$ST77Q02 <- substr(data[, 1], start = 290, stop = 290)
+  index <- which(names(db) == "ST77Q02")
+  
+  names[index, 1] <- "ST77Q02"
+  names[index, 2] <- "Maths Teaching - Extra help"
+  
+  db$ST77Q04 <- substr(data[, 1], start = 291, stop = 291)
+  index <- which(names(db) == "ST77Q04")
+  
+  names[index, 1] <- "ST77Q04"
+  names[index, 2] <- "Maths Teaching - Teacher helps"
+  
+  db$ST77Q05 <- substr(data[, 1], start = 292, stop = 292)
+  index <- which(names(db) == "ST77Q05")
+  
+  names[index, 1] <- "ST77Q05"
+  names[index, 2] <- "Maths Teaching - Teacher continues"
+
+  db$ST77Q06 <- substr(data[, 1], start = 293, stop = 293)
+  index <- which(names(db) == "ST77Q06")
+  
+  names[index, 1] <- "ST77Q06"
+  names[index, 2] <- "Maths Teaching - Express opinions"
+  
+  db$ST79Q01 <- substr(data[, 1], start = 294, stop = 294)
+  index <- which(names(db) == "ST79Q01")
+  
+  names[index, 1] <- "ST79Q01"
+  names[index, 2] <- "Teacher-Directed Instruction - Sets Clear Goals"
+  
+  db$ST79Q02 <- substr(data[, 1], start = 295, stop = 295)
+  index <- which(names(db) == "ST79Q02")
+  
+  names[index, 1] <- "ST79Q02"
+  names[index, 2] <- "Teacher-Directed Instruction - Encourages Thinking and Reasoning"
+  
+  db$ST79Q03 <- substr(data[, 1], start = 296, stop = 296)
+  index <- which(names(db) == "ST79Q03")
+  
+  names[index, 1] <- "ST79Q03"
+  names[index, 2] <- "Student Orientation - Differentiates Between Students When Giving Tasks"
+  
+  db$ST79Q04 <- substr(data[, 1], start = 297, stop = 297)
+  index <- which(names(db) == "ST79Q04")
+  
+  names[index, 1] <- "ST79Q04"
+  names[index, 2] <- "Student Orientation - Assigns Complex Projects"
+  
+  db$ST79Q05 <- substr(data[, 1], start = 298, stop = 298)
+  index <- which(names(db) == "ST79Q05")
+  
+  names[index, 1] <- "ST79Q05"
+  names[index, 2] <- "Formative Assessment - Gives Feedback"
+  
+  db$ST79Q06 <- substr(data[, 1], start = 299, stop = 299)
+  index <- which(names(db) == "ST79Q06")
+  
+  names[index, 1] <- "ST79Q06"
+  names[index, 2] <- "Teacher-Directed Instruction - Checks Understanding"
+  
+  db$ST79Q07 <- substr(data[, 1], start = 300, stop = 300)
+  index <- which(names(db) == "ST79Q07")
+  
+  names[index, 1] <- "ST79Q07"
+  names[index, 2] <- "Student Orientation - Has Students Work in Small Groups"
+  
+  db$ST79Q08 <- substr(data[, 1], start = 301, stop = 301)
+  index <- which(names(db) == "ST79Q08")
+  
+  names[index, 1] <- "ST79Q08"
+  names[index, 2] <- "Teacher-Directed Instruction - Summarizes Previous Lessons"
+  
+  db$ST79Q10 <- substr(data[, 1], start = 302, stop = 302)
+  index <- which(names(db) == "ST79Q10")
+  
+  names[index, 1] <- "ST79Q10"
+  names[index, 2] <- "Student Orientation - Plans Classroom Activities"
+  
+  db$ST79Q11 <- substr(data[, 1], start = 303, stop = 303)
+  index <- which(names(db) == "ST79Q11")
+  
+  names[index, 1] <- "ST79Q11"
+  names[index, 2] <- "Formative Assessment - Gives Feedback on Strengths and Weaknesses"
+  
+  db$ST79Q12 <- substr(data[, 1], start = 304, stop = 304)
+  index <- which(names(db) == "ST79Q12")
+  
+  names[index, 1] <- "ST79Q12"
+  names[index, 2] <- "Formative Assessment - Informs about Expectations"
+  
+  db$ST79Q15 <- substr(data[, 1], start = 305, stop = 305)
+  index <- which(names(db) == "ST79Q15")
+  
+  names[index, 1] <- "ST79Q15"
+  names[index, 2] <- "Teacher-Directed Instruction - Informs about Learning Goals"
+  
+  db$ST79Q17 <- substr(data[, 1], start = 306, stop = 306)
+  index <- which(names(db) == "ST79Q17")
+  
+  names[index, 1] <- "ST79Q17"
+  names[index, 2] <- "Formative Assessment - Tells How to Get Better"
+  
+  db$ST80Q01 <- substr(data[, 1], start = 307, stop = 307)
+  index <- which(names(db) == "ST80Q01")
+  
+  names[index, 1] <- "ST80Q01"
+  names[index, 2] <- "Cognitive Activation - Teacher Encourages to Reflect Problems"
+  
+  db$ST80Q04 <- substr(data[, 1], start = 308, stop = 308)
+  index <- which(names(db) == "ST80Q04")
+  
+  names[index, 1] <- "ST80Q04"
+  names[index, 2] <- "Cognitive Activation - Gives Problems that Require to Think"
+  
+  db$ST80Q05 <- substr(data[, 1], start = 309, stop = 309)
+  index <- which(names(db) == "ST80Q05")
+  
+  names[index, 1] <- "ST80Q05"
+  names[index, 2] <- "Cognitive Activation - Asks to Use Own Procedures"
+  
+  db$ST80Q06 <- substr(data[, 1], start = 310, stop = 310)
+  index <- which(names(db) == "ST80Q06")
+  
+  names[index, 1] <- "ST80Q06"
+  names[index, 2] <- "Cognitive Activation - Presents Problems with No Obvious Solutions"
+  
+  db$ST80Q07 <- substr(data[, 1], start = 311, stop = 311)
+  index <- which(names(db) == "ST80Q07")
+  
+  names[index, 1] <- "ST80Q07"
+  names[index, 2] <- "Cognitive Activation - Presents Problems in Different Contexts"
+  
+  db$ST80Q08 <- substr(data[, 1], start = 312, stop = 312)
+  index <- which(names(db) == "ST80Q08")
+  
+  names[index, 1] <- "ST80Q08"
+  names[index, 2] <- "Cognitive Activation - Helps Learn from Mistakes"
+  
+  db$ST80Q09 <- substr(data[, 1], start = 313, stop = 313)
+  index <- which(names(db) == "ST80Q09")
+  
+  names[index, 1] <- "ST80Q09"
+  names[index, 2] <- "Cognitive Activation - Asks for Explanations"
+  
+  db$ST80Q10 <- substr(data[, 1], start = 314, stop = 314)
+  index <- which(names(db) == "ST80Q10")
+  
+  names[index, 1] <- "ST80Q10"
+  names[index, 2] <- "Cognitive Activation - Apply What We Learned"
+  
+  db$ST80Q11 <- substr(data[, 1], start = 315, stop = 315)
+  index <- which(names(db) == "ST80Q11")
+  
+  names[index, 1] <- "ST80Q11"
+  names[index, 2] <- "Cognitive Activation - Problems with Multiple Solutions"
+  
+  db$ST81Q01 <- substr(data[, 1], start = 316, stop = 316)
+  index <- which(names(db) == "ST81Q01")
+  
+  names[index, 1] <- "ST81Q01"
+  names[index, 2] <- "Disciplinary Climate - Students Don’t Listen"
+  
+  db$ST81Q02 <- substr(data[, 1], start = 317, stop = 317)
+  index <- which(names(db) == "ST81Q02")
+  
+  names[index, 1] <- "ST81Q02"
+  names[index, 2] <- "Disciplinary Climate - Noise and Disorder"
+  
+  db$ST81Q03 <- substr(data[, 1], start = 318, stop = 318)
+  index <- which(names(db) == "ST81Q03")
+  
+  names[index, 1] <- "ST81Q03"
+  names[index, 2] <- "Disciplinary Climate - Teacher Has to Wait Until its Quiet"
+  
+  db$ST81Q04 <- substr(data[, 1], start = 319, stop = 319)
+  index <- which(names(db) == "ST81Q04")
+  
+  names[index, 1] <- "ST81Q04"
+  names[index, 2] <- "Disciplinary Climate - Students Don’t Work Well"
+  
+  db$ST81Q05 <- substr(data[, 1], start = 320, stop = 320)
+  index <- which(names(db) == "ST81Q05")
+  
+  names[index, 1] <- "ST81Q05"
+  names[index, 2] <- "Disciplinary Climate - Students Start Working Late"
+  
+  db$ST82Q01 <- substr(data[, 1], start = 321, stop = 321)
+  index <- which(names(db) == "ST82Q01")
+  
+  names[index, 1] <- "ST82Q01"
+  names[index, 2] <- "Vignette Teacher Support - Homework Every Other Day/Back in Time"
+  
+  db$ST82Q02 <- substr(data[, 1], start = 322, stop = 322)
+  index <- which(names(db) == "ST82Q02")
+  
+  names[index, 1] <- "ST82Q02"
+  names[index, 2] <- "Vignette Teacher Support - Homework Once a Week/Back in Time"
+  
+  db$ST82Q03 <- substr(data[, 1], start = 323, stop = 323)
+  index <- which(names(db) == "ST82Q03")
+  
+  names[index, 1] <- "ST82Q03"
+  names[index, 2] <- "Vignette Teacher Support - Homework Once a Week/Not Back in Time"
+  
+  db$ST83Q01 <- substr(data[, 1], start = 324, stop = 324)
+  index <- which(names(db) == "ST83Q01")
+  
+  names[index, 1] <- "ST83Q01"
+  names[index, 2] <- "Teacher Support - Lets Us Know We Have to Work Hard"
+  
+  db$ST83Q02 <- substr(data[, 1], start = 325, stop = 325)
+  index <- which(names(db) == "ST83Q02")
+  
+  names[index, 1] <- "ST83Q02"
+  names[index, 2] <- "Teacher Support - Provides Extra Help When Needed"
+  
+  db$ST83Q03 <- substr(data[, 1], start = 326, stop = 326)
+  index <- which(names(db) == "ST83Q03")
+  
+  names[index, 1] <- "ST83Q03"
+  names[index, 2] <- "Teacher Support - Helps Students with Learning"
+  
+  db$ST83Q04 <- substr(data[, 1], start = 327, stop = 327)
+  index <- which(names(db) == "ST83Q04")
+  
+  names[index, 1] <- "ST83Q04"
+  names[index, 2] <- "Teacher Support - Gives Opportunity to Express Opinions"
+  
+  db$ST84Q01 <- substr(data[, 1], start = 328, stop = 328)
+  index <- which(names(db) == "ST84Q01")
+  
+  names[index, 1] <- "ST84Q01"
+  names[index, 2] <- "Vignette Classroom Management - Students Frequently Interrupt/Teacher Arrives Early"
+  
+  db$ST84Q02 <- substr(data[, 1], start = 329, stop = 329)
+  index <- which(names(db) == "ST84Q02")
+  
+  names[index, 1] <- "ST84Q02"
+  names[index, 2] <- "Vignette Classroom Management - Students Are Calm/Teacher Arrives on Time"
+  
+  db$ST84Q03 <- substr(data[, 1], start = 330, stop = 330)
+  index <- which(names(db) == "ST84Q03")
+  
+  names[index, 1] <- "ST84Q03"
+  names[index, 2] <- "Vignette Classroom Management - Students Frequently Interrupt/Teacher Arrives Late"
+  
+  db$ST85Q01 <- substr(data[, 1], start = 331, stop = 331)
+  index <- which(names(db) == "ST85Q01")
+  
+  names[index, 1] <- "ST85Q01"
+  names[index, 2] <- "Classroom Management - Students Listen"
+  
+  db$ST85Q02 <- substr(data[, 1], start = 332, stop = 332)
+  index <- which(names(db) == "ST85Q02")
+  
+  names[index, 1] <- "ST85Q02"
+  names[index, 2] <- "Classroom Management - Teacher Keeps Class Orderly"
+  
+  db$ST85Q03 <- substr(data[, 1], start = 333, stop = 333)
+  index <- which(names(db) == "ST85Q03")
+  
+  names[index, 1] <- "ST85Q03"
+  names[index, 2] <- "Classroom Management - Teacher Starts On Time"
+  
+  db$ST85Q04 <- substr(data[, 1], start = 334, stop = 334)
+  index <- which(names(db) == "ST85Q04")
+  
+  names[index, 1] <- "ST85Q04"
+  names[index, 2] <- "Classroom Management - Wait Long to <Quiet Down>"
+  
+  db$ST86Q01 <- substr(data[, 1], start = 335, stop = 335)
+  index <- which(names(db) == "ST86Q01")
+  
+  names[index, 1] <- "ST86Q01"
+  names[index, 2] <- "Student-Teacher Relations - Get Along with Teachers"
+  
+  db$ST86Q02 <- substr(data[, 1], start = 336, stop = 336)
+  index <- which(names(db) == "ST86Q02")
+  
+  names[index, 1] <- "ST86Q02"
+  names[index, 2] <- "Student-Teacher Relations - Teachers Are Interested"
+  
+  db$ST86Q03 <- substr(data[, 1], start = 337, stop = 337)
+  index <- which(names(db) == "ST86Q03")
+  
+  names[index, 1] <- "ST86Q03"
+  names[index, 2] <- "Student-Teacher Relations - Teachers Listen to Students"
+  
+  db$ST86Q04 <- substr(data[, 1], start = 338, stop = 338)
+  index <- which(names(db) == "ST86Q04")
+  
+  names[index, 1] <- "ST86Q04"
+  names[index, 2] <- "Student-Teacher Relations - Teachers Help Students"
+  
+  db$ST86Q05 <- substr(data[, 1], start = 339, stop = 339)
+  index <- which(names(db) == "ST86Q05")
+  
+  names[index, 1] <- "ST86Q05"
+  names[index, 2] <- "Student-Teacher Relations - Teachers Treat Students Fair"
+  
+  db$ST87Q01 <- substr(data[, 1], start = 340, stop = 340)
+  index <- which(names(db) == "ST87Q01")
+  
+  names[index, 1] <- "ST87Q01"
+  names[index, 2] <- "Sense of Belonging - Feel Like Outsider"
+  
+  db$ST87Q02 <- substr(data[, 1], start = 341, stop = 341)
+  index <- which(names(db) == "ST87Q02")
+  
+  names[index, 1] <- "ST87Q02"
+  names[index, 2] <- "Sense of Belonging - Make Friends Easily"
+  
+  db$ST87Q03 <- substr(data[, 1], start = 342, stop = 342)
+  index <- which(names(db) == "ST87Q03")
+  
+  names[index, 1] <- "ST87Q03"
+  names[index, 2] <- "Sense of Belonging - Belong at School"
+  
+  db$ST87Q04 <- substr(data[, 1], start = 343, stop = 343)
+  index <- which(names(db) == "ST87Q04")
+  
+  names[index, 1] <- "ST87Q04"
+  names[index, 2] <- "Sense of Belonging - Feel Awkward at School"
+  
+  db$ST87Q05 <- substr(data[, 1], start = 344, stop = 344)
+  index <- which(names(db) == "ST87Q05")
+  
+  names[index, 1] <- "ST87Q05"
+  names[index, 2] <- "Sense of Belonging - Liked by Other Students"
+  
+  db$ST87Q06 <- substr(data[, 1], start = 345, stop = 345)
+  index <- which(names(db) == "ST87Q06")
+  
+  names[index, 1] <- "ST87Q06"
+  names[index, 2] <- "Sense of Belonging - Feel Lonely at School"
+  
+  db$ST87Q07 <- substr(data[, 1], start = 346, stop = 346)
+  index <- which(names(db) == "ST87Q07")
+  
+  names[index, 1] <- "ST87Q07"
+  names[index, 2] <- "Sense of Belonging - Feel Happy at School"
+  
+  db$ST87Q08 <- substr(data[, 1], start = 347, stop = 347)
+  index <- which(names(db) == "ST87Q08")
+  
+  names[index, 1] <- "ST87Q08"
+  names[index, 2] <- "Sense of Belonging - Things Are Ideal at School"
+  
+  db$ST87Q09 <- substr(data[, 1], start = 348, stop = 348)
+  index <- which(names(db) == "ST87Q09")
+  
+  names[index, 1] <- "ST87Q09"
+  names[index, 2] <- "Sense of Belonging - Satisfied at School"
+  
+  db$ST88Q01 <- substr(data[, 1], start = 349, stop = 349)
+  index <- which(names(db) == "ST88Q01")
+  
+  names[index, 1] <- "ST88Q01"
+  names[index, 2] <- "Attitude towards School - Does Little to Prepare Me for Life"
+  
+  db$ST88Q02 <- substr(data[, 1], start = 350, stop = 350)
+  index <- which(names(db) == "ST88Q02")
+  
+  names[index, 1] <- "ST88Q02"
+  names[index, 2] <- "Attitude towards School - Waste of Time"
+  
+  db$ST88Q03 <- substr(data[, 1], start = 351, stop = 351)
+  index <- which(names(db) == "ST88Q03")
+  
+  names[index, 1] <- "ST88Q03"
+  names[index, 2] <- "Attitude towards School - Gave Me Confidence"
+  
+  db$ST88Q04 <- substr(data[, 1], start = 352, stop = 352)
+  index <- which(names(db) == "ST88Q04")
+  
+  names[index, 1] <- "ST88Q04"
+  names[index, 2] <- "Attitude towards School - Useful for Job"
+  
+  db$ST89Q02 <- substr(data[, 1], start = 353, stop = 353)
+  index <- which(names(db) == "ST89Q02")
+  
+  names[index, 1] <- "ST89Q02"
+  names[index, 2] <- "Attitude toward School - Helps to Get a Job"
+  
+  db$ST89Q03 <- substr(data[, 1], start = 354, stop = 354)
+  index <- which(names(db) == "ST89Q03")
+  
+  names[index, 1] <- "ST89Q03"
+  names[index, 2] <- "Attitude toward School - Prepare for College"
+  
+  db$ST89Q04 <- substr(data[, 1], start = 355, stop = 355)
+  index <- which(names(db) == "ST89Q04")
+  
+  names[index, 1] <- "ST89Q04"
+  names[index, 2] <- "Attitude toward School - Enjoy Good Grades"
+  
+  db$ST89Q05 <- substr(data[, 1], start = 356, stop = 356)
+  index <- which(names(db) == "ST89Q05")
+  
+  names[index, 1] <- "ST89Q05"
+  names[index, 2] <- "Attitude toward School - Trying Hard is Important"
+  
+  db$ST91Q01 <- substr(data[, 1], start = 357, stop = 357)
+  index <- which(names(db) == "ST91Q01")
+  
+  names[index, 1] <- "ST91Q01"
+  names[index, 2] <- "Perceived Control - Can Succeed with Enough Effort"
+  
+  db$ST91Q02 <- substr(data[, 1], start = 358, stop = 358)
+  index <- which(names(db) == "ST91Q02")
+  
+  names[index, 1] <- "ST91Q02"
+  names[index, 2] <- "Perceived Control - My Choice Whether I Will Be Good"
+  
+  db$ST91Q03 <- substr(data[, 1], start = 359, stop = 359)
+  index <- which(names(db) == "ST91Q03")
+  
+  names[index, 1] <- "ST91Q03"
+  names[index, 2] <- "Perceived Control - Problems Prevent from Putting Effort into School"
+  
+  db$ST91Q04 <- substr(data[, 1], start = 360, stop = 360)
+  index <- which(names(db) == "ST91Q04")
+  
+  names[index, 1] <- "ST91Q04"
+  names[index, 2] <- "Perceived Control - Different Teachers Would Make Me Try Harder"
+  
+  db$ST91Q05 <- substr(data[, 1], start = 361, stop = 361)
+  index <- which(names(db) == "ST91Q05")
+  
+  names[index, 1] <- "ST91Q05"
+  names[index, 2] <- "Perceived Control - Could Perform Well if I Wanted"
+  
+  db$ST91Q06 <- substr(data[, 1], start = 362, stop = 362)
+  index <- which(names(db) == "ST91Q06")
+  
+  names[index, 1] <- "ST91Q06"
+  names[index, 2] <- "Perceived Control - Perform Poor Regardless"
+  
+  db$ST93Q01 <- substr(data[, 1], start = 363, stop = 363)
+  index <- which(names(db) == "ST93Q01")
+  
+  names[index, 1] <- "ST93Q01"
+  names[index, 2] <- "Perseverance - Give up easily"
+  
+  db$ST93Q03 <- substr(data[, 1], start = 364, stop = 364)
+  index <- which(names(db) == "ST93Q03")
+  
+  names[index, 1] <- "ST93Q03"
+  names[index, 2] <- "Perseverance - Put off difficult problems"
+  
+  db$ST93Q04 <- substr(data[, 1], start = 365, stop = 365)
+  index <- which(names(db) == "ST93Q04")
+  
+  names[index, 1] <- "ST93Q04"
+  names[index, 2] <- "Perseverance - Remain interested"
+  
+  db$ST93Q06 <- substr(data[, 1], start = 366, stop = 366)
+  index <- which(names(db) == "ST93Q06")
+  
+  names[index, 1] <- "ST93Q06"
+  names[index, 2] <- "Perseverance - Remain interested"
+  
+  db$ST93Q07 <- substr(data[, 1], start = 367, stop = 367)
+  index <- which(names(db) == "ST93Q07")
+  
+  names[index, 1] <- "ST93Q07"
+  names[index, 2] <- "Perseverance - Exceed expectations"
+  
+  db$ST94Q05 <- substr(data[, 1], start = 368, stop = 368)
+  index <- which(names(db) == "ST94Q05")
+  
+  names[index, 1] <- "ST94Q05"
+  names[index, 2] <- "Openness for Problem Solving - Can Handle a Lot of Information"
+  
+  db$ST94Q06 <- substr(data[, 1], start = 369, stop = 369)
+  index <- which(names(db) == "ST94Q06")
+  
+  names[index, 1] <- "ST94Q06"
+  names[index, 2] <- "Openness for Problem Solving - Quick to Understand"
+  
+  db$ST94Q09 <- substr(data[, 1], start = 370, stop = 370)
+  index <- which(names(db) == "ST94Q09")
+  
+  names[index, 1] <- "ST94Q09"
+  names[index, 2] <- "Openness for Problem Solving - Seek Explanations"
+  
+  db$ST94Q10 <- substr(data[, 1], start = 371, stop = 371)
+  index <- which(names(db) == "ST94Q10")
+  
+  names[index, 1] <- "ST94Q10"
+  names[index, 2] <- "Openness for Problem Solving - Can Link Facts"
+  
+  db$ST94Q14 <- substr(data[, 1], start = 372, stop = 372)
+  index <- which(names(db) == "ST94Q14")
+  
+  names[index, 1] <- "ST94Q14"
+  names[index, 2] <- "Openness for Problem Solving - Like to Solve Complex Problems"
+  
+  db$ST96Q01 <- substr(data[, 1], start = 373, stop = 373)
+  index <- which(names(db) == "ST96Q01")
+  
+  names[index, 1] <- "ST96Q01"
+  names[index, 2] <- "Problem Text Message - Press every button"
+  
+  db$ST96Q02 <- substr(data[, 1], start = 374, stop = 374)
+  index <- which(names(db) == "ST96Q02")
+  
+  names[index, 1] <- "ST96Q02"
+  names[index, 2] <- "Problem Text Message - Trace steps"
+  
+  db$ST96Q03 <- substr(data[, 1], start = 375, stop = 375)
+  index <- which(names(db) == "ST96Q03")
+  
+  names[index, 1] <- "ST96Q03"
+  names[index, 2] <- "Problem Text Message - Manual"
+  
+  db$ST96Q05 <- substr(data[, 1], start = 376, stop = 376)
+  index <- which(names(db) == "ST96Q05")
+  
+  names[index, 1] <- "ST96Q05"
+  names[index, 2] <- "Problem Text Message - Ask a friend"
+  
+  db$ST101Q01 <- substr(data[, 1], start = 377, stop = 377)
+  index <- which(names(db) == "ST101Q01")
+  
+  names[index, 1] <- "ST101Q01"
+  names[index, 2] <- "Problem Route Selection - Read brochure"
+  
+  db$ST101Q02 <- substr(data[, 1], start = 378, stop = 378)
+  index <- which(names(db) == "ST101Q02")
+  
+  names[index, 1] <- "ST101Q02"
+  names[index, 2] <- "Problem Route Selection - Study map"
+  
+  db$ST101Q03 <- substr(data[, 1], start = 379, stop = 379)
+  index <- which(names(db) == "ST101Q03")
+  
+  names[index, 1] <- "ST101Q03"
+  names[index, 2] <- "Problem Route Selection - Leave it to brother"
+  
+  db$ST101Q05 <- substr(data[, 1], start = 380, stop = 380)
+  index <- which(names(db) == "ST101Q05")
+  
+  names[index, 1] <- "ST101Q05"
+  names[index, 2] <- "Problem Route Selection - Just drive"
+  
+  db$ST104Q01 <- substr(data[, 1], start = 381, stop = 381)
+  index <- which(names(db) == "ST104Q01")
+  
+  names[index, 1] <- "ST104Q01"
+  names[index, 2] <- "Problem Ticket Machine - Similarities"
+  
+  db$ST104Q04 <- substr(data[, 1], start = 382, stop = 382)
+  index <- which(names(db) == "ST104Q04")
+  
+  names[index, 1] <- "ST104Q04"
+  names[index, 2] <- "Problem Ticket Machine - Try buttons"
+  
+  db$ST104Q05 <- substr(data[, 1], start = 383, stop = 383)
+  index <- which(names(db) == "ST104Q05")
+  
+  names[index, 1] <- "ST104Q05"
+  names[index, 2] <- "Problem Ticket Machine - Ask for help"
+  
+  
+  
   return(list(data = db, names = names))
   
   
