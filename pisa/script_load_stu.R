@@ -2348,15 +2348,464 @@ sortBD <- function(
   names[index, 1] <- "EC07Q01"
   names[index, 2] <- "Language spoken - Mother"
   
-  db$EC07Q01 <- substr(data[, 1], start = 483, stop = 483)
-  index <- which(names(db) == "EC07Q01")
+  db$EC07Q02 <- substr(data[, 1], start = 483, stop = 483)
+  index <- which(names(db) == "EC07Q02")
   
-  names[index, 1] <- "EC07Q01"
-  names[index, 2] <- "Language spoken - Mother"
+  names[index, 1] <- "EC07Q02"
+  names[index, 2] <- "Language spoken - Father"
   
+  db$EC07Q03 <- substr(data[, 1], start = 484, stop = 484)
+  index <- which(names(db) == "EC07Q03")
+  
+  names[index, 1] <- "EC07Q03"
+  names[index, 2] <- "Language spoken - Siblings"
+  
+  db$EC07Q04 <- substr(data[, 1], start = 485, stop = 485)
+  index <- which(names(db) == "EC07Q04")
+  
+  names[index, 1] <- "EC07Q04"
+  names[index, 2] <- "Language spoken - Best friend"
+  
+  db$EC07Q05 <- substr(data[, 1], start = 486, stop = 486)
+  index <- which(names(db) == "EC07Q05")
+  
+  names[index, 1] <- "EC07Q05"
+  names[index, 2] <- "Language spoken - Schoolmates"
+  
+  db$EC08Q01 <- substr(data[, 1], start = 487, stop = 487)
+  index <- which(names(db) == "EC08Q01")
+  
+  names[index, 1] <- "EC08Q01"
+  names[index, 2] <- "Activities language - Reading"
+  
+  db$EC08Q02 <- substr(data[, 1], start = 488, stop = 488)
+  index <- which(names(db) == "EC08Q02")
+  
+  names[index, 1] <- "EC08Q02"
+  names[index, 2] <- "Activities language - Watching TV"
+  
+  db$EC08Q03 <- substr(data[, 1], start = 489, stop = 489)
+  index <- which(names(db) == "EC08Q03")
+  
+  names[index, 1] <- "EC08Q03"
+  names[index, 2] <- "Activities language - Internet surfing"
+  
+  db$EC08Q04 <- substr(data[, 1], start = 490, stop = 490)
+  index <- which(names(db) == "EC08Q04")
+  
+  names[index, 1] <- "EC08Q04"
+  names[index, 2] <- "Activities language - Writing emails"
+  
+  db$EC09Q03 <- substr(data[, 1], start = 491, stop = 491)
+  index <- which(names(db) == "EC09Q03")
+  
+  names[index, 1] <- "EC09Q03"
+  names[index, 2] <- "Types of support <test language> - remedial lessons"
+  
+  db$EC10Q01 <- substr(data[, 1], start = 492, stop = 492)
+  index <- which(names(db) == "EC10Q01")
+  
+  names[index, 1] <- "EC10Q01"
+  names[index, 2] <- "Amount of support <test language>"
+  
+  db$EC11Q02 <- substr(data[, 1], start = 493, stop = 493)
+  index <- which(names(db) == "EC11Q02")
+  
+  names[index, 1] <- "EC11Q02"
+  names[index, 2] <- "Attend lessons <heritage language> - focused"
+  
+  db$EC11Q03 <- substr(data[, 1], start = 494, stop = 494)
+  index <- which(names(db) == "EC11Q03")
+  
+  names[index, 1] <- "EC11Q03"
+  names[index, 2] <- "Attend lessons <heritage language> - school subjects"
+  
+  db$EC12Q01 <- substr(data[, 1], start = 495, stop = 495)
+  index <- which(names(db) == "EC12Q01")
+  
+  names[index, 1] <- "EC12Q01"
+  names[index, 2] <- "Instruction in <heritage language>"
+  
+  db$ST22Q01 <- substr(data[, 1], start = 496, stop = 496)
+  index <- which(names(db) == "ST22Q01")
+  
+  names[index, 1] <- "ST22Q01"
+  names[index, 2] <- "Acculturation - Mother Immigrant (Filter)"
+  
+  db$ST23Q01 <- substr(data[, 1], start = 497, stop = 497)
+  index <- which(names(db) == "ST23Q01")
+  
+  names[index, 1] <- "ST23Q01"
+  names[index, 2] <- "Acculturation - Enjoy <Host Culture> Friends"
+  
+  db$ST23Q02 <- substr(data[, 1], start = 498, stop = 498)
+  index <- which(names(db) == "ST23Q02")
+  
+  names[index, 1] <- "ST23Q02"
+  names[index, 2] <- "Acculturation - Enjoy <Heritage Culture> Friends"
+  
+  db$ST23Q03 <- substr(data[, 1], start = 499, stop = 499)
+  index <- which(names(db) == "ST23Q03")
+  
+  names[index, 1] <- "ST23Q03"
+  names[index, 2] <- "Acculturation - Enjoy <Host Culture> Celebrations"
+  
+  db$ST23Q04 <- substr(data[, 1], start = 500, stop = 500)
+  index <- which(names(db) == "ST23Q04")
+  
+  names[index, 1] <- "ST23Q04"
+  names[index, 2] <- "Acculturation - Enjoy <Heritage Culture> Celebrations"
+  
+  db$ST23Q05 <- substr(data[, 1], start = 501, stop = 501)
+  index <- which(names(db) == "ST23Q05")
+  
+  names[index, 1] <- "ST23Q05"
+  names[index, 2] <- "Acculturation - Spend Time with <Host Culture> Friends"
+  
+  db$ST23Q06 <- substr(data[, 1], start = 502, stop = 502)
+  index <- which(names(db) == "ST23Q06")
+  
+  names[index, 1] <- "ST23Q06"
+  names[index, 2] <- "Acculturation - Spend Time with <Heritage Culture> Friends"
+  
+  db$ST23Q07 <- substr(data[, 1], start = 503, stop = 503)
+  index <- which(names(db) == "ST23Q07")
+  
+  names[index, 1] <- "ST23Q07"
+  names[index, 2] <- "Acculturation - Participate in <Host Culture> Celebrations"
+  
+  db$ST23Q08 <- substr(data[, 1], start = 504, stop = 504)
+  index <- which(names(db) == "ST23Q08")
+  
+  names[index, 1] <- "ST23Q08"
+  names[index, 2] <- "Acculturation - Participate in <Heritage Culture> Celebrations"
+  
+  db$ST24Q01 <- substr(data[, 1], start = 505, stop = 505)
+  index <- which(names(db) == "ST24Q01")
+  
+  names[index, 1] <- "ST24Q01"
+  names[index, 2] <- "Acculturation - Perceived Host-Heritage Cultural Differences - Values"
+  
+  db$ST24Q02 <- substr(data[, 1], start = 506, stop = 506)
+  index <- which(names(db) == "ST24Q02")
+  
+  names[index, 1] <- "ST24Q02"
+  names[index, 2] <- "Acculturation - Perceived Host-Heritage Cultural Differences - Mother Treatment"
+  
+  db$ST24Q03 <- substr(data[, 1], start = 507, stop = 507)
+  index <- which(names(db) == "ST24Q03")
+  
+  names[index, 1] <- "ST24Q03"
+  names[index, 2] <- "Acculturation - Perceived Host-Heritage Cultural Differences - Teacher Treatment"
+  
+  db$CLCUSE1 <- substr(data[, 1], start = 508, stop = 508)
+  index <- which(names(db) == "CLCUSE1")
+  
+  names[index, 1] <- "CLCUSE1"
+  names[index, 2] <- "Calculator Use"
+  
+  db$CLCUSE301 <- substr(data[, 1], start = 509, stop = 510)
+  index <- which(names(db) == "CLCUSE301")
+  
+  names[index, 1] <- "CLCUSE301"
+  names[index, 2] <- "Effort-real 1"
+  
+  db$CLCUSE302 <- substr(data[, 1], start = 511, stop = 512)
+  index <- which(names(db) == "CLCUSE302")
+  
+  names[index, 1] <- "CLCUSE302"
+  names[index, 2] <- "Effort-real 2"
+  
+  db$DEFFORT <- substr(data[, 1], start = 513, stop = 514)
+  index <- which(names(db) == "DEFFORT")
+  
+  names[index, 1] <- "DEFFORT"
+  names[index, 2] <- "Difference in Effort"
+  
+  db$QUESTID <- substr(data[, 1], start = 515, stop = 515)
+  index <- which(names(db) == "QUESTID")
+  
+  names[index, 1] <- "QUESTID"
+  names[index, 2] <- "Student Questionnaire Form"
+  
+  db$BOOKID <- substr(data[, 1], start = 516, stop = 517)
+  index <- which(names(db) == "BOOKID")
+  
+  names[index, 1] <- "BOOKID"
+  names[index, 2] <- "Booklet ID"
+  
+  db$EASY <- substr(data[, 1], start = 518, stop = 518)
+  index <- which(names(db) == "EASY")
+  
+  names[index, 1] <- "EASY"
+  names[index, 2] <- "Standard or simplified set of booklets"
+  
+  db$AGE <- substr(data[, 1], start = 519, stop = 526)
+  index <- which(names(db) == "AGE")
+  
+  names[index, 1] <- "AGE"
+  names[index, 2] <- "Standard or simplified set of booklets"
+  
+  db$GRADE <- substr(data[, 1], start = 527, stop = 528)
+  index <- which(names(db) == "GRADE")
+  
+  names[index, 1] <- "GRADE"
+  names[index, 2] <- "Grade compared to modal grade in country"
+  
+  db$PROGN <- substr(data[, 1], start = 529, stop = 536)
+  index <- which(names(db) == "PROGN")
+  
+  names[index, 1] <- "PROGN"
+  names[index, 2] <- "Unique national study programme code"
+  
+  db$ANXMAT <- substr(data[, 1], start = 537, stop = 544)
+  index <- which(names(db) == "ANXMAT")
+  
+  names[index, 1] <- "ANXMAT"
+  names[index, 2] <- "Mathematics Anxiety"
+  
+  db$ATSCHL <- substr(data[, 1], start = 545, stop = 552)
+  index <- which(names(db) == "ATSCHL")
+  
+  names[index, 1] <- "ATSCHL"
+  names[index, 2] <- "Attitude towards School: Learning Outcomes"
+  
+  db$ATTLNACT <- substr(data[, 1], start = 553, stop = 561)
+  index <- which(names(db) == "ATTLNACT")
+  
+  names[index, 1] <- "ATTLNACT"
+  names[index, 2] <- "Attitude towards School: Learning Activities"
+  
+  db$BELONG <- substr(data[, 1], start = 562, stop = 569)
+  index <- which(names(db) == "BELONG")
+  
+  names[index, 1] <- "BELONG"
+  names[index, 2] <- "Sense of Belonging to School"
+  
+  db$BFMJ2 <- substr(data[, 1], start = 570, stop = 574)
+  index <- which(names(db) == "BFMJ2")
+  
+  names[index, 1] <- "BFMJ2"
+  names[index, 2] <- "Father SQ ISEI"
+  
+  db$BMMJ1 <- substr(data[, 1], start = 575, stop = 579)
+  index <- which(names(db) == "BMMJ1")
+  
+  names[index, 1] <- "BMMJ1"
+  names[index, 2] <- "Mother SQ ISEI"
+  
+  db$CLSMAN <- substr(data[, 1], start = 580, stop = 588)
+  index <- which(names(db) == "CLSMAN")
+  
+  names[index, 1] <- "CLSMAN"
+  names[index, 2] <- "Mathematics Teacher's Classroom Management"
+  
+  db$COBN_F <- substr(data[, 1], start = 589, stop = 594)
+  index <- which(names(db) == "COBN_F")
+  
+  names[index, 1] <- "COBN_F"
+  names[index, 2] <- "Country of Birth National Categories-Father"
+  
+  db$COBN_M <- substr(data[, 1], start = 595, stop = 600)
+  index <- which(names(db) == "COBN_M")
+  
+  names[index, 1] <- "COBN_M"
+  names[index, 2] <- "Country of Birth National Categories-Father"
+  
+  db$COBN_S <- substr(data[, 1], start = 601, stop = 606)
+  index <- which(names(db) == "COBN_S")
+  
+  names[index, 1] <- "COBN_S"
+  names[index, 2] <- "Country of Birth National Categories- Self"
+  
+  db$COGACT <- substr(data[, 1], start = 607, stop = 615)
+  index <- which(names(db) == "COGACT")
+  
+  names[index, 1] <- "COGACT"
+  names[index, 2] <- "Cognitive Activation in Mathematics Lessons"
+  
+  db$CULTDIST <- substr(data[, 1], start = 616, stop = 624)
+  index <- which(names(db) == "CULTDIST")
+  
+  names[index, 1] <- "CULTDIST"
+  names[index, 2] <- "Cultural Distance between Host and Heritage Culture"
+  
+  db$CULTPOS <- substr(data[, 1], start = 625, stop = 632)
+  index <- which(names(db) == "CULTPOS")
+  
+  names[index, 1] <- "CULTPOS"
+  names[index, 2] <- "Cultural Possessions"
+  
+  db$DISCLIMA <- substr(data[, 1], start = 633, stop = 640)
+  index <- which(names(db) == "DISCLIMA")
+  
+  names[index, 1] <- "DISCLIMA"
+  names[index, 2] <- "Disciplinary Climate"
+  
+  db$ENTUSE <- substr(data[, 1], start = 641, stop = 649)
+  index <- which(names(db) == "ENTUSE")
+  
+  names[index, 1] <- "ENTUSE"
+  names[index, 2] <- "ICT Entertainment Use"
+  
+  db$ESCS <- substr(data[, 1], start = 650, stop = 657)
+  index <- which(names(db) == "ESCS")
+  
+  names[index, 1] <- "ESCS"
+  names[index, 2] <- "Index of economic, social and cultural status"
+  
+  db$EXAPPLM <- substr(data[, 1], start = 658, stop = 666)
+  index <- which(names(db) == "EXAPPLM")
+  
+  names[index, 1] <- "EXAPPLM"
+  names[index, 2] <- "Experience with Applied Mathematics Tasks at School"
+  
+  db$EXPUREM <- substr(data[, 1], start = 667, stop = 675)
+  index <- which(names(db) == "EXPUREM")
+  
+  names[index, 1] <- "EXPUREM"
+  names[index, 2] <- "Experience with Pure Mathematics Tasks at School"
+  
+  db$FAILMAT <- substr(data[, 1], start = 676, stop = 684)
+  index <- which(names(db) == "FAILMAT")
+  
+  names[index, 1] <- "FAILMAT"
+  names[index, 2] <- "Attributions to Failure in Mathematics"
+  
+  db$FAMCON <- substr(data[, 1], start = 685, stop = 693)
+  index <- which(names(db) == "FAMCON")
+  
+  names[index, 1] <- "FAMCON"
+  names[index, 2] <- "Familiarity with Mathematical Concepts"
+  
+  db$FAMCONC <- substr(data[, 1], start = 694, stop = 701)
+  index <- which(names(db) == "FAMCONC")
+  
+  names[index, 1] <- "FAMCONC"
+  names[index, 2] <- "Familiarity with Mathematical Concepts (Signal Detection Adjusted)"
+  
+  
+  db$FAMSTRUC <- substr(data[, 1], start = 702, stop = 702)
+  index <- which(names(db) == "FAMSTRUC")
+  
+  names[index, 1] <- "FAMSTRUC"
+  names[index, 2] <- "Family Structure"
+  
+  db$FISCED <- substr(data[, 1], start = 703, stop = 703)
+  index <- which(names(db) == "FISCED")
+  
+  names[index, 1] <- "FISCED"
+  names[index, 2] <- "Educational level of father (ISCED)"
+  
+  db$HEDRES <- substr(data[, 1], start = 704, stop = 711)
+  index <- which(names(db) == "HEDRES")
+  
+  names[index, 1] <- "HEDRES"
+  names[index, 2] <- "Home educational resources"
+  
+  db$HERITCUL <- substr(data[, 1], start = 712, stop = 720)
+  index <- which(names(db) == "HERITCUL")
+  
+  names[index, 1] <- "HERITCUL"
+  names[index, 2] <- "Acculturation: Heritage Culture Oriented Strategies"
+  
+  db$HISCED <- substr(data[, 1], start = 721, stop = 721)
+  index <- which(names(db) == "HISCED")
+  
+  names[index, 1] <- "HISCED"
+  names[index, 2] <- "Highest educational level of parents"
+  
+  db$HISEI <- substr(data[, 1], start = 722, stop = 729)
+  index <- which(names(db) == "HISEI")
+  
+  names[index, 1] <- "HISEI"
+  names[index, 2] <- "Highest parental occupational status"
+  
+  db$HOMEPOS <- substr(data[, 1], start = 730, stop = 737)
+  index <- which(names(db) == "HOMEPOS")
+  
+  names[index, 1] <- "HOMEPOS"
+  names[index, 2] <- "Home Possessions"
+  
+  db$HOMSCH <- substr(data[, 1], start = 738, stop = 746)
+  index <- which(names(db) == "HOMSCH")
+  
+  names[index, 1] <- "HOMSCH"
+  names[index, 2] <- "ICT Use at Home for School-related Tasks"
+  
+  db$HOSTCUL <- substr(data[, 1], start = 737, stop = 755)
+  index <- which(names(db) == "HOSTCUL")
+  
+  names[index, 1] <- "HOSTCUL"
+  names[index, 2] <- "Acculturation: Host Culture Oriented Strategies"
+  
+  db$ICTATTNEG <- substr(data[, 1], start = 756, stop = 764)
+  index <- which(names(db) == "ICTATTNEG")
+  
+  names[index, 1] <- "ICTATTNEG"
+  names[index, 2] <- "Attitudes Towards Computers: Limitations of the Computer as a Tool for School Learning"
+  
+  db$ICTATTPOS <- substr(data[, 1], start = 765, stop = 773)
+  index <- which(names(db) == "ICTATTPOS")
+  
+  names[index, 1] <- "ICTATTPOS"
+  names[index, 2] <- "Attitudes Towards Computers: Computer as a Tool for School Learning"
+  
+  db$ICTHOME <- substr(data[, 1], start = 774, stop = 782)
+  index <- which(names(db) == "ICTHOME")
+  
+  names[index, 1] <- "ICTHOME"
+  names[index, 2] <- "ICT Availability at Home"
+  
+  db$ICTSCH <- substr(data[, 1], start = 783, stop = 791)
+  index <- which(names(db) == "ICTSCH")
+  
+  names[index, 1] <- "ICTSCH"
+  names[index, 2] <- "ICT Availability at School"
+  
+  db$IMMIG <- substr(data[, 1], start = 792, stop = 792)
+  index <- which(names(db) == "IMMIG")
+  
+  names[index, 1] <- "IMMIG"
+  names[index, 2] <- "Immigration status"
+  
+  db$INFOCAR <- substr(data[, 1], start = 793, stop = 801)
+  index <- which(names(db) == "INFOCAR")
+  
+  names[index, 1] <- "INFOCAR"
+  names[index, 2] <- "Information about Careers"
+  
+  db$INFOCAR <- substr(data[, 1], start = 793, stop = 801)
+  index <- which(names(db) == "INFOCAR")
+  
+  names[index, 1] <- "INFOCAR"
+  names[index, 2] <- "Information about Careers"
+  
+  db$INFOJOB1 <- substr(data[, 1], start = 802, stop = 810)
+  index <- which(names(db) == "INFOJOB1")
+  
+  names[index, 1] <- "INFOJOB1"
+  names[index, 2] <- "Information about the Labour Market provided by the School"
+  
+  db$INFOJOB2 <- substr(data[, 1], start = 811, stop = 819)
+  index <- which(names(db) == "INFOJOB2")
+  
+  names[index, 1] <- "INFOJOB2"
+  names[index, 2] <- "Information about the Labour Market provided outside of School"
+  
+  db$INSTMOT <- substr(data[, 1], start = 820, stop = 827)
+  index <- which(names(db) == "INSTMOT")
+  
+  names[index, 1] <- "INSTMOT"
+  names[index, 2] <- "Instrumental Motivation for Mathematics"
+  
+  db$INTMAT <- substr(data[, 1], start = 828, stop = 835)
+  index <- which(names(db) == "INTMAT")
+  
+  names[index, 1] <- "INTMAT"
+  names[index, 2] <- "Mathematics Interest"
   
   return(list(data = db, names = names))
-  
   
 }
 
