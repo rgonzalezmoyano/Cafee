@@ -62,19 +62,94 @@ efficiency_estimation <- function (
     data <- as.data.frame(data)
     
     # 3 labelling as not efficient
-    data$class_efficiency <- "not_efficient"
+    data$class_efficiency <- rep(0, nrow(data))
     
-    # labelling as efficient
-    data_opt <- as.data.frame(cbind(data[, x], y = bootstrapping_dea[["eff.bc"]] * data[, y]))
-    data_opt$class_efficiency <- "efficient"
-    names(data_opt) <- names(data)
+    # prueba 2
+    n <- 10
+    new_scores <- matrix(NA, ncol = 1, nrow = n * nrow(data))
     
-    # join data
-    data <- rbind(data, data_opt)
+    scores <- bootstrapping_dea[["conf.int"]]
+    max_score <- apply(scores, 1, max)
+    min_score <- apply(scores, 1, min)
+
+    for (i in 1:nrow(data)) {
+      
+      n_new_dmus <- nrow(data) * n
+      index <- 1:n_new_dmus
+      matrix_idx <- matrix(index, nrow = length(index)/n, ncol = n, byrow = TRUE)
+      
+      rows <- matrix_idx[i, ]
+      random_scores <- runif(n, min = 1, max = max_score[i]) 
+      
+      new_dmus <- as.data.frame(matrix(NA, ncol = length(data[, c(x,y)])) )
+      names(new_dmus) <- names(data[, c(x, y)])
+      new_dmus <- na.omit(new_dmus)
+      
+      for (t in 1:length(rows)) {
+       
+        new_dmus <- rbind(new_dmus, data[i, c(x, y)])
+        
+      }
+      
+      new_dmus["y"] <- new_dmus["y"] * random_scores
+      
+      idx_eff <- data.frame (
+        "random_scores" = random_scores,
+        "class_efficiency" = rep(NA, n)
+      )
+      
+      determinate_eff_score <- function(score, min) {
+        ifelse(score < min, 0, 1)
+      }
+      
+      idx_eff[, 2] <- determinate_eff_score(score = random_scores, min = min_score[i])
+      
+      names_data <- names(data)
+      
+      new_dmus <- as.data.frame(new_dmus)
+      new_dmus$class_efficiency <- idx_eff[, 2]
+      
+      names(new_dmus) <- names_data
+      
+      data <- rbind(data, new_dmus)
+      
+    }
+    
     data$class_efficiency <- as.factor(data$class_efficiency)
+    #levels(new_dmus$class_efficiency) <- c("efficient", "not_efficient")
     
-    # class_efficiency as factor
+    data$class_efficiency <- factor(data$class_efficiency)
+    data$class_efficiency <- factor (
+      data$class_efficiency,
+      levels = rev(levels(data$class_efficiency))
+    )
+    
     levels(data$class_efficiency) <- c("efficient", "not_efficient")
+    
+    #break
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    # antiguo 
+    
+    # # labelling as efficient
+    # data_opt <- as.data.frame(cbind(data[, x], y = bootstrapping_dea[["eff.bc"]] * data[, y]))
+    # data_opt$class_efficiency <- "efficient"
+    # names(data_opt) <- names(data)
+    # 
+    # # join data
+    # data <- rbind(data, data_opt)
+    # data$class_efficiency <- as.factor(data$class_efficiency)
+    # 
+    # # class_efficiency as factor
+    # levels(data$class_efficiency) <- c("efficient", "not_efficient")
 
   } else if (target_method == "additive") {
     

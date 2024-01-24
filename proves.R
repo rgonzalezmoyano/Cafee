@@ -138,6 +138,11 @@ ggplot(data = data) +
   geom_point(aes(x = x1, y = y)) +
   #geom_text(aes(x = x1, y = y, label = rownames(data))) +
   theme_bw()
+
+ggplot(data = data) +
+  geom_point(aes(x = x1, y = y, color = class_efficiency)) +
+  #geom_text(aes(x = x1, y = y, label = rownames(data))) +
+  theme_bw()
   
 
 

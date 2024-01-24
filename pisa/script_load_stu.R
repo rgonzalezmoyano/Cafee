@@ -1766,6 +1766,593 @@ sortBD <- function(
   names[index, 1] <- "ST104Q05"
   names[index, 2] <- "Problem Ticket Machine - Ask for help"
   
+  db$ST104Q06 <- substr(data[, 1], start = 384, stop = 384)
+  index <- which(names(db) == "ST104Q06")
+  
+  names[index, 1] <- "ST104Q06"
+  names[index, 2] <- "Problem Ticket Machine - Find ticket office"
+  
+  db$IC01Q01 <- substr(data[, 1], start = 385, stop = 385)
+  index <- which(names(db) == "IC01Q01")
+  
+  names[index, 1] <- "IC01Q01"
+  names[index, 2] <- "At Home - Desktop Computer"
+  
+  db$IC01Q02 <- substr(data[, 1], start = 386, stop = 386)
+  index <- which(names(db) == "IC01Q02")
+  
+  names[index, 1] <- "IC01Q02"
+  names[index, 2] <- "At Home - Portable laptop"
+  
+  db$IC01Q03 <- substr(data[, 1], start = 387, stop = 387)
+  index <- which(names(db) == "IC01Q03")
+  
+  names[index, 1] <- "IC01Q03"
+  names[index, 2] <- "At Home - Tablet computerp"
+  
+  db$IC01Q04 <- substr(data[, 1], start = 388, stop = 388)
+  index <- which(names(db) == "IC01Q04")
+  
+  names[index, 1] <- "IC01Q04"
+  names[index, 2] <- "At Home - Internet connection"
+  
+  db$IC01Q05 <- substr(data[, 1], start = 389, stop = 389)
+  index <- which(names(db) == "IC01Q05")
+  
+  names[index, 1] <- "IC01Q05"
+  names[index, 2] <- "At Home - Video games console"
+  
+  db$IC01Q06 <- substr(data[, 1], start = 390, stop = 390)
+  index <- which(names(db) == "IC01Q06")
+  
+  names[index, 1] <- "IC01Q06"
+  names[index, 2] <- "At Home - Cell phone w/o Internet"
+  
+  db$IC01Q07 <- substr(data[, 1], start = 391, stop = 391)
+  index <- which(names(db) == "IC01Q07")
+  
+  names[index, 1] <- "IC01Q07"
+  names[index, 2] <- "At Home - Cell phone with Internet"
+  
+  db$IC01Q08 <- substr(data[, 1], start = 392, stop = 392)
+  index <- which(names(db) == "IC01Q08")
+  
+  names[index, 1] <- "IC01Q08"
+  names[index, 2] <- "At Home - Mp3/Mp4 player"
+  
+  db$IC01Q09 <- substr(data[, 1], start = 393, stop = 393)
+  index <- which(names(db) == "IC01Q09")
+  
+  names[index, 1] <- "IC01Q09"
+  names[index, 2] <- "At Home - Printer"
+  
+  db$IC01Q10 <- substr(data[, 1], start = 394, stop = 394)
+  index <- which(names(db) == "IC01Q10")
+  
+  names[index, 1] <- "IC01Q10"
+  names[index, 2] <- "At Home - USB (memory) stick"
+  
+  db$IC01Q11 <- substr(data[, 1], start = 395, stop = 395)
+  index <- which(names(db) == "IC01Q11")
+  
+  names[index, 1] <- "IC01Q11"
+  names[index, 2] <- "At Home - Ebook reader"
+  
+  db$IC02Q01 <- substr(data[, 1], start = 396, stop = 396)
+  index <- which(names(db) == "IC02Q01")
+  
+  names[index, 1] <- "IC02Q01"
+  names[index, 2] <- "At school - Desktop Computer"
+  
+  db$IC02Q02 <- substr(data[, 1], start = 397, stop = 397)
+  index <- which(names(db) == "IC02Q02")
+  
+  names[index, 1] <- "IC02Q02"
+  names[index, 2] <- "At school - Portable laptop"
+  
+  db$IC02Q03 <- substr(data[, 1], start = 398, stop = 398)
+  index <- which(names(db) == "IC02Q03")
+  
+  names[index, 1] <- "IC02Q03"
+  names[index, 2] <- "At school - Tablet computer"
+  
+  db$IC02Q04 <- substr(data[, 1], start = 399, stop = 399)
+  index <- which(names(db) == "IC02Q04")
+  
+  names[index, 1] <- "IC02Q04"
+  names[index, 2] <- "At school - Internet connection"
+  
+  db$IC02Q05 <- substr(data[, 1], start = 400, stop = 400)
+  index <- which(names(db) == "IC02Q05")
+  
+  names[index, 1] <- "IC02Q05"
+  names[index, 2] <- "At school - Printer"
+  
+  db$IC02Q06 <- substr(data[, 1], start = 401, stop = 401)
+  index <- which(names(db) == "IC02Q06")
+  
+  names[index, 1] <- "IC02Q06"
+  names[index, 2] <- "At school - USB (memory) stick"
+  
+  db$IC02Q07 <- substr(data[, 1], start = 402, stop = 402)
+  index <- which(names(db) == "IC02Q07")
+  
+  names[index, 1] <- "IC02Q07"
+  names[index, 2] <- "At school - Ebook reader"
+  
+  db$IC03Q01 <- substr(data[, 1], start = 403, stop = 403)
+  index <- which(names(db) == "IC03Q01")
+  
+  names[index, 1] <- "IC03Q01"
+  names[index, 2] <- "First use of computers"
+  
+  db$IC04Q01 <- substr(data[, 1], start = 404, stop = 404)
+  index <- which(names(db) == "IC04Q01")
+  
+  names[index, 1] <- "IC04Q01"
+  names[index, 2] <- "First access to Internet"
+  
+  db$IC05Q01 <- substr(data[, 1], start = 405, stop = 406)
+  index <- which(names(db) == "IC05Q01")
+  
+  names[index, 1] <- "IC05Q01"
+  names[index, 2] <- "Internet at School"
+  
+  db$IC06Q01 <- substr(data[, 1], start = 407, stop = 408)
+  index <- which(names(db) == "IC06Q01")
+  
+  names[index, 1] <- "IC06Q01"
+  names[index, 2] <- "Internet out-of-school - Weekday"
+  
+  db$IC07Q01 <- substr(data[, 1], start = 409, stop = 410)
+  index <- which(names(db) == "IC07Q01")
+  
+  names[index, 1] <- "IC07Q01"
+  names[index, 2] <- "Internet out-of-school - Weekend"
+  
+  db$IC08Q01 <- substr(data[, 1], start = 411, stop = 411)
+  index <- which(names(db) == "IC08Q01")
+  
+  names[index, 1] <- "IC08Q01"
+  names[index, 2] <- "Out-of-school 8 - One player games"
+  
+  db$IC08Q02 <- substr(data[, 1], start = 412, stop = 412)
+  index <- which(names(db) == "IC08Q02")
+  
+  names[index, 1] <- "IC08Q02"
+  names[index, 2] <- "Out-of-school 8 - ColLabourative games"
+  
+  db$IC08Q03 <- substr(data[, 1], start = 413, stop = 413)
+  index <- which(names(db) == "IC08Q03")
+  
+  names[index, 1] <- "IC08Q03"
+  names[index, 2] <- "Out-of-school 8 - Use email"
+  
+  db$IC08Q04 <- substr(data[, 1], start = 414, stop = 414)
+  index <- which(names(db) == "IC08Q04")
+  
+  names[index, 1] <- "IC08Q04"
+  names[index, 2] <- "Out-of-school 8 - Chat on line"
+  
+  db$IC08Q05 <- substr(data[, 1], start = 415, stop = 415)
+  index <- which(names(db) == "IC08Q05")
+  
+  names[index, 1] <- "IC08Q05"
+  names[index, 2] <- "Out-of-school 8 - Social networks"
+  
+  db$IC08Q06 <- substr(data[, 1], start = 416, stop = 416)
+  index <- which(names(db) == "IC08Q06")
+  
+  names[index, 1] <- "IC08Q06"
+  names[index, 2] <- "Out-of-school 8 - Browse the Internet for fun"
+  
+  db$IC08Q07 <- substr(data[, 1], start = 417, stop = 417)
+  index <- which(names(db) == "IC08Q07")
+  
+  names[index, 1] <- "IC08Q07"
+  names[index, 2] <- "Out-of-school 8 - Read news"
+  
+  db$IC08Q08 <- substr(data[, 1], start = 418, stop = 418)
+  index <- which(names(db) == "IC08Q08")
+  
+  names[index, 1] <- "IC08Q08"
+  names[index, 2] <- "Out-of-school 8 - Obtain practical information from the Internet"
+  
+  db$IC08Q09 <- substr(data[, 1], start = 419, stop = 419)
+  index <- which(names(db) == "IC08Q09")
+  
+  names[index, 1] <- "IC08Q09"
+  names[index, 2] <- "Out-of-school 8 - Download music"
+  
+  db$IC08Q11 <- substr(data[, 1], start = 420, stop = 420)
+  index <- which(names(db) == "IC08Q11")
+  
+  names[index, 1] <- "IC08Q11"
+  names[index, 2] <- "Out-of-school 8 - Upload content"
+  
+  db$IC09Q01 <- substr(data[, 1], start = 421, stop = 421)
+  index <- which(names(db) == "IC09Q01")
+  
+  names[index, 1] <- "IC09Q01"
+  names[index, 2] <- "Out-of-school 9 - Internet for school"
+  
+  db$IC09Q02 <- substr(data[, 1], start = 422, stop = 422)
+  index <- which(names(db) == "IC09Q02")
+  
+  names[index, 1] <- "IC09Q02"
+  names[index, 2] <- "Out-of-school 9 - Email students"
+  
+  db$IC09Q03 <- substr(data[, 1], start = 423, stop = 423)
+  index <- which(names(db) == "IC09Q03")
+  
+  names[index, 1] <- "IC09Q03"
+  names[index, 2] <- "Out-of-school 9 - Email teachers"
+  
+  db$IC09Q04 <- substr(data[, 1], start = 424, stop = 424)
+  index <- which(names(db) == "IC09Q04")
+  
+  names[index, 1] <- "IC09Q04"
+  names[index, 2] <- "Out-of-school 9 - Download from School"
+  
+  db$IC09Q05 <- substr(data[, 1], start = 425, stop = 425)
+  index <- which(names(db) == "IC09Q05")
+  
+  names[index, 1] <- "IC09Q05"
+  names[index, 2] <- "Out-of-school 9 - Announcements"
+  
+  db$IC09Q06 <- substr(data[, 1], start = 426, stop = 426)
+  index <- which(names(db) == "IC09Q06")
+  
+  names[index, 1] <- "IC09Q06"
+  names[index, 2] <- "Out-of-school 9 - Homework"
+  
+  db$IC09Q07 <- substr(data[, 1], start = 427, stop = 427)
+  index <- which(names(db) == "IC09Q07")
+  
+  names[index, 1] <- "IC09Q07"
+  names[index, 2] <- "Out-of-school 9 - Share school material"
+  
+  db$IC10Q01 <- substr(data[, 1], start = 428, stop = 428)
+  index <- which(names(db) == "IC10Q01")
+  
+  names[index, 1] <- "IC10Q01"
+  names[index, 2] <- "At School - Chat on line"
+  
+  db$IC10Q02 <- substr(data[, 1], start = 428, stop = 428)
+  index <- which(names(db) == "IC10Q02")
+  
+  names[index, 1] <- "IC10Q02"
+  names[index, 2] <- "At School - Email"
+  
+  db$IC10Q02 <- substr(data[, 1], start = 429, stop = 429)
+  index <- which(names(db) == "IC10Q02")
+  
+  names[index, 1] <- "IC10Q02"
+  names[index, 2] <- "At School - Email"
+  
+  db$IC10Q03 <- substr(data[, 1], start = 430, stop = 430)
+  index <- which(names(db) == "IC10Q03")
+  
+  names[index, 1] <- "IC10Q03"
+  names[index, 2] <- "At School - Browse for schoolwork"
+  
+  db$IC10Q04 <- substr(data[, 1], start = 431, stop = 431)
+  index <- which(names(db) == "IC10Q04")
+  
+  names[index, 1] <- "IC10Q04"
+  names[index, 2] <- "At School - Download from website"
+  
+  db$IC10Q05 <- substr(data[, 1], start = 432, stop = 432)
+  index <- which(names(db) == "IC10Q05")
+  
+  names[index, 1] <- "IC10Q05"
+  names[index, 2] <- "At School - Post on website"
+  
+  db$IC10Q06 <- substr(data[, 1], start = 433, stop = 433)
+  index <- which(names(db) == "IC10Q06")
+  
+  names[index, 1] <- "IC10Q06"
+  names[index, 2] <- "At School - Simulations"
+  
+  db$IC10Q07 <- substr(data[, 1], start = 434, stop = 434)
+  index <- which(names(db) == "IC10Q07")
+  
+  names[index, 1] <- "IC10Q07"
+  names[index, 2] <- "At School - Practice and drilling"
+  
+  db$IC10Q08 <- substr(data[, 1], start = 435, stop = 435)
+  index <- which(names(db) == "IC10Q08")
+  
+  names[index, 1] <- "IC10Q08"
+  names[index, 2] <- "At School - Homework"
+  
+  db$IC10Q09 <- substr(data[, 1], start = 436, stop = 436)
+  index <- which(names(db) == "IC10Q09")
+  
+  names[index, 1] <- "IC10Q09"
+  names[index, 2] <- "At School - Group work"
+  
+  db$IC11Q01 <- substr(data[, 1], start = 437, stop = 437)
+  index <- which(names(db) == "IC11Q01")
+  
+  names[index, 1] <- "IC11Q01"
+  names[index, 2] <- "Maths lessons - Draw graph"
+  
+  db$IC11Q02 <- substr(data[, 1], start = 438, stop = 438)
+  index <- which(names(db) == "IC11Q02")
+  
+  names[index, 1] <- "IC11Q02"
+  names[index, 2] <- "Maths lessons - Calculation with numbers"
+  
+  db$IC11Q03 <- substr(data[, 1], start = 439, stop = 439)
+  index <- which(names(db) == "IC11Q03")
+  
+  names[index, 1] <- "IC11Q03"
+  names[index, 2] <- "Maths lessons - Geometric figures"
+  
+  db$IC11Q04 <- substr(data[, 1], start = 440, stop = 440)
+  index <- which(names(db) == "IC11Q04")
+  
+  names[index, 1] <- "IC11Q04"
+  names[index, 2] <- "Maths lessons - Spreadsheet"
+  
+  db$IC11Q05 <- substr(data[, 1], start = 441, stop = 441)
+  index <- which(names(db) == "IC11Q05")
+  
+  names[index, 1] <- "IC11Q05"
+  names[index, 2] <- "Maths lessons - Algebra"
+  
+  db$IC11Q06 <- substr(data[, 1], start = 442, stop = 442)
+  index <- which(names(db) == "IC11Q06")
+  
+  names[index, 1] <- "IC11Q06"
+  names[index, 2] <- "Maths lessons - Histograms"
+  
+  db$IC11Q07 <- substr(data[, 1], start = 443, stop = 443)
+  index <- which(names(db) == "IC11Q07")
+  
+  names[index, 1] <- "IC11Q07"
+  names[index, 2] <- "Maths lessons - Change in graphs"
+  
+  db$IC22Q01 <- substr(data[, 1], start = 444, stop = 444)
+  index <- which(names(db) == "IC22Q01")
+  
+  names[index, 1] <- "IC22Q01"
+  names[index, 2] <- "Attitudes - Useful for schoolwork"
+  
+  db$IC22Q02 <- substr(data[, 1], start = 445, stop = 445)
+  index <- which(names(db) == "IC22Q02")
+  
+  names[index, 1] <- "IC22Q02"
+  names[index, 2] <- "Attitudes - Homework more fun"
+  
+  db$IC22Q04 <- substr(data[, 1], start = 446, stop = 446)
+  index <- which(names(db) == "IC22Q04")
+  
+  names[index, 1] <- "IC22Q04"
+  names[index, 2] <- "Attitudes - Source of information"
+  
+  db$IC22Q06 <- substr(data[, 1], start = 447, stop = 447)
+  index <- which(names(db) == "IC22Q06")
+  
+  names[index, 1] <- "IC22Q06"
+  names[index, 2] <- "Attitudes - Troublesome"
+  
+  db$IC22Q07 <- substr(data[, 1], start = 448, stop = 448)
+  index <- which(names(db) == "IC22Q07")
+  
+  names[index, 1] <- "IC22Q07"
+  names[index, 2] <- "Attitudes - Not suitable for schoolwork"
+  
+  db$IC22Q08 <- substr(data[, 1], start = 449, stop = 449)
+  index <- which(names(db) == "IC22Q08")
+  
+  names[index, 1] <- "IC22Q08"
+  names[index, 2] <- "Attitudes - Too unreliable"
+  
+  db$EC01Q01 <- substr(data[, 1], start = 450, stop = 450)
+  index <- which(names(db) == "EC01Q01")
+  
+  names[index, 1] <- "EC01Q01"
+  names[index, 2] <- "Miss 2 months of <ISCED 1>"
+  
+  db$EC02Q01 <- substr(data[, 1], start = 451, stop = 451)
+  index <- which(names(db) == "EC02Q01")
+  
+  names[index, 1] <- "EC02Q01"
+  names[index, 2] <- "Miss 2 months of <ISCED 2>"
+  
+  db$EC03Q01 <- substr(data[, 1], start = 452, stop = 452)
+  index <- which(names(db) == "EC03Q01")
+  
+  names[index, 1] <- "EC03Q01"
+  names[index, 2] <- "Future Orientation - Internship"
+  
+  db$EC03Q02 <- substr(data[, 1], start = 453, stop = 453)
+  index <- which(names(db) == "EC03Q02")
+  
+  names[index, 1] <- "EC03Q02"
+  names[index, 2] <- "Future Orientation - Work-site visits"
+  
+  db$EC03Q03 <- substr(data[, 1], start = 454, stop = 454)
+  index <- which(names(db) == "EC03Q03")
+  
+  names[index, 1] <- "EC03Q03"
+  names[index, 2] <- "Future Orientation - Job fair"
+  
+  db$EC03Q04 <- substr(data[, 1], start = 455, stop = 455)
+  index <- which(names(db) == "EC03Q04")
+  
+  names[index, 1] <- "EC03Q04"
+  names[index, 2] <- "Future Orientation - Career advisor at school"
+  
+  db$EC03Q05 <- substr(data[, 1], start = 456, stop = 456)
+  index <- which(names(db) == "EC03Q05")
+  
+  names[index, 1] <- "EC03Q05"
+  names[index, 2] <- "Future Orientation - Career advisor outside school"
+  
+  db$EC03Q06 <- substr(data[, 1], start = 457, stop = 457)
+  index <- which(names(db) == "EC03Q06")
+  
+  names[index, 1] <- "EC03Q06"
+  names[index, 2] <- "Future Orientation - Questionnaire"
+  
+  db$EC03Q07 <- substr(data[, 1], start = 458, stop = 458)
+  index <- which(names(db) == "EC03Q07")
+  
+  names[index, 1] <- "EC03Q07"
+  names[index, 2] <- "Future Orientation - Internet search"
+  
+  db$EC03Q08 <- substr(data[, 1], start = 459, stop = 459)
+  index <- which(names(db) == "EC03Q08")
+  
+  names[index, 1] <- "EC03Q08"
+  names[index, 2] <- "Future Orientation - Tour<ISCED 3-5> institution"
+  
+  db$EC03Q09 <- substr(data[, 1], start = 460, stop = 460)
+  index <- which(names(db) == "EC03Q09")
+  
+  names[index, 1] <- "EC03Q09"
+  names[index, 2] <- "Future Orientation - web search <ISCED 3-5> prog"
+  
+  db$EC03Q10 <- substr(data[, 1], start = 461, stop = 461)
+  index <- which(names(db) == "EC03Q10")
+  
+  names[index, 1] <- "EC03Q10"
+  names[index, 2] <- "Future Orientation - <country specific item>"
+  
+  db$EC04Q01A <- substr(data[, 1], start = 462, stop = 462)
+  index <- which(names(db) == "EC04Q01A")
+  
+  names[index, 1] <- "EC04Q01A"
+  names[index, 2] <- "Acquired skills - Find job info - Yes, at school"
+  
+  db$EC04Q01B <- substr(data[, 1], start = 463, stop = 463)
+  index <- which(names(db) == "EC04Q01B")
+  
+  names[index, 1] <- "EC04Q01B"
+  names[index, 2] <- "Acquired skills - Find job info - Yes, out of school"
+  
+  db$EC04Q01C <- substr(data[, 1], start = 464, stop = 464)
+  index <- which(names(db) == "EC04Q01C")
+  
+  names[index, 1] <- "EC04Q01C"
+  names[index, 2] <- "Acquired skills - Find job info - No, never"
+  
+  db$EC04Q02A <- substr(data[, 1], start = 465, stop = 465)
+  index <- which(names(db) == "EC04Q02A")
+  
+  names[index, 1] <- "EC04Q02A"
+  names[index, 2] <- "Acquired skills - Search for job - Yes, at school"
+  
+  db$EC04Q02B <- substr(data[, 1], start = 466, stop = 466)
+  index <- which(names(db) == "EC04Q02B")
+  
+  names[index, 1] <- "EC04Q02B"
+  names[index, 2] <- "Acquired skills - Search for job - Yes, out of school"
+  
+  db$EC04Q02C <- substr(data[, 1], start = 467, stop = 467)
+  index <- which(names(db) == "EC04Q02C")
+  
+  names[index, 1] <- "EC04Q02C"
+  names[index, 2] <- "Acquired skills - Search for job - No, never"
+  
+  db$EC04Q03A <- substr(data[, 1], start = 468, stop = 468)
+  index <- which(names(db) == "EC04Q03A")
+  
+  names[index, 1] <- "EC04Q03A"
+  names[index, 2] <- "Acquired skills - Write resume - Yes, at school"
+  
+  db$EC04Q03B <- substr(data[, 1], start = 469, stop = 469)
+  index <- which(names(db) == "EC04Q03B")
+  
+  names[index, 1] <- "EC04Q03B"
+  names[index, 2] <- "Acquired skills - Write resume - Yes, out of school"
+  
+  db$EC04Q03C <- substr(data[, 1], start = 470, stop = 470)
+  index <- which(names(db) == "EC04Q03C")
+  
+  names[index, 1] <- "EC04Q03C"
+  names[index, 2] <- "Acquired skills - Write resume - No, never"
+  
+  db$EC04Q04A <- substr(data[, 1], start = 471, stop = 471)
+  index <- which(names(db) == "EC04Q04A")
+  
+  names[index, 1] <- "EC04Q04A"
+  names[index, 2] <- "Acquired skills - Job interview - Yes, at school"
+  
+  db$EC04Q04B <- substr(data[, 1], start = 472, stop = 472)
+  index <- which(names(db) == "EC04Q04B")
+  
+  names[index, 1] <- "EC04Q04B"
+  names[index, 2] <- "Acquired skills - Job interview - Yes, out of school"
+  
+  db$EC04Q04C <- substr(data[, 1], start = 473, stop = 473)
+  index <- which(names(db) == "EC04Q04C")
+  
+  names[index, 1] <- "EC04Q04C"
+  names[index, 2] <- "Acquired skills - Job interview - No, never"
+  
+  db$EC04Q05A <- substr(data[, 1], start = 474, stop = 474)
+  index <- which(names(db) == "EC04Q05A")
+  
+  names[index, 1] <- "EC04Q05A"
+  names[index, 2] <- "Acquired skills - ISCED 3-5 programs - Yes, at school"
+  
+  db$EC04Q05B <- substr(data[, 1], start = 475, stop = 475)
+  index <- which(names(db) == "EC04Q05B")
+  
+  names[index, 1] <- "EC04Q05B"
+  names[index, 2] <- "Acquired skills - ISCED 3-5 programs - Yes, out of school"
+  
+  db$EC04Q05C <- substr(data[, 1], start = 476, stop = 476)
+  index <- which(names(db) == "EC04Q05C")
+  
+  names[index, 1] <- "EC04Q05C"
+  names[index, 2] <- "Acquired skills - ISCED 3-5 programs - No, never"
+  
+  db$EC04Q06A <- substr(data[, 1], start = 477, stop = 477)
+  index <- which(names(db) == "EC04Q06A")
+  
+  names[index, 1] <- "EC04Q06A"
+  names[index, 2] <- "Acquired skills - Student financing - Yes, at school"
+  
+  db$EC04Q06B <- substr(data[, 1], start = 478, stop = 478)
+  index <- which(names(db) == "EC04Q06B")
+  
+  names[index, 1] <- "EC04Q06B"
+  names[index, 2] <- "Acquired skills - Student financing - Yes, out of school"
+  
+  db$EC04Q06C <- substr(data[, 1], start = 479, stop = 479)
+  index <- which(names(db) == "EC04Q06C")
+  
+  names[index, 1] <- "EC04Q06C"
+  names[index, 2] <- "Acquired skills - Student financing - No, never"
+  
+  db$EC05Q01 <- substr(data[, 1], start = 480, stop = 480)
+  index <- which(names(db) == "EC05Q01")
+  
+  names[index, 1] <- "EC05Q01"
+  names[index, 2] <- "First language learned"
+  
+  db$EC06Q01 <- substr(data[, 1], start = 481, stop = 481)
+  index <- which(names(db) == "EC06Q01")
+  
+  names[index, 1] <- "EC06Q01"
+  names[index, 2] <- "Age started learning <test language>"
+  
+  db$EC07Q01 <- substr(data[, 1], start = 482, stop = 482)
+  index <- which(names(db) == "EC07Q01")
+  
+  names[index, 1] <- "EC07Q01"
+  names[index, 2] <- "Language spoken - Mother"
+  
+  db$EC07Q01 <- substr(data[, 1], start = 483, stop = 483)
+  index <- which(names(db) == "EC07Q01")
+  
+  names[index, 1] <- "EC07Q01"
+  names[index, 2] <- "Language spoken - Mother"
   
   
   return(list(data = db, names = names))
