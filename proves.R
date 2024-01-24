@@ -13,6 +13,8 @@ data <- reffcy (
   )
 )
 
+copy_data <- data
+
 x <- 1
 y <- 2
 
@@ -141,6 +143,7 @@ ggplot(data = data) +
 
 ggplot(data = data) +
   geom_point(aes(x = x1, y = y, color = class_efficiency)) +
+  scale_color_manual(values = c("not_efficient" = "red", "efficient" = "lightgreen")) +
   #geom_text(aes(x = x1, y = y, label = rownames(data))) +
   theme_bw()
   
