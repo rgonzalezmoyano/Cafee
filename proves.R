@@ -136,14 +136,14 @@ cor(data_frame_13_11$diferencias, data_frame_13_11$BCC)
 # Generate plot #
 # ============= #
 
-ggplot(data = data) +
+ggplot(data = copy_data) +
   geom_point(aes(x = x1, y = y)) +
   #geom_text(aes(x = x1, y = y, label = rownames(data))) +
   theme_bw()
 
 ggplot(data = data) +
   geom_point(aes(x = x1, y = y, color = class_efficiency)) +
-  scale_color_manual(values = c("not_efficient" = "red", "efficient" = "lightgreen")) +
+  geom_line(data = copy_data, aes(x = x1, y = yD), linewidth = 1, linetype = "dotted") +
   #geom_text(aes(x = x1, y = y, label = rownames(data))) +
   theme_bw()
   
