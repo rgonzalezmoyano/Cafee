@@ -2805,6 +2805,236 @@ sortBD <- function(
   names[index, 1] <- "INTMAT"
   names[index, 2] <- "Mathematics Interest"
   
+  db$ISCEDD <- substr(data[, 1], start = 836, stop = 836)
+  index <- which(names(db) == "ISCEDD")
+  
+  names[index, 1] <- "ISCEDD"
+  names[index, 2] <- "ISCED designation"
+  
+  db$ISCEDL <- substr(data[, 1], start = 837, stop = 837)
+  index <- which(names(db) == "ISCEDL")
+  
+  names[index, 1] <- "ISCEDL"
+  names[index, 2] <- "ISCED level"
+  
+  db$ISCEDO <- substr(data[, 1], start = 838, stop = 838)
+  index <- which(names(db) == "ISCEDO")
+  
+  names[index, 1] <- "ISCEDO"
+  names[index, 2] <- "ISCED orientation"
+  
+  db$LANGCOMM <- substr(data[, 1], start = 839, stop = 839)
+  index <- which(names(db) == "LANGCOMM")
+  
+  names[index, 1] <- "LANGCOMM"
+  names[index, 2] <- "Preference for Heritage Language in Conversations with Family and Friends"
+  
+  db$LANGN <- substr(data[, 1], start = 840, stop = 842)
+  index <- which(names(db) == "LANGN")
+  
+  names[index, 1] <- "LANGN"
+  names[index, 2] <- "Language at home (3-digit code)"
+  
+  db$LANGRPPD <- substr(data[, 1], start = 843, stop = 843)
+  index <- which(names(db) == "LANGRPPD")
+  
+  names[index, 1] <- "LANGRPPD"
+  names[index, 2] <- "Preference for Heritage Language in Language Reception and Production"
+  
+  db$LMINS <- substr(data[, 1], start = 844, stop = 847)
+  index <- which(names(db) == "LMINS")
+  
+  names[index, 1] <- "LMINS"
+  names[index, 2] <- "Learning time (minutes per week) - <test language>"
+  
+  db$MATBEH <- substr(data[, 1], start = 848, stop = 856)
+  index <- which(names(db) == "MATBEH")
+  
+  names[index, 1] <- "MATBEH"
+  names[index, 2] <- "Mathematics Behaviour"
+  
+  db$MATHEFF <- substr(data[, 1], start = 857, stop = 864)
+  index <- which(names(db) == "MATHEFF")
+  
+  names[index, 1] <- "MATHEFF"
+  names[index, 2] <- "Mathematics Self-Efficacy"
+  
+  db$MATINTFC <- substr(data[, 1], start = 865, stop = 873)
+  index <- which(names(db) == "MATINTFC")
+  
+  names[index, 1] <- "MATINTFC"
+  names[index, 2] <- "Mathematics Intentions"
+  
+  db$MATWKETH <- substr(data[, 1], start = 874, stop = 882)
+  index <- which(names(db) == "MATWKETH")
+  
+  names[index, 1] <- "MATWKETH"
+  names[index, 2] <- "Mathematics Work Ethic"
+  
+  db$MISCED <- substr(data[, 1], start = 883, stop = 883)
+  index <- which(names(db) == "MISCED")
+  
+  names[index, 1] <- "MISCED"
+  names[index, 2] <- "Educational level of mother (ISCED)"
+  
+  db$MMINS <- substr(data[, 1], start = 884, stop = 887)
+  index <- which(names(db) == "MMINS")
+  
+  names[index, 1] <- "MMINS"
+  names[index, 2] <- "Learning time (minutes per week)- <Mathematics>"
+  
+  db$MTSUP <- substr(data[, 1], start = 888, stop = 896)
+  index <- which(names(db) == "MTSUP")
+  
+  names[index, 1] <- "MTSUP"
+  names[index, 2] <- "Mathematics Teacher's Support"
+  
+  db$OCOD1 <- substr(data[, 1], start = 897, stop = 900)
+  index <- which(names(db) == "OCOD1")
+  
+  names[index, 1] <- "OCOD1"
+  names[index, 2] <- "ISCO-08 Occupation code - Mother"
+  
+  db$OCOD2 <- substr(data[, 1], start = 901, stop = 904)
+  index <- which(names(db) == "OCOD2")
+  
+  names[index, 1] <- "OCOD2"
+  names[index, 2] <- "ISCO-08 Occupation code - Father"
+  
+  db$OPENPS <- substr(data[, 1], start = 905, stop = 913)
+  index <- which(names(db) == "OPENPS")
+  
+  names[index, 1] <- "OPENPS"
+  names[index, 2] <- "Openness for Problem Solving"
+  
+  db$OUTHOURS <- substr(data[, 1], start = 914, stop = 921)
+  index <- which(names(db) == "OUTHOURS")
+  
+  names[index, 1] <- "OUTHOURS"
+  names[index, 2] <- "Out-of-School Study Time"
+  
+  db$PARED <- substr(data[, 1], start = 922, stop = 929)
+  index <- which(names(db) == "PARED")
+  
+  names[index, 1] <- "PARED"
+  names[index, 2] <- "Highest parental education in years"
+  
+  db$PERSEV <- substr(data[, 1], start = 930, stop = 938)
+  index <- which(names(db) == "PERSEV")
+  
+  names[index, 1] <- "PERSEV"
+  names[index, 2] <- "Perseverance"
+  
+  db$REPEAT <- substr(data[, 1], start = 939, stop = 939)
+  index <- which(names(db) == "REPEAT")
+  
+  names[index, 1] <- "REPEAT"
+  names[index, 2] <- "Grade Repetition"
+  
+  db$SCMAT <- substr(data[, 1], start = 940, stop = 947)
+  index <- which(names(db) == "SCMAT")
+  
+  names[index, 1] <- "SCMAT"
+  names[index, 2] <- "Mathematics Self-Concept"
+  
+  db$SMINS <- substr(data[, 1], start = 948, stop = 951)
+  index <- which(names(db) == "SMINS")
+  
+  names[index, 1] <- "SMINS"
+  names[index, 2] <- "Learning time (minutes per week) - <Science>"
+  
+  db$STUDREL <- substr(data[, 1], start = 952, stop = 959)
+  index <- which(names(db) == "STUDREL")
+  
+  names[index, 1] <- "STUDREL"
+  names[index, 2] <- "Teacher Student Relations"
+  
+  db$SUBNORM <- substr(data[, 1], start = 960, stop = 968)
+  index <- which(names(db) == "SUBNORM")
+  
+  names[index, 1] <- "SUBNORM"
+  names[index, 2] <- "Subjective Norms in Mathematics"
+  
+  db$TCHBEHFA <- substr(data[, 1], start = 969, stop = 977)
+  index <- which(names(db) == "TCHBEHFA")
+  
+  names[index, 1] <- "TCHBEHFA"
+  names[index, 2] <- "Teacher Behaviour: Formative Assessment"
+  
+  db$TCHBEHSO <- substr(data[, 1], start = 978, stop = 986)
+  index <- which(names(db) == "TCHBEHSO")
+  
+  names[index, 1] <- "TCHBEHSO"
+  names[index, 2] <- "Teacher Behaviour: Student Orientation"
+  
+  db$TCHBEHTD <- substr(data[, 1], start = 987, stop = 995)
+  index <- which(names(db) == "TCHBEHTD")
+  
+  names[index, 1] <- "TCHBEHTD"
+  names[index, 2] <- "Teacher Behaviour: Teacher-directed Instruction"
+  
+  db$TEACHSUP <- substr(data[, 1], start = 996, stop = 1003)
+  index <- which(names(db) == "TEACHSUP")
+  
+  names[index, 1] <- "TEACHSUP"
+  names[index, 2] <- "Teacher Support"
+  
+  db$TESTLANG <- substr(data[, 1], start = 1004, stop = 1006)
+  index <- which(names(db) == "TESTLANG")
+  
+  names[index, 1] <- "TESTLANG"
+  names[index, 2] <- "Language of the test"
+  
+  db$TIMEINT <- substr(data[, 1], start = 1007, stop = 1015)
+  index <- which(names(db) == "TIMEINT")
+  
+  names[index, 1] <- "TIMEINT"
+  names[index, 2] <- "Time of computer use (mins)"
+  
+  db$USEMATH <- substr(data[, 1], start = 1016, stop = 1024)
+  index <- which(names(db) == "USEMATH")
+  
+  names[index, 1] <- "USEMATH"
+  names[index, 2] <- "Use of ICT in Mathematic Lessons"
+  
+  db$USESCH <- substr(data[, 1], start = 1025, stop = 1033)
+  index <- which(names(db) == "USESCH")
+  
+  names[index, 1] <- "USESCH"
+  names[index, 2] <- "Use of ICT at School"
+  
+  db$WEALTH <- substr(data[, 1], start = 1034, stop = 1041)
+  index <- which(names(db) == "WEALTH")
+  
+  names[index, 1] <- "WEALTH"
+  names[index, 2] <- "Wealth"
+  
+  db$ANCATSCHL <- substr(data[, 1], start = 1042, stop = 1050)
+  index <- which(names(db) == "ANCATSCHL")
+  
+  names[index, 1] <- "ANCATSCHL"
+  names[index, 2] <- "Attitude towards School: Learning Outcomes (Anchored)"
+  
+  db$ANCATTLNACT <- substr(data[, 1], start = 1051, stop = 1059)
+  index <- which(names(db) == "ANCATTLNACT")
+  
+  names[index, 1] <- "ANCATTLNACT"
+  names[index, 2] <- "Attitude towards School: Learning Activities (Anchored)"
+  
+  db$ANCBELONG <- substr(data[, 1], start = 1060, stop = 1068)
+  index <- which(names(db) == "ANCBELONG")
+  
+  names[index, 1] <- "ANCBELONG"
+  names[index, 2] <- "Sense of Belonging to School (Anchored)"
+  
+  db$ANCBELONG <- substr(data[, 1], start = 1060, stop = 1068)
+  index <- which(names(db) == "ANCBELONG")
+  
+  names[index, 1] <- "ANCBELONG"
+  names[index, 2] <- "Sense of Belonging to School (Anchored)"
+  
+  
+  
   return(list(data = db, names = names))
   
 }
