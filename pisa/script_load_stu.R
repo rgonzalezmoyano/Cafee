@@ -15,7 +15,7 @@
 #save(dataset, file = "pisa/data/1_student_questionannaire_data_file/INT_STU12_DEC03.RData")
 
 # PC CIO
-load("C:/Users/Ricardo/Desktop/cafee/pisa/data/1_student_questionannaire_data_file/INT_STU12_DEC03.RData")
+load("C:/Users/Ricardo/OneDrive - UMH/Escritorio/Data Pisa 2012/INT_STU12_DEC03.RData")
 
 # Surface
 load("C:/Users/Ricardo/Desktop/Data Pisa 2012/INT_STU12_DEC03.RData")
@@ -2733,7 +2733,7 @@ sortBD <- function(
   names[index, 1] <- "HOMSCH"
   names[index, 2] <- "ICT Use at Home for School-related Tasks"
   
-  db$HOSTCUL <- substr(data[, 1], start = 737, stop = 755)
+  db$HOSTCUL <- substr(data[, 1], start = 747, stop = 755)
   index <- which(names(db) == "HOSTCUL")
   
   names[index, 1] <- "HOSTCUL"
@@ -3027,16 +3027,266 @@ sortBD <- function(
   names[index, 1] <- "ANCBELONG"
   names[index, 2] <- "Sense of Belonging to School (Anchored)"
   
-  db$ANCBELONG <- substr(data[, 1], start = 1060, stop = 1068)
-  index <- which(names(db) == "ANCBELONG")
+  db$ANCCLSMAN <- substr(data[, 1], start = 1069, stop = 1077)
+  index <- which(names(db) == "ANCCLSMAN")
   
-  names[index, 1] <- "ANCBELONG"
-  names[index, 2] <- "Sense of Belonging to School (Anchored)"
+  names[index, 1] <- "ANCCLSMAN"
+  names[index, 2] <- "Mathematics Teacher's Classroom Management (Anchored)"
   
+  db$ANCCOGACT <- substr(data[, 1], start = 1078, stop = 1086)
+  index <- which(names(db) == "ANCCOGACT")
   
+  names[index, 1] <- "ANCCOGACT"
+  names[index, 2] <- "Cognitive Activation in Mathematics Lessons (Anchored)"
+  
+  db$ANCINSTMOT <- substr(data[, 1], start = 1087, stop = 1095)
+  index <- which(names(db) == "ANCINSTMOT")
+  
+  names[index, 1] <- "ANCINSTMOT"
+  names[index, 2] <- "Instrumental Motivation for Mathematics (Anchored)"
+  
+  db$ANCINTMAT <- substr(data[, 1], start = 1096, stop = 1104)
+  index <- which(names(db) == "ANCINTMAT")
+  
+  names[index, 1] <- "ANCINTMAT"
+  names[index, 2] <- "Mathematics Interest (Anchored)"
+  
+  db$ANCMATWKETH <- substr(data[, 1], start = 1105, stop = 1113)
+  index <- which(names(db) == "ANCMATWKETH")
+  
+  names[index, 1] <- "ANCMATWKETH"
+  names[index, 2] <- "Mathematics Work Ethic (Anchored)"
+  
+  db$ANCMTSUP <- substr(data[, 1], start = 1114, stop = 1122)
+  index <- which(names(db) == "ANCMTSUP")
+  
+  names[index, 1] <- "ANCMTSUP"
+  names[index, 2] <- "Mathematics Teacher's Support (Anchored)"
+  
+  db$ANCSCMAT <- substr(data[, 1], start = 1123, stop = 1131)
+  index <- which(names(db) == "ANCSCMAT")
+  
+  names[index, 1] <- "ANCSCMAT"
+  names[index, 2] <- "Mathematics Self-Concept (Anchored)"
+  
+  db$ANCSTUDREL <- substr(data[, 1], start = 1132, stop = 1140)
+  index <- which(names(db) == "ANCSTUDREL")
+  
+  names[index, 1] <- "ANCSTUDREL"
+  names[index, 2] <- "Teacher Student Relations (Anchored)"
+  
+  db$ANCSUBNORM <- substr(data[, 1], start = 1141, stop = 1149)
+  index <- which(names(db) == "ANCSUBNORM")
+  
+  names[index, 1] <- "ANCSUBNORM"
+  names[index, 2] <- "Subjective Norms in Mathematics (Anchored)"
+  
+  db$PV1MATH <- substr(data[, 1], start = 1150, stop = 1158)
+  index <- which(names(db) == "PV1MATH")
+  
+  names[index, 1] <- "PV1MATH"
+  names[index, 2] <- "Plausible value 1 in mathematics"
+  
+  db$PV2MATH <- substr(data[, 1], start = 1159, stop = 1167)
+  index <- which(names(db) == "PV2MATH")
+  
+  names[index, 1] <- "PV2MATH"
+  names[index, 2] <- "Plausible value 2 in mathematics"
+  
+  db$PV3MATH <- substr(data[, 1], start = 1168, stop = 1176)
+  index <- which(names(db) == "PV3MATH")
+  
+  names[index, 1] <- "PV3MATH"
+  names[index, 2] <- "Plausible value 3 in mathematics"
+  
+  db$PV4MATH <- substr(data[, 1], start = 1177, stop = 1185)
+  index <- which(names(db) == "PV4MATH")
+  
+  names[index, 1] <- "PV4MATH"
+  names[index, 2] <- "Plausible value 4 in mathematics"
+  
+  db$PV5MATH <- substr(data[, 1], start = 1186, stop = 1194)
+  index <- which(names(db) == "PV5MATH")
+  
+  names[index, 1] <- "PV5MATH"
+  names[index, 2] <- "Plausible value 5 in mathematics"
+  
+  db$PV1MACC <- substr(data[, 1], start = 1195, stop = 1203)
+  index <- which(names(db) == "PV1MACC")
+  
+  names[index, 1] <- "PV1MACC"
+  names[index, 2] <- "Plausible value 1 in content subscale of Maths - Change and Relationships"
+  
+  db$PV2MACC <- substr(data[, 1], start = 1204, stop = 1212)
+  index <- which(names(db) == "PV2MACC")
+  
+  names[index, 1] <- "PV2MACC"
+  names[index, 2] <- "Plausible value 2 in content subscale of Maths - Change and Relationships"
+  
+  db$PV3MACC <- substr(data[, 1], start = 1213, stop = 1221)
+  index <- which(names(db) == "PV3MACC")
+  
+  names[index, 1] <- "PV3MACC"
+  names[index, 2] <- "Plausible value 3 in content subscale of Maths - Change and Relationships"
+  
+  db$PV4MACC <- substr(data[, 1], start = 1222, stop = 1230)
+  index <- which(names(db) == "PV4MACC")
+  
+  names[index, 1] <- "PV4MACC"
+  names[index, 2] <- "Plausible value 4 in content subscale of Maths - Change and Relationships"
+  
+  db$PV5MACC <- substr(data[, 1], start = 1231, stop = 1239)
+  index <- which(names(db) == "PV5MACC")
+  
+  names[index, 1] <- "PV5MACC"
+  names[index, 2] <- "Plausible value 5 in content subscale of Maths - Change and Relationships"
+  
+  db$PV1MACQ <- substr(data[, 1], start = 1240, stop = 1248)
+  index <- which(names(db) == "PV1MACQ")
+  
+  names[index, 1] <- "PV1MACQ"
+  names[index, 2] <- "Plausible value 1 in content subscale of Maths - Quantity"
+  
+  db$PV2MACQ <- substr(data[, 1], start = 1249, stop = 1257)
+  index <- which(names(db) == "PV2MACQ")
+  
+  names[index, 1] <- "PV2MACQ"
+  names[index, 2] <- "Plausible value 2 in content subscale of Maths - Quantity"
+  
+  db$PV3MACQ <- substr(data[, 1], start = 1258, stop = 1266)
+  index <- which(names(db) == "PV3MACQ")
+  
+  names[index, 1] <- "PV3MACQ"
+  names[index, 2] <- "Plausible value 3 in content subscale of Maths - Quantity"
+  
+  db$PV4MACQ <- substr(data[, 1], start = 1267, stop = 1275)
+  index <- which(names(db) == "PV4MACQ")
+  
+  names[index, 1] <- "PV4MACQ"
+  names[index, 2] <- "Plausible value 4 in content subscale of Maths - Quantity"
+  
+  db$PV5MACQ <- substr(data[, 1], start = 1276, stop = 1284)
+  index <- which(names(db) == "PV5MACQ")
+  
+  names[index, 1] <- "PV5MACQ"
+  names[index, 2] <- "Plausible value 5 in content subscale of Maths - Quantity"
+  
+  db$PV1MACS <- substr(data[, 1], start = 1285, stop = 1293)
+  index <- which(names(db) == "PV1MACS")
+  
+  names[index, 1] <- "PV1MACS"
+  names[index, 2] <- "Plausible value 1 in content subscale of Maths - Space and Shape"
+  
+  db$PV2MACS <- substr(data[, 1], start = 1294, stop = 1302)
+  index <- which(names(db) == "PV2MACS")
+  
+  names[index, 1] <- "PV2MACS"
+  names[index, 2] <- "Plausible value 2 in content subscale of Maths - Space and Shape"
+  
+  db$PV3MACS <- substr(data[, 1], start = 1303, stop = 1311)
+  index <- which(names(db) == "PV3MACS")
+  
+  names[index, 1] <- "PV3MACS"
+  names[index, 2] <- "Plausible value 3 in content subscale of Maths - Space and Shape"
+  
+  db$PV4MACS <- substr(data[, 1], start = 1312, stop = 1320)
+  index <- which(names(db) == "PV4MACS")
+  
+  names[index, 1] <- "PV4MACS"
+  names[index, 2] <- "Plausible value 4 in content subscale of Maths - Space and Shape"
+  
+  db$PV5MACS <- substr(data[, 1], start = 1321, stop = 1329)
+  index <- which(names(db) == "PV5MACS")
+  
+  names[index, 1] <- "PV5MACS"
+  names[index, 2] <- "Plausible value 5 in content subscale of Maths - Space and Shape"
+  
+  db$PV1MACU <- substr(data[, 1], start = 1330, stop = 1338)
+  index <- which(names(db) == "PV1MACU")
+  
+  names[index, 1] <- "PV1MACU"
+  names[index, 2] <- "Plausible value 1 in content subscale of Maths - Uncertainty and Data"
+  
+  db$PV2MACU <- substr(data[, 1], start = 1339, stop = 1347)
+  index <- which(names(db) == "PV2MACU")
+  
+  names[index, 1] <- "PV2MACU"
+  names[index, 2] <- "Plausible value 2 in content subscale of Maths - Uncertainty and Data"
+  
+  db$PV3MACU <- substr(data[, 1], start = 1348, stop = 1356)
+  index <- which(names(db) == "PV3MACU")
+  
+  names[index, 1] <- "PV3MACU"
+  names[index, 2] <- "Plausible value 3 in content subscale of Maths - Uncertainty and Data"
+  
+  db$PV4MACU <- substr(data[, 1], start = 1357, stop = 1365)
+  index <- which(names(db) == "PV4MACU")
+  
+  names[index, 1] <- "PV4MACU"
+  names[index, 2] <- "Plausible value 4 in content subscale of Maths - Uncertainty and Data"
+  
+  db$PV5MACU <- substr(data[, 1], start = 1366, stop = 1374)
+  index <- which(names(db) == "PV5MACU")
+  
+  names[index, 1] <- "PV5MACU"
+  names[index, 2] <- "Plausible value 5 in content subscale of Maths - Uncertainty and Data"
+  
+  db$PV1MAPE <- substr(data[, 1], start = 1375, stop = 1383)
+  index <- which(names(db) == "PV1MAPE")
+  
+  names[index, 1] <- "PV1MAPE"
+  names[index, 2] <- "Plausible value 1 in process subscale of Maths - Employ"
+  
+  db$PV2MAPE <- substr(data[, 1], start = 1384, stop = 1392)
+  index <- which(names(db) == "PV2MAPE")
+  
+  names[index, 1] <- "PV2MAPE"
+  names[index, 2] <- "Plausible value 2 in process subscale of Maths - Employ"
+  
+  db$PV3MAPE <- substr(data[, 1], start = 1393, stop = 1401)
+  index <- which(names(db) == "PV3MAPE")
+  
+  names[index, 1] <- "PV3MAPE"
+  names[index, 2] <- "Plausible value 3 in process subscale of Maths - Employ"
+  
+  db$PV4MAPE <- substr(data[, 1], start = 1402, stop = 1410)
+  index <- which(names(db) == "PV4MAPE")
+  
+  names[index, 1] <- "PV4MAPE"
+  names[index, 2] <- "Plausible value 4 in process subscale of Maths - Employ"
+  
+  db$PV5MAPE <- substr(data[, 1], start = 1411, stop = 1419)
+  index <- which(names(db) == "PV5MAPE")
+  
+  names[index, 1] <- "PV5MAPE"
+  names[index, 2] <- "Plausible value 5 in process subscale of Maths - Employ"
+  
+  db$PV1MAPF <- substr(data[, 1], start = 1420, stop = 1428)
+  index <- which(names(db) == "PV1MAPF")
+  
+  names[index, 1] <- "PV1MAPF"
+  names[index, 2] <- "Plausible value 1 in process subscale of Maths - Formulate"
+  
+  db$PV2MAPF <- substr(data[, 1], start = 1429, stop = 1437)
+  index <- which(names(db) == "PV2MAPF")
+  
+  names[index, 1] <- "PV2MAPF"
+  names[index, 2] <- "Plausible value 2 in process subscale of Maths - Formulate"
+  
+  db$PV3MAPF <- substr(data[, 1], start = 1438, stop = 1446)
+  index <- which(names(db) == "PV3MAPF")
+  
+  names[index, 1] <- "PV3MAPF"
+  names[index, 2] <- "Plausible value 3 in process subscale of Maths - Formulate"
+  
+  db$PV4MAPF <- substr(data[, 1], start = 1447, stop = 1455)
+  index <- which(names(db) == "PV4MAPF")
+  
+  names[index, 1] <- "PV4MAPF"
+  names[index, 2] <- "Plausible value 4 in process subscale of Maths - Formulate"
   
   return(list(data = db, names = names))
   
 }
 
-sortBD(data = dataset)
+a <- sortBD(data = dataset)
