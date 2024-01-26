@@ -45,10 +45,26 @@ simulaciones <- data.frame (
   technique = rep(NA, repl),
   
   # correlations
-  corr_yD_DEA = rep(NA, repl),
-  corr_yD_BDEA = rep(NA, repl),
-  corr_yD_cafee_DEA = rep(NA, repl),
-  corr_yD_cafee_BDEA = rep(NA, repl),
+  # DEA
+  corr_pearson_yD_DEA = rep(NA, repl),
+  corr_spearman_yD_DEA = rep(NA, repl),
+  corr_kendall_yD_DEA = rep(NA, repl),
+  
+  
+  # BDEA
+  corr_pearson_yD_BDEA = rep(NA, repl),
+  corr_spearman_yD_BDEA = rep(NA, repl),
+  corr_kendall_yD_BDEA = rep(NA, repl),
+  
+  # cafee_DEA
+  corr_pearson_yD_cafee_DEA = rep(NA, repl),
+  corr_spearman_yD_cafee_DEA = rep(NA, repl),
+  corr_kendall_yD_cafee_DEA = rep(NA, repl),
+  
+  # cafee_BDEA
+  corr_pearson_yD_cafee_BDEA = rep(NA, repl),
+  corr_spearman_yD_cafee_BDEA = rep(NA, repl),
+  corr_kendall_yD_cafee_BDEA = rep(NA, repl),
   
   # mse
   mse_DEA = rep(NA, repl),
@@ -285,7 +301,7 @@ for (std_dev in noise) {
     
     # corr yD vs score_DEA
     
-    simulaciones$corr_yD_DEA[i] <- as.numeric (
+    simulaciones$corr_pearson_yD_DEA[i] <- as.numeric (
       cor (
         scores$score_yD, 
         scores$score_DEA, 
@@ -294,14 +310,50 @@ for (std_dev in noise) {
       )
     )
     
+    simulaciones$corr_spearman_yD_DEA[i] <- as.numeric (
+      cor (
+        scores$score_yD, 
+        scores$score_DEA, 
+        use = "everything", 
+        method = "spearman"
+      )
+    )
+    
+    simulaciones$corr_kendall_yD_DEA[i] <- as.numeric (
+      cor (
+        scores$score_yD, 
+        scores$score_DEA, 
+        use = "everything", 
+        method = "kendall"
+      )
+    )
+    
     # corr yD vs score_BDEA
 
-    simulaciones$corr_yD_BDEA[i] <- as.numeric (
+    simulaciones$corr_pearson_yD_BDEA[i] <- as.numeric (
       cor (
         scores$score_yD,
         scores$score_BDEA,
         use = "everything",
         method = "pearson"
+      )
+    )
+    
+    simulaciones$corr_spearman_yD_BDEA[i] <- as.numeric (
+      cor (
+        scores$score_yD,
+        scores$score_BDEA,
+        use = "everything",
+        method = "spearman"
+      )
+    )
+    
+    simulaciones$corr_kendall_yD_BDEA[i] <- as.numeric (
+      cor (
+        scores$score_yD,
+        scores$score_BDEA,
+        use = "everything",
+        method = "kendall"
       )
     )
     
@@ -329,13 +381,31 @@ for (std_dev in noise) {
       
     }
     
-    simulaciones$corr_yD_cafee_DEA[i] <- as.numeric (
+    simulaciones$corr_pearson_yD_cafee_DEA[i] <- as.numeric (
       cor (
         filtered_data$score_yD, 
         filtered_data$score_cafee_DEA, 
         use = "everything", 
         method = "pearson"
         )
+    )
+    
+    simulaciones$corr_spearman_yD_cafee_DEA[i] <- as.numeric (
+      cor (
+        filtered_data$score_yD, 
+        filtered_data$score_cafee_DEA, 
+        use = "everything", 
+        method = "spearman"
+      )
+    )
+    
+    simulaciones$corr_kendall_yD_cafee_DEA[i] <- as.numeric (
+      cor (
+        filtered_data$score_yD, 
+        filtered_data$score_cafee_DEA, 
+        use = "everything", 
+        method = "kendall"
+      )
     )
     
     # corr yD vs score_cafee_BDEA
@@ -361,14 +431,32 @@ for (std_dev in noise) {
       }
 
     }
-
-    simulaciones$corr_yD_cafee_BDEA[i] <- as.numeric (
+    
+    simulaciones$corr_pearson_yD_cafee_BDEA[i] <- as.numeric (
       cor (
         filtered_data$score_yD,
         filtered_data$score_cafee_BDEA,
         use = "everything",
         method = "pearson"
-        )
+      )
+    )
+    
+    simulaciones$corr_spearman_yD_cafee_BDEA[i] <- as.numeric ( 
+      cor (
+        filtered_data$score_yD,
+        filtered_data$score_cafee_BDEA,
+        use = "everything",
+        method = "spearman"
+      )
+    )
+    
+    simulaciones$corr_kendall_yD_cafee_BDEA[i] <- as.numeric (
+      cor (
+        filtered_data$score_yD,
+        filtered_data$score_cafee_BDEA,
+        use = "everything",
+        method = "kendall"
+      )
     )
     
     # ============ #

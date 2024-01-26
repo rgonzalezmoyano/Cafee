@@ -3285,6 +3285,133 @@ sortBD <- function(
   names[index, 1] <- "PV4MAPF"
   names[index, 2] <- "Plausible value 4 in process subscale of Maths - Formulate"
   
+  db$PV5MAPF <- substr(data[, 1], start = 1456, stop = 1464)
+  index <- which(names(db) == "PV5MAPF")
+  
+  names[index, 1] <- "PV5MAPF"
+  names[index, 2] <- "Plausible value 5 in process subscale of Maths - Formulate"
+  
+  db$PV1MAPI <- substr(data[, 1], start = 1465, stop = 1473)
+  index <- which(names(db) == "PV1MAPI")
+  
+  names[index, 1] <- "PV1MAPI"
+  names[index, 2] <- "Plausible value 1 in process subscale of Maths - Interpret"
+  
+  db$PV2MAPI <- substr(data[, 1], start = 1474, stop = 1482)
+  index <- which(names(db) == "PV2MAPI")
+  
+  names[index, 1] <- "PV2MAPI"
+  names[index, 2] <- "Plausible value 2 in process subscale of Maths - Interpret"
+  
+  db$PV3MAPI <- substr(data[, 1], start = 1483, stop = 1491)
+  index <- which(names(db) == "PV3MAPI")
+  
+  names[index, 1] <- "PV3MAPI"
+  names[index, 2] <- "Plausible value 3 in process subscale of Maths - Interpret"
+  
+  db$PV4MAPI <- substr(data[, 1], start = 1492, stop = 1500)
+  index <- which(names(db) == "PV4MAPI")
+  
+  names[index, 1] <- "PV4MAPI"
+  names[index, 2] <- "Plausible value 4 in process subscale of Maths - Interpret"
+  
+  db$PV5MAPI <- substr(data[, 1], start = 1501, stop = 1509)
+  index <- which(names(db) == "PV5MAPI")
+  
+  names[index, 1] <- "PV5MAPI"
+  names[index, 2] <- "Plausible value 5 in process subscale of Maths - Interpret"
+  
+  db$PV1READ <- substr(data[, 1], start = 1510, stop = 1518)
+  index <- which(names(db) == "PV1READ")
+  
+  names[index, 1] <- "PV1READ"
+  names[index, 2] <- "Plausible value 1 in reading"
+  
+  db$PV2READ <- substr(data[, 1], start = 1519, stop = 1527)
+  index <- which(names(db) == "PV2READ")
+  
+  names[index, 1] <- "PV2READ"
+  names[index, 2] <- "Plausible value 2 in reading"
+  
+  db$PV3READ <- substr(data[, 1], start = 1528, stop = 1536)
+  index <- which(names(db) == "PV3READ")
+  
+  names[index, 1] <- "PV3READ"
+  names[index, 2] <- "Plausible value 3 in reading"
+  
+  db$PV4READ <- substr(data[, 1], start = 1537, stop = 1545)
+  index <- which(names(db) == "PV4READ")
+  
+  names[index, 1] <- "PV4READ"
+  names[index, 2] <- "Plausible value 4 in reading"
+  
+  db$PV5READ <- substr(data[, 1], start = 1546, stop = 1554)
+  index <- which(names(db) == "PV5READ")
+  
+  names[index, 1] <- "PV5READ"
+  names[index, 2] <- "Plausible value 5 in reading"
+  
+  db$PV1SCIE <- substr(data[, 1], start = 1555, stop = 1563)
+  index <- which(names(db) == "PV1SCIE")
+  
+  names[index, 1] <- "PV1SCIE"
+  names[index, 2] <- "Plausible value 1 in science"
+  
+  db$PV2SCIE <- substr(data[, 1], start = 1564, stop = 1572)
+  index <- which(names(db) == "PV2SCIE")
+  
+  names[index, 1] <- "PV2SCIE"
+  names[index, 2] <- "Plausible value 2 in science"
+  
+  db$PV3SCIE <- substr(data[, 1], start = 1573, stop = 1581)
+  index <- which(names(db) == "PV3SCIE")
+  
+  names[index, 1] <- "PV3SCIE"
+  names[index, 2] <- "Plausible value 3 in science"
+  
+  db$PV4SCIE <- substr(data[, 1], start = 1582, stop = 1590)
+  index <- which(names(db) == "PV4SCIE")
+  
+  names[index, 1] <- "PV4SCIE"
+  names[index, 2] <- "Plausible value 4 in science"
+  
+  db$PV5SCIE <- substr(data[, 1], start = 1591, stop = 1599)
+  index <- which(names(db) == "PV5SCIE")
+  
+  names[index, 1] <- "PV5SCIE"
+  names[index, 2] <- "Plausible value 5 in science"
+  
+  db$W_FSTUWT <- substr(data[, 1], start = 1600, stop = 1608)
+  index <- which(names(db) == "W_FSTUWT")
+  
+  names[index, 1] <- "W_FSTUWT"
+  names[index, 2] <- "FINAL STUDENT WEIGHT"
+  
+  db$W_FSTR1 <- substr(data[, 1], start = 1609, stop = 1617)
+  index <- which(names(db) == "W_FSTR1")
+  
+  names[index, 1] <- "W_FSTR1"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT1"
+  
+  db$W_FSTR2 <- substr(data[, 1], start = 1618, stop = 1626)
+  index <- which(names(db) == "W_FSTR2")
+  
+  names[index, 1] <- "W_FSTR2"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT2"
+  
+  db$W_FSTR3 <- substr(data[, 1], start = 1627, stop = 1635)
+  index <- which(names(db) == "W_FSTR3")
+  
+  names[index, 1] <- "W_FSTR3"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT3"
+  
+  db$W_FSTR4 <- substr(data[, 1], start = 1636, stop = 1644)
+  index <- which(names(db) == "W_FSTR4")
+  
+  names[index, 1] <- "W_FSTR4"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT4"
+  
+  
   return(list(data = db, names = names))
   
 }
