@@ -8,7 +8,7 @@ set.seed(314)
 data <- reffcy (
   DGP = "cobb_douglas_XnY1",
   parms = list (
-    N = 50,
+    N = 150,
     nX = 1
   )
 )
@@ -60,37 +60,37 @@ trControl <- trainControl (
 hold_out <- 0.10
 
 methods <- list (
-  # "knn" = list (
-  #   k = 5:15
-  # ),
-  # "gbm" = list (
-  #   n.trees = c(50, 100, 150),
-  #   interaction.depth = c(1, 2, 3),
-  #   shrinkage = c(0.01, 0.1, 0.2),
-  #   n.minobsinnode = c(1, 3, 5)
-  # ),
-  # "svmRadial" = list (
-  # C = c(0.01, 0.1, 1, 10),
-  #   sigma = c(0.001, 0.01, 0.1, 1)
-  #   ),
-  "svmPoly" = list(
+  "knn" = list (
+    k = 5:15
+  ),
+  "gbm" = list (
+    n.trees = c(50, 100, 150),
+    interaction.depth = c(1, 2, 3),
+    shrinkage = c(0.01, 0.1, 0.2),
+    n.minobsinnode = c(1, 3, 5)
+  ),
+  "svmRadial" = list (
+    C = c(0.01, 0.1, 1, 10),
+    sigma = c(0.001, 0.01, 0.1, 1)
+    ),
+  "svmPoly" = list (
     "degree" = c(1, 2, 3, 4, 5),
     "scale" = c(0.1, 1, 10),
     "C" = c(0.1, 1, 10, 100, 1000)
+  ),
+  "rf" = list (
+    mtry = c(1, 2)
+    ),
+  "earth" = list (
+    nprune = c(5, 10, 15, 20, 25),
+    degree = c(1)
   )
-  # "rf" = list (
-  #   mtry = c(1, 2)
-  #   ),
-  # "earth" = list (
-  #   nprune = c(5, 10, 15, 20, 25),
-  #   degree = c(1)
-  # )
 )
 
 # https://topepo.github.io/caret/train-models-by-tag.html
 
 metric = "F1"
-target_method <- "bootstrapping_dea" # bootstrapping_dea additive
+target_method <- c("additive") #, "bootstrapping_dea") # bootstrapping_dea additive
 
 # Result
 final_model <- efficiency_estimation (
@@ -186,8 +186,8 @@ if (min(copy_data[3] < min(copy_data[2]))) {
 rng.y <- range(bottom, top)
 
 grid <- expand.grid (
-  x1 = seq(rng.x[1], rng.x[2], length = 150),
-  y = seq(rng.y[1], rng.y[2], length = 150)
+  x1 = seq(rng.x[1], rng.x[2], length = 300),
+  y = seq(rng.y[1], rng.y[2], length = 300)
 )
 
 # grid <- expand.grid (
@@ -229,11 +229,11 @@ ggplot(data = SV) +
 
 
 ggplot(data = data) +
-  geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.75, alpha = 0.8) +
+  geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.75, alpha = 0.7) +
   geom_line(aes(x = x1, y = yD), linewidth = 1, linetype = "dotted") +
-  geom_point(aes(x = x1, y = y), size = 0.75) +
+  geom_point(aes(x = x1, y = y), size = 2) +
   #geom_point(aes(x = x1[i], y = y[i]), colour = "black", size = 3) +
-  scale_color_manual(values = c("not_efficient" = "pink", "efficient" = "lightgreen")) +
+  scale_color_manual(values = c("not_efficient" = "red", "efficient" = "lightgreen")) +
   #ggtitle(paste("Frontera mejor modelo ", prueba$method, sep = "")) +
   theme_bw() +
   theme(
