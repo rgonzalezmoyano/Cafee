@@ -42,13 +42,12 @@ sortBD <- function(
   # variables #
   #############
   
-  # Country code 3-character
   db$CNT <- substr(data[, 1], start = 1, stop = 3)
   db$V1 <- NULL # delete first column of NA
   index <- which(names(db) == "CNT")
   
   names[index, 1] <- "CNT"
-  names[index, 2] <- "Country code"
+  names[index, 2] <- "Country code 3-character"
   
   # Adjudicated sub-region code 7-digit code (3-digit country code + region ID + stratum ID)
   db$SUBNATIO <- substr(data[, 1], start = 4, stop = 10) 
@@ -962,10 +961,10 @@ sortBD <- function(
   names[index, 1] <- "ST61Q02"
   names[index, 2] <- "Experience with Applied Maths Tasks - Calculate Price including Tax"
   
-  db$ST61Q02 <- substr(data[, 1], start = 226, stop = 226)
-  index <- which(names(db) == "ST61Q02")
+  db$ST61Q03 <- substr(data[, 1], start = 226, stop = 226)
+  index <- which(names(db) == "ST61Q03")
   
-  names[index, 1] <- "ST61Q02"
+  names[index, 1] <- "ST61Q03"
   names[index, 2] <- "Experience with Applied Maths Tasks - Calculate Square Metres"
   
   db$ST61Q04 <- substr(data[, 1], start = 227, stop = 227)
@@ -3411,9 +3410,489 @@ sortBD <- function(
   names[index, 1] <- "W_FSTR4"
   names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT4"
   
+  db$W_FSTR5 <- substr(data[, 1], start = 1645, stop = 1653)
+  index <- which(names(db) == "W_FSTR5")
+  
+  names[index, 1] <- "W_FSTR5"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT5"
+  
+  db$W_FSTR6 <- substr(data[, 1], start = 1654, stop = 1662)
+  index <- which(names(db) == "W_FSTR6")
+  
+  names[index, 1] <- "W_FSTR6"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT6"
+  
+  db$W_FSTR7 <- substr(data[, 1], start = 1663, stop = 1671)
+  index <- which(names(db) == "W_FSTR7")
+  
+  names[index, 1] <- "W_FSTR7"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT7"
+  
+  db$W_FSTR8 <- substr(data[, 1], start = 1672, stop = 1680)
+  index <- which(names(db) == "W_FSTR8")
+  
+  names[index, 1] <- "W_FSTR8"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT8"
+  
+  db$W_FSTR9 <- substr(data[, 1], start = 1681, stop = 1689)
+  index <- which(names(db) == "W_FSTR9")
+  
+  names[index, 1] <- "W_FSTR9"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT9"
+  
+  db$W_FSTR10 <- substr(data[, 1], start = 1690, stop = 1698)
+  index <- which(names(db) == "W_FSTR10")
+  
+  names[index, 1] <- "W_FSTR10"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT10"
+  
+  db$W_FSTR11 <- substr(data[, 1], start = 1699, stop = 1707)
+  index <- which(names(db) == "W_FSTR11")
+  
+  names[index, 1] <- "W_FSTR11"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT11"
+  
+  db$W_FSTR12 <- substr(data[, 1], start = 1708, stop = 1716)
+  index <- which(names(db) == "W_FSTR12")
+  
+  names[index, 1] <- "W_FSTR12"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT12"
+  
+  db$W_FSTR13 <- substr(data[, 1], start = 1717, stop = 1725)
+  index <- which(names(db) == "W_FSTR13")
+  
+  names[index, 1] <- "W_FSTR13"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT13"
+  
+  db$W_FSTR14 <- substr(data[, 1], start = 1726, stop = 1734)
+  index <- which(names(db) == "W_FSTR14")
+  
+  names[index, 1] <- "W_FSTR14"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT14"
+  
+  db$W_FSTR15 <- substr(data[, 1], start = 1735, stop = 1743)
+  index <- which(names(db) == "W_FSTR15")
+  
+  names[index, 1] <- "W_FSTR15"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT15"
+  
+  db$W_FSTR16 <- substr(data[, 1], start = 1744, stop = 1752)
+  index <- which(names(db) == "W_FSTR16")
+  
+  names[index, 1] <- "W_FSTR16"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT16"
+  
+  db$W_FSTR17 <- substr(data[, 1], start = 1753, stop = 1761)
+  index <- which(names(db) == "W_FSTR17")
+  
+  names[index, 1] <- "W_FSTR17"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT17"
+  
+  db$W_FSTR18 <- substr(data[, 1], start = 1762, stop = 1770)
+  index <- which(names(db) == "W_FSTR18")
+  
+  names[index, 1] <- "W_FSTR18"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT18"
+  
+  db$W_FSTR19 <- substr(data[, 1], start = 1771, stop = 1779)
+  index <- which(names(db) == "W_FSTR19")
+  
+  names[index, 1] <- "W_FSTR19"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT19"
+  
+  db$W_FSTR20 <- substr(data[, 1], start = 1780, stop = 1788)
+  index <- which(names(db) == "W_FSTR20")
+  
+  names[index, 1] <- "W_FSTR20"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT20"
+  
+  db$W_FSTR21 <- substr(data[, 1], start = 1789, stop = 1797)
+  index <- which(names(db) == "W_FSTR21")
+  
+  names[index, 1] <- "W_FSTR21"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT21"
+  
+  db$W_FSTR22 <- substr(data[, 1], start = 1798, stop = 1806)
+  index <- which(names(db) == "W_FSTR22")
+  
+  names[index, 1] <- "W_FSTR22"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT22"
+  
+  db$W_FSTR23 <- substr(data[, 1], start = 1807, stop = 1815)
+  index <- which(names(db) == "W_FSTR23")
+  
+  names[index, 1] <- "W_FSTR23"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT23"
+  
+  db$W_FSTR24 <- substr(data[, 1], start = 1816, stop = 1824)
+  index <- which(names(db) == "W_FSTR24")
+  
+  names[index, 1] <- "W_FSTR24"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT24"
+  
+  db$W_FSTR25 <- substr(data[, 1], start = 1825, stop = 1833)
+  index <- which(names(db) == "W_FSTR25")
+  
+  names[index, 1] <- "W_FSTR25"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT25"
+  
+  db$W_FSTR26 <- substr(data[, 1], start = 1834, stop = 1842)
+  index <- which(names(db) == "W_FSTR26")
+  
+  names[index, 1] <- "W_FSTR26"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT26"
+  
+  db$W_FSTR27 <- substr(data[, 1], start = 1843, stop = 1851)
+  index <- which(names(db) == "W_FSTR27")
+  
+  names[index, 1] <- "W_FSTR27"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT27"
+  
+  db$W_FSTR28 <- substr(data[, 1], start = 1852, stop = 1860)
+  index <- which(names(db) == "W_FSTR28")
+  
+  names[index, 1] <- "W_FSTR28"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT28"
+  
+  db$W_FSTR29 <- substr(data[, 1], start = 1861, stop = 1869)
+  index <- which(names(db) == "W_FSTR29")
+  
+  names[index, 1] <- "W_FSTR29"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT29"
+  
+  db$W_FSTR30 <- substr(data[, 1], start = 1870, stop = 1878)
+  index <- which(names(db) == "W_FSTR30")
+  
+  names[index, 1] <- "W_FSTR30"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT30"
+  
+  db$W_FSTR31 <- substr(data[, 1], start = 1879, stop = 1887)
+  index <- which(names(db) == "W_FSTR31")
+  
+  names[index, 1] <- "W_FSTR31"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT31"
+  
+  db$W_FSTR32 <- substr(data[, 1], start = 1888, stop = 1896)
+  index <- which(names(db) == "W_FSTR32")
+  
+  names[index, 1] <- "W_FSTR32"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT32"
+  
+  db$W_FSTR33 <- substr(data[, 1], start = 1897, stop = 1905)
+  index <- which(names(db) == "W_FSTR33")
+  
+  names[index, 1] <- "W_FSTR33"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT33"
+  
+  db$W_FSTR34 <- substr(data[, 1], start = 1906, stop = 1914)
+  index <- which(names(db) == "W_FSTR34")
+  
+  names[index, 1] <- "W_FSTR34"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT34"
+  
+  db$W_FSTR35 <- substr(data[, 1], start = 1915, stop = 1923)
+  index <- which(names(db) == "W_FSTR35")
+  
+  names[index, 1] <- "W_FSTR35"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT35"
+  
+  db$W_FSTR36 <- substr(data[, 1], start = 1924, stop = 1932)
+  index <- which(names(db) == "W_FSTR36")
+  
+  names[index, 1] <- "W_FSTR36"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT36"
+  
+  db$W_FSTR37 <- substr(data[, 1], start = 1933, stop = 1941)
+  index <- which(names(db) == "W_FSTR37")
+  
+  names[index, 1] <- "W_FSTR37"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT37"
+  
+  db$W_FSTR38 <- substr(data[, 1], start = 1942, stop = 1950)
+  index <- which(names(db) == "W_FSTR38")
+  
+  names[index, 1] <- "W_FSTR38"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT38"
+  
+  db$W_FSTR39 <- substr(data[, 1], start = 1951, stop = 1959)
+  index <- which(names(db) == "W_FSTR39")
+  
+  names[index, 1] <- "W_FSTR39"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT39"
+  
+  db$W_FSTR40 <- substr(data[, 1], start = 1960, stop = 1968)
+  index <- which(names(db) == "W_FSTR40")
+  
+  names[index, 1] <- "W_FSTR40"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT40"
+  
+  db$W_FSTR41 <- substr(data[, 1], start = 1969, stop = 1977)
+  index <- which(names(db) == "W_FSTR41")
+  
+  names[index, 1] <- "W_FSTR41"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT41"
+  
+  db$W_FSTR42 <- substr(data[, 1], start = 1978, stop = 1986)
+  index <- which(names(db) == "W_FSTR42")
+  
+  names[index, 1] <- "W_FSTR42"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT42"
+  
+  db$W_FSTR43 <- substr(data[, 1], start = 1987, stop = 1995)
+  index <- which(names(db) == "W_FSTR43")
+  
+  names[index, 1] <- "W_FSTR43"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT43"
+  
+  db$W_FSTR44 <- substr(data[, 1], start = 1996, stop = 2004)
+  index <- which(names(db) == "W_FSTR44")
+  
+  names[index, 1] <- "W_FSTR44"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT44"
+  
+  db$W_FSTR45 <- substr(data[, 1], start = 2005, stop = 2013)
+  index <- which(names(db) == "W_FSTR45")
+  
+  names[index, 1] <- "W_FSTR45"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT45"
+  
+  db$W_FSTR46 <- substr(data[, 1], start = 2014, stop = 2022)
+  index <- which(names(db) == "W_FSTR46")
+  
+  names[index, 1] <- "W_FSTR46"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT46"
+  
+  db$W_FSTR47 <- substr(data[, 1], start = 2023, stop = 2031)
+  index <- which(names(db) == "W_FSTR47")
+  
+  names[index, 1] <- "W_FSTR47"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT47"
+  
+  db$W_FSTR48 <- substr(data[, 1], start = 2032, stop = 2040)
+  index <- which(names(db) == "W_FSTR48")
+  
+  names[index, 1] <- "W_FSTR48"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT48"
+  
+  db$W_FSTR49 <- substr(data[, 1], start = 2041, stop = 2049)
+  index <- which(names(db) == "W_FSTR49")
+  
+  names[index, 1] <- "W_FSTR49"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT49"
+  
+  db$W_FSTR50 <- substr(data[, 1], start = 2050, stop = 2058)
+  index <- which(names(db) == "W_FSTR50")
+  
+  names[index, 1] <- "W_FSTR50"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT50"
+  
+  db$W_FSTR51 <- substr(data[, 1], start = 2059, stop = 2067)
+  index <- which(names(db) == "W_FSTR51")
+  
+  names[index, 1] <- "W_FSTR51"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT51"
+  
+  db$W_FSTR52 <- substr(data[, 1], start = 2068, stop = 2076)
+  index <- which(names(db) == "W_FSTR52")
+  
+  names[index, 1] <- "W_FSTR52"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT52"
+  
+  db$W_FSTR53 <- substr(data[, 1], start = 2077, stop = 2085)
+  index <- which(names(db) == "W_FSTR53")
+  
+  names[index, 1] <- "W_FSTR53"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT53"
+  
+  db$W_FSTR54 <- substr(data[, 1], start = 2086, stop = 2094)
+  index <- which(names(db) == "W_FSTR54")
+  
+  names[index, 1] <- "W_FSTR54"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT54"
+  
+  db$W_FSTR55 <- substr(data[, 1], start = 2095, stop = 2103)
+  index <- which(names(db) == "W_FSTR55")
+  
+  names[index, 1] <- "W_FSTR55"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT55"
+  
+  db$W_FSTR56 <- substr(data[, 1], start = 2104, stop = 2112)
+  index <- which(names(db) == "W_FSTR56")
+  
+  names[index, 1] <- "W_FSTR56"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT56"
+  
+  db$W_FSTR57 <- substr(data[, 1], start = 2113, stop = 2121)
+  index <- which(names(db) == "W_FSTR57")
+  
+  names[index, 1] <- "W_FSTR57"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT57"
+  
+  db$W_FSTR58 <- substr(data[, 1], start = 2122, stop = 2130)
+  index <- which(names(db) == "W_FSTR58")
+  
+  names[index, 1] <- "W_FSTR58"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT58"
+  
+  db$W_FSTR59 <- substr(data[, 1], start = 2131, stop = 2139)
+  index <- which(names(db) == "W_FSTR59")
+  
+  names[index, 1] <- "W_FSTR59"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT59"
+  
+  db$W_FSTR60 <- substr(data[, 1], start = 2140, stop = 2148)
+  index <- which(names(db) == "W_FSTR60")
+  
+  names[index, 1] <- "W_FSTR60"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT60"
+  
+  db$W_FSTR61 <- substr(data[, 1], start = 2149, stop = 2157)
+  index <- which(names(db) == "W_FSTR61")
+  
+  names[index, 1] <- "W_FSTR61"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT61"
+  
+  db$W_FSTR62 <- substr(data[, 1], start = 2158, stop = 2166)
+  index <- which(names(db) == "W_FSTR62")
+  
+  names[index, 1] <- "W_FSTR62"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT62"
+  
+  db$W_FSTR63 <- substr(data[, 1], start = 2167, stop = 2175)
+  index <- which(names(db) == "W_FSTR63")
+  
+  names[index, 1] <- "W_FSTR63"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT63"
+  
+  db$W_FSTR64 <- substr(data[, 1], start = 2176, stop = 2184)
+  index <- which(names(db) == "W_FSTR64")
+  
+  names[index, 1] <- "W_FSTR64"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT64"
+  
+  db$W_FSTR65 <- substr(data[, 1], start = 2185, stop = 2193)
+  index <- which(names(db) == "W_FSTR65")
+  
+  names[index, 1] <- "W_FSTR65"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT65"
+  
+  db$W_FSTR66 <- substr(data[, 1], start = 2194, stop = 2202)
+  index <- which(names(db) == "W_FSTR66")
+  
+  names[index, 1] <- "W_FSTR66"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT66"
+  
+  db$W_FSTR67 <- substr(data[, 1], start = 2203, stop = 2211)
+  index <- which(names(db) == "W_FSTR67")
+  
+  names[index, 1] <- "W_FSTR67"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT67"
+  
+  db$W_FSTR68 <- substr(data[, 1], start = 2212, stop = 2220)
+  index <- which(names(db) == "W_FSTR68")
+  
+  names[index, 1] <- "W_FSTR68"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT68"
+  
+  db$W_FSTR69 <- substr(data[, 1], start = 2221, stop = 2229)
+  index <- which(names(db) == "W_FSTR69")
+  
+  names[index, 1] <- "W_FSTR69"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT69"
+  
+  db$W_FSTR70 <- substr(data[, 1], start = 2230, stop = 2238)
+  index <- which(names(db) == "W_FSTR70")
+  
+  names[index, 1] <- "W_FSTR70"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT70"
+  
+  db$W_FSTR71 <- substr(data[, 1], start = 2239, stop = 2247)
+  index <- which(names(db) == "W_FSTR71")
+  
+  names[index, 1] <- "W_FSTR71"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT71"
+  
+  db$W_FSTR72 <- substr(data[, 1], start = 2248, stop = 2256)
+  index <- which(names(db) == "W_FSTR72")
+  
+  names[index, 1] <- "W_FSTR72"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT72"
+  
+  db$W_FSTR73 <- substr(data[, 1], start = 2257, stop = 2265)
+  index <- which(names(db) == "W_FSTR73")
+  
+  names[index, 1] <- "W_FSTR73"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT73"
+  
+  db$W_FSTR74 <- substr(data[, 1], start = 2266, stop = 2274)
+  index <- which(names(db) == "W_FSTR74")
+  
+  names[index, 1] <- "W_FSTR74"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT74"
+  
+  db$W_FSTR75 <- substr(data[, 1], start = 2275, stop = 2283)
+  index <- which(names(db) == "W_FSTR75")
+  
+  names[index, 1] <- "W_FSTR75"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT75"
+  
+  db$W_FSTR76 <- substr(data[, 1], start = 2284, stop = 2292)
+  index <- which(names(db) == "W_FSTR76")
+  
+  names[index, 1] <- "W_FSTR76"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT76"
+  
+  db$W_FSTR77 <- substr(data[, 1], start = 2293, stop = 2301)
+  index <- which(names(db) == "W_FSTR76")
+  
+  names[index, 1] <- "W_FSTR76"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT77"
+  
+  db$W_FSTR78 <- substr(data[, 1], start = 2302, stop = 2310)
+  index <- which(names(db) == "W_FSTR78")
+  
+  names[index, 1] <- "W_FSTR78"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT78"
+  
+  db$W_FSTR79 <- substr(data[, 1], start = 2311, stop = 2319)
+  index <- which(names(db) == "W_FSTR79")
+  
+  names[index, 1] <- "W_FSTR79"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT79"
+  
+  db$W_FSTR80 <- substr(data[, 1], start = 2320, stop = 2328)
+  index <- which(names(db) == "W_FSTR80")
+  
+  names[index, 1] <- "W_FSTR80"
+  names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT80"
+  
+  db$WVARSTRR <- substr(data[, 1], start = 2329, stop = 2330)
+  index <- which(names(db) == "WVARSTRR")
+  
+  names[index, 1] <- "WVARSTRR"
+  names[index, 2] <- "RANDOMIZED FINAL VARIANCE STRATUM (1-80)"
+  
+  db$VAR_UNIT <- substr(data[, 1], start = 2331, stop = 2332)
+  index <- which(names(db) == "VAR_UNIT")
+  
+  names[index, 1] <- "VAR_UNIT"
+  names[index, 2] <- "RANDOMLY ASSIGNED VARIANCE UNIT"
+  
+  db$SENWGT_STU <- substr(data[, 1], start = 2333, stop = 2341)
+  index <- which(names(db) == "SENWGT_STU")
+  
+  names[index, 1] <- "SENWGT_STU"
+  names[index, 2] <- "Senate weight - sum of weight within the country is 1000"
+  
+  db$VER_STU <- substr(data[, 1], start = 2342, stop = 2348)
+  index <- which(names(db) == "VER_STU")
+  
+  names[index, 1] <- "VER_STU"
+  names[index, 2] <- "Date of the database creation"
   
   return(list(data = db, names = names))
   
 }
 
 a <- sortBD(data = dataset)
+b <- a$data
