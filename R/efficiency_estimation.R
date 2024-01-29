@@ -254,6 +254,11 @@ efficiency_estimation <- function (
   
   final_model$cut_off <- cut_off
   
+  # encontrar error
+  final_model$valid_index <- valid_index
+  
+  
+  
   return(final_model)
 }
 

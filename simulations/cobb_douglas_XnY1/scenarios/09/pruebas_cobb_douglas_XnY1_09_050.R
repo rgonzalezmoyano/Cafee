@@ -33,7 +33,7 @@ nX <- 9
 # Table
 # ===
 
-repl <- 50
+repl <- 100
 
 simulaciones <- data.frame (
   # general
@@ -106,7 +106,7 @@ simulaciones$N <- N
 simulaciones$technique <- "svmPoly"
 
 # different types to label
-label_type <- c("additive", "bootstrapping_dea")
+label_type <- c("bootstrapping_dea")#"additive",
 
 set.seed(314)
 
@@ -233,7 +233,7 @@ for (std_dev in noise) {
       savePredictions = "all"
     )
     
-    hold_out <- 0.15
+    hold_out <- 0.10
     
     methods <- list (
       "svmPoly" = list(
@@ -284,8 +284,10 @@ for (std_dev in noise) {
       
       if (is.null(try_final_model)) {
 
-         # file <- paste("Error_data_9_50_", std_dev, ".RData", sep = "")
-         # save(data, file = file)
+         file <- paste("Error_data_9_50_", std_dev, ".RData", sep = "")
+         save(data, file = file)
+         
+         save(final_model, file = "modelo_error_Error_data_9_50.RData")
 
         stop()
       }
