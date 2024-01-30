@@ -46,15 +46,32 @@ efficiency_estimation <- function (
     # Label by bootstrapping_dea #
     # ========================== #
     
+    detect_error <- 0
+    
     # 1 compute DEA scores through bootstrapping
-    bootstrapping_dea <- dea.boot (
-      X = as.matrix(data[, x]),
-      Y = as.matrix(data[, y]),
-      NREP = 200,
-      ORIENTATION = "out",
-      alpha = 0.01,
-      CONTROL = list(scaling = c("curtisreid", "equilibrate"))
-    )
+    while (!is.null(detect_error)) {
+      
+      detect_error <- tryCatch(
+        {
+          bootstrapping_dea <- dea.boot (
+            X = as.matrix(data[, x]),
+            Y = as.matrix(data[, y]),
+            NREP = 200,
+            ORIENTATION = "out",
+            alpha = 0.01,
+            CONTROL = list(scaling = c("curtisreid", "equilibrate"))
+          )
+        }, error = function(e) e
+      )
+      
+      if (length(detect_error) == 7) {
+        break
+      }
+      
+      delete_DMU <- as.numeric(substr(detect_error[["message"]], start = 45, stop = 46))
+      
+      data <- data[-delete_DMU, ]
+    } # end while
     
     data <- as.data.frame(data)
     
@@ -253,11 +270,6 @@ efficiency_estimation <- function (
   )
   
   final_model$cut_off <- cut_off
-  
-  # encontrar error
-  final_model$valid_index <- valid_index
-  
-  
   
   return(final_model)
 }

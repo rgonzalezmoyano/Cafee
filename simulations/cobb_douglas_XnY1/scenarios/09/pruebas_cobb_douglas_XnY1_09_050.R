@@ -116,7 +116,9 @@ for (std_dev in noise) {
   
   for (i in 1:repl) {
     
-    
+    if (i == 14) {
+      stop()
+    }
     #while (i < 20) {
       print(i)
     repeat {
@@ -282,15 +284,15 @@ for (std_dev in noise) {
         error = function(e) NULL
       )
       
-      if (is.null(try_final_model)) {
-
-         file <- paste("Error_data_9_50_", std_dev, ".RData", sep = "")
-         save(data, file = file)
-         
-         save(final_model, file = "modelo_error_Error_data_9_50.RData")
-
-        stop()
-      }
+      # if (is.null(try_final_model)) {
+      # 
+      #    file <- paste("Error_data_9_50_", std_dev, ".RData", sep = "")
+      #    save(data, file = file)
+      #    
+      #    save(final_model, file = "modelo_error_Error_data_9_50.RData")
+      # 
+      #   stop()
+      # }
       
     }
     
