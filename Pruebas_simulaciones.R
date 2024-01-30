@@ -19,27 +19,25 @@ data_filtrado <- data2[c("scenario", "N", "ratio_obs_por_input", "corr_yD_DEA", 
 
 data_DEA <- data2[c("scenario", "N", "ratio_obs_por_input", "corr_yD_DEA")]
 data_DEA$corr <- "corr_yD_DEA"
-names(data_DEA)[4] <- "value"
+names(data_DEA)[4] <- "correlation"
 
 data_BDEA <- data2[c("scenario", "N", "ratio_obs_por_input", "corr_yD_BDEA")]
 data_BDEA$corr <- "corr_yD_BDEA"
-names(data_BDEA)[4] <- "value"
+names(data_BDEA)[4] <- "correlation"
 
 data_cafee_DEA <- data2[c("scenario", "N", "ratio_obs_por_input", "corr_yD_cafee_DEA")]
 data_cafee_DEA$corr <- "corr_yD_cafee_DEA"
-names(data_cafee_DEA)[4] <- "value"
+names(data_cafee_DEA)[4] <- "correlation"
 
 data_cafee_BDEA <- data2[c("scenario", "N", "ratio_obs_por_input", "corr_yD_cafee_BDEA")]
 data_cafee_BDEA$corr <- "corr_yD_cafee_BDEA"
-names(data_cafee_BDEA)[4] <- "value"
+names(data_cafee_BDEA)[4] <- "correlation"
 
 new_data <- rbind(data_DEA, data_BDEA, data_cafee_DEA, data_cafee_BDEA)
-
-par(mfrow = c(1,1))
   
   ggplot(data = new_data) +
-    geom_point(aes(x = ratio_obs_por_input, y = value, colour = scenario)) +
-    geom_line(aes(x = ratio_obs_por_input, y = value, group = scenario, colour = scenario)) +
+    geom_point(aes(x = ratio_obs_por_input, y = correlation, colour = scenario)) +
+    geom_line(aes(x = ratio_obs_por_input, y = correlation, group = scenario, colour = scenario)) +
     scale_y_continuous(limits = c(0, 1)) +
     facet_wrap(~corr) +
     theme_bw() +
