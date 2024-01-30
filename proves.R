@@ -168,18 +168,19 @@ ggplot() +
 # ============= #
 
 # make a grid of the predictors
-rng.x <- range(data[1])
+copy_data
+rng.x <- range(copy_data[1])
 
-if (max(data[3] > max(data[2]))) {
-  top <- max(data[3])
+if (max(copy_data[3] > max(copy_data[2]))) {
+  top <- max(copy_data[3])
 } else {
-  top <- max(data[2])
+  top <- max(copy_data[2])
 }
 
-if (min(data[3] < min(data[2]))) {
-  bottom <- min(data[3])
+if (min(copy_data[3] < min(copy_data[2]))) {
+  bottom <- min(copy_data[3])
 } else {
-  bottom <- min(data[2])
+  bottom <- min(copy_data[2])
 }
 
 rng.y <- range(bottom, top)
@@ -204,9 +205,23 @@ grid$decision <- predict(final_model, grid, type = "raw")
 # filter_ggplot_data <- data[r,]
 
 ggplot(data = data) +
+  geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.6, alpha = 0.8) +
   geom_point(aes(x = x1, y = y)) +
-  geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.75, alpha = 0.8) +
   scale_color_manual(values = c("not_efficient" = "pink", "efficient" = "lightgreen")) +
+  geom_line(data = copy_data, aes(x = x1, y = yD), linewidth = 1, linetype = "dotted") +
+  theme_bw() +
+  theme(legend.position = "none")
+
+index_SV <- final_model[["finalModel"]]@SVindex
+SV <- data[index_SV, ]
+
+# grafico de SV
+ggplot(data = SV) +
+  geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.75, alpha = 0.8) +
+  geom_point(aes(x = x1, y = y), size = 1.6) +
+  geom_point(data = data, aes(x = x1, y = y), alpha = 0.2) +
+  scale_color_manual(values = c("not_efficient" = "pink", "efficient" = "lightgreen")) +
+  geom_line(data = copy_data, aes(x = x1, y = yD), linewidth = 1, linetype = "dotted") +
   theme_bw() +
   theme(legend.position = "none")
 
