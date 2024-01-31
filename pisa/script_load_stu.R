@@ -25,7 +25,7 @@ sortBD <- function(
   
   # delete spaces
   #data <- apply(dataset, 2, function(x) gsub(" ", "", x))
-  data <- as.data.frame(dataset[1:9,])
+  #data <- as.data.frame(dataset[1:9,])
   
   # create new data.frame to save correct data
   db <- as.data.frame( 
@@ -3843,9 +3843,9 @@ sortBD <- function(
   names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT76"
   
   db$W_FSTR77 <- substr(data[, 1], start = 2293, stop = 2301)
-  index <- which(names(db) == "W_FSTR76")
+  index <- which(names(db) == "W_FSTR77")
   
-  names[index, 1] <- "W_FSTR76"
+  names[index, 1] <- "W_FSTR77"
   names[index, 2] <- "FINAL STUDENT REPLICATE BRR-FAY WEIGHT77"
   
   db$W_FSTR78 <- substr(data[, 1], start = 2302, stop = 2310)
@@ -3896,3 +3896,6 @@ sortBD <- function(
 
 a <- sortBD(data = dataset)
 b <- a$data
+c <- a$names
+
+save(a, file = "PISA_2012.RData")
