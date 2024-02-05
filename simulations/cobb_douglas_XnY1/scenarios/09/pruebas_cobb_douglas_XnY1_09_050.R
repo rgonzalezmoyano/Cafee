@@ -106,7 +106,7 @@ simulaciones$N <- N
 simulaciones$technique <- "svmPoly"
 
 # different types to label
-label_type <- c("bootstrapping_dea")#"additive",
+label_type <- c("additive", "bootstrapping_dea")
 
 set.seed(314)
 
@@ -116,7 +116,7 @@ for (std_dev in noise) {
   
   for (i in 1:repl) {
     
-    if (i == 14) {
+    if (i == 8) {
       stop()
     }
     #while (i < 20) {
@@ -277,8 +277,14 @@ for (std_dev in noise) {
           if (target_method == "additive") {
             scores["score_cafee_DEA"] <- as.vector(scores_cafee)
             
+            # simulaciones$technique_cafee_dea <- final_model
+            # simulaciones$hyperparameters_cafee_dea <- final_model
+            
           } else if (target_method == "bootstrapping_dea") {
             scores["score_cafee_BDEA"] <- as.vector(scores_cafee)
+            
+            # simulaciones$technique_cafee_bdea <- final_model
+            # simulaciones$hyperparameters_cafee_bdea <- final_model
           }
         },
         error = function(e) NULL

@@ -46,37 +46,19 @@ efficiency_estimation <- function (
     # Label by bootstrapping_dea #
     # ========================== #
     
-    detect_error <- 0
-    
-    # 1 compute DEA scores through bootstrapping
-    while (!is.null(detect_error)) {
-      
-      detect_error <- tryCatch(
-        {
-          bootstrapping_dea <- dea.boot (
-            X = as.matrix(data[, x]),
-            Y = as.matrix(data[, y]),
-            NREP = 200,
-            ORIENTATION = "out",
-            alpha = 0.01,
-            CONTROL = list(scaling = c("curtisreid", "equilibrate"))
-          )
-        }, error = function(e) e
-      )
-      
-      if (length(detect_error) == 7) {
-        break
-      }
-      
-      delete_DMU <- as.numeric(substr(detect_error[["message"]], start = 45, stop = 46))
-      
-      data <- data[-delete_DMU, ]
-    } # end while
-    
+    bootstrapping_dea <- dea.boot (
+      X = as.matrix(data[, x]),
+      Y = as.matrix(data[, y]),
+      NREP = 200,
+      ORIENTATION = "out",
+      alpha = 0.01
+      # CONTROL = list(scaling = c("curtisreid", "equilibrate"))
+    )
+
     data <- as.data.frame(data)
     
     # 3 labelling as not efficient
-    data$class_efficiency <- rep(0, nrow(data))
+    data$class_efficiency <- rep("not_efficient", nrow(data))
     
     # labelling as efficient
     data_opt <- as.data.frame(cbind(data[, x], y = bootstrapping_dea[["eff.bc"]] * data[, y]))
