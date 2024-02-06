@@ -1,20 +1,58 @@
 library(readxl)
 library(dplyr)
 
-data_original <- read_excel("pisa_example/Data PISA2012 ordenado2.xlsx")
+data_original <- read_excel("pisa/data_Juan_Aparicio/pisa_2012_JA.xlsx")
 
-# index
-colums_ID <- c("CNT", "IDCNT", "UNIT", "SCHOOLID")
-colums_out <- c("PVSCIE", "PVMATH", "PVREAD")
-colums_inp <- c("ESCS", "EDUSHORT2", "TSRATIO", "SCHLTYPE", "OBS")
-# input recomendados: 
-#  ESCSmean (media del nivel socioeconómico de los alumnos)
-#  STRATIO (ratio profesor por cada 100 alumnos)
-#  EDUSHORT (proxy de la calidad de los recursos educativos, está ya transformada para poder ser incluida como input, ya que la variable original reflejaba la escasez de material educativo)
+dataframe <- a$data
+names <- a$names
 
-data <- data_original %>% 
-  select(colums_ID, colums_out, colums_inp)
+to_search <- names(data_original)
 
-names <- names(data_original)
+names_to_search <- names(dataframe)
 
-any(names == "TSRATIO")
+indices <- which(names_to_search %in% to_search)
+
+merge_names <- names_to_search[indices]
+
+# mismas variables
+data <- dataframe[merge_names]
+
+copy_data <- data
+
+
+# try to find agrupation
+library(dplyr)
+
+# database PISA
+# Pruebas con AUS
+data_new <- data[data$CNT == "AUS", ]
+data_new <- data_new[, -1]
+
+data_new <- data_new %>% 
+  group_by(SCHOOLID) %>% 
+  summarise(
+    mean_DISCLIMA = mean(as.numeric(DISCLIMA)),
+    mean_ESCS = mean(as.numeric(ESCS)),
+    mean_PERSEV = mean(as.numeric(PERSEV))
+    )
+
+# Juan Aparicio
+data_JA <- data_original[data_original$CNT == "AUS", ]
+data_JA <- data_JA[merge_names]
+data_JA <- data_JA[, -1]  
+data_new$SCHOOLID <- as.numeric(data_new$SCHOOLID)
+data_new
+prueba <- data_original[data_original$CNT == "AUS", ]
+  
+  
+data_JA_new <- data_JA %>% 
+  group_by(SCHOOLID) %>% 
+  summarise(
+    mean_DISCLIMA = mean(as.numeric(DISCLIMA)),
+    mean_ESCS = mean(as.numeric(ESCS)),
+    mean_PERSEV = mean(as.numeric(PERSEV))
+  )
+data_JA_new
+
+head(data_JA)
+head(data_new)
