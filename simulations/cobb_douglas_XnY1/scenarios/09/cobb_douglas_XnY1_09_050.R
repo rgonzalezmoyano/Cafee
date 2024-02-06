@@ -44,9 +44,11 @@ simulaciones <- data.frame (
   noise = rep(NA, repl),
   
   # information technique
+  # cafee_DEA
   technique_cafee_DEA = rep(NA, repl),
   hyperparameters_cafee_DEA = rep(NA, repl),
   
+  # cafee_BDEA
   technique_cafee_BDEA = rep(NA, repl),
   hyperparameters_cafee_BDEA = rep(NA, repl),
   
@@ -55,7 +57,6 @@ simulaciones <- data.frame (
   corr_pearson_yD_DEA = rep(NA, repl),
   corr_spearman_yD_DEA = rep(NA, repl),
   corr_kendall_yD_DEA = rep(NA, repl),
-  
   
   # BDEA
   corr_pearson_yD_BDEA = rep(NA, repl),
@@ -124,9 +125,6 @@ simulaciones$scenario <- nX
 # sample size
 simulaciones$N <- N
 
-# technique
-#simulaciones$technique <- "svmPoly"
-
 # different types to label
 label_type <- c("additive", "bootstrapping_dea")
 
@@ -137,7 +135,7 @@ for (std_dev in noise) {
   simulaciones$noise <- std_dev
   
   for (i in 1:repl) {
-print(i)
+
     repeat {
       
       # ===

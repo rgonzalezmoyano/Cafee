@@ -42,14 +42,21 @@ simulaciones <- data.frame (
   scenario = rep(NA, repl),
   N = rep(NA, repl),
   noise = rep(NA, repl),
-  technique = rep(NA, repl),
+  
+  # information technique
+  # cafee_DEA
+  technique_cafee_DEA = rep(NA, repl),
+  hyperparameters_cafee_DEA = rep(NA, repl),
+  
+  # cafee_BDEA
+  technique_cafee_BDEA = rep(NA, repl),
+  hyperparameters_cafee_BDEA = rep(NA, repl),
   
   # correlations
   # DEA
   corr_pearson_yD_DEA = rep(NA, repl),
   corr_spearman_yD_DEA = rep(NA, repl),
   corr_kendall_yD_DEA = rep(NA, repl),
-  
   
   # BDEA
   corr_pearson_yD_BDEA = rep(NA, repl),
@@ -117,9 +124,6 @@ simulaciones$scenario <- nX
 
 # sample size
 simulaciones$N <- N
-
-# technique
-simulaciones$technique <- "svmPoly"
 
 # different types to label
 label_type <- c("additive", "bootstrapping_dea")
@@ -285,8 +289,15 @@ for (std_dev in noise) {
           if (target_method == "additive") {
             scores["score_cafee_DEA"] <- as.vector(scores_cafee)
             
+            simulaciones$technique_cafee_DEA[i] <- final_model[["method"]]
+            simulaciones$hyperparameters_cafee_DEA[i] <- toString(final_model[["bestTune"]])
+            
           } else if (target_method == "bootstrapping_dea") {
             scores["score_cafee_BDEA"] <- as.vector(scores_cafee)
+            
+            simulaciones$technique_cafee_BDEA[i] <- final_model[["method"]]
+            simulaciones$hyperparameters_cafee_BDEA[i] <- toString(final_model[["bestTune"]])
+            
           }
           
         },
@@ -527,7 +538,7 @@ for (std_dev in noise) {
     simulaciones$bias_cafee_BDEA[i] <- round(mean(diff_error), 3)
     
     # round results
-    simulaciones[, 7:ncol(simulaciones)] <- round(simulaciones[, 7:ncol(simulaciones)], 3)
+    simulaciones[, 10:ncol(simulaciones)] <- round(simulaciones[, 10:ncol(simulaciones)], 3)
   }
   
   # to character to save name
@@ -588,3 +599,4 @@ for (std_dev in noise) {
   # 
   # setwd(directory)
 }
+
