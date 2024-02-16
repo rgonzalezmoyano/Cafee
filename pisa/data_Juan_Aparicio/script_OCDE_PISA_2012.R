@@ -181,13 +181,12 @@ dataframe[, 3:ncol(dataframe)] <- round(dataframe[, 3:ncol(dataframe)], digits =
 # ============ #
 # Data Cordero #
 # ============ #
-data_original <- read_excel("pisa_2012_JA.xlsx")
+data_original <- read_excel("pisa/data_Juan_Aparicio/pisa_2012_JA.xlsx")
 
 # make ID connection
 data_original$id_join <- paste(data_original$CNT, data_original$PVMATH, data_original$PVREAD, data_original$PVSCIE)
 dataframe$id_join <- paste(dataframe$CNT, dataframe$mean_PVMATH, dataframe$mean_PVREAD, dataframe$mean_SCIE)
 
-976
 data_original$id_join[1] == dataframe$id_join[889]
 
 # ========= #
@@ -199,3 +198,4 @@ data_final <- inner_join(data_original, dataframe, by = "id_join")
 nrow(data_original)
 nrow(dataframe)
 nrow(dataframe) - nrow(data_original)
+
