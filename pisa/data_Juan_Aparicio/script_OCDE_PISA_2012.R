@@ -1,7 +1,7 @@
 library(readxl)
 library(dplyr)
 
-data_original <- read_excel("pisa/data_Juan_Aparicio/pisa_2012_JA.xlsx")
+data_original <- read_excel("pisa_2012_JA.xlsx")
 
 load("C:/Users/Ricardo/Downloads/PISA_2012.RData")
 dataframe <- a$data
@@ -136,7 +136,7 @@ data_PV$PVSCIE <- rowMeans(data_PV[scie])
 
 data_PV <- cbind(ID, data_PV[c("PVMATH", "PVREAD", "PVSCIE")])
 
-data_PV$SCHOOLID <- as.factor(data_PV$SCHOOLID)
+data_PV$SCHOOLID <- as.numeric(data_PV$SCHOOLID)
 #data_PV[1:7] <- apply(data_PV[1:7], 2, as.factor) 
 
 dataframe <- as.data.frame(
@@ -176,24 +176,26 @@ for (i in 1:num_CNT) {
   dataframe <- rbind(dataframe, data_PV_CNT_mean)
 }
 
-################################################################################
-data_result <- data_result[data_PV$CNT == "AUS", ]
+dataframe[, 3:ncol(dataframe)] <- round(dataframe[, 3:ncol(dataframe)], digits = 2)
 
-math <- grep("MATH", names(dataframe), value = TRUE)[3:7]
-math_df <- data_result[math]
+# ============ #
+# Data Cordero #
+# ============ #
+data_original <- read_excel("pisa_2012_JA.xlsx")
 
-math_df <- mutate_all(math_df, as.numeric)
+# make ID connection
+data_original$id_join <- paste(data_original$CNT, data_original$PVMATH, data_original$PVREAD, data_original$PVSCIE)
+dataframe$id_join <- paste(dataframe$CNT, dataframe$mean_PVMATH, dataframe$mean_PVREAD, dataframe$mean_SCIE)
 
-data_result$PVMATH <- rowMeans(math_df) 
-prueba_coin_pvmath <- cbind(ID[ID$CNT == "AUS",], data_result$PVMATH)
+976
+data_original$id_join[1] == dataframe$id_join[889]
 
-prueba_coin_pvmath <- prueba_coin_pvmath[, c(6,8)]
+# ========= #
+# join data #
+# ========= #
 
-names(prueba_coin_pvmath) <- c("SCHOOLID", "PVMATH")
+data_final <- inner_join(data_original, dataframe, by = "id_join")
 
-math_coin <- prueba_coin_pvmath %>%
-  group_by(SCHOOLID) %>% 
-  summarise(
-    mean_PVMATH = mean(PVMATH)
-  )
-math_coin
+nrow(data_original)
+nrow(dataframe)
+nrow(dataframe) - nrow(data_original)
