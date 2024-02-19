@@ -15,12 +15,11 @@ data <- data.frame (
   noise = rep(NA, repl),
   
   
-  # technique
+  # technique & hyperparameters
   technique_cafee_DEA = rep(NA, repl),
-  technique_cafee_BDEA = rep(NA, repl),
-  
-  # hyperparameters
   hyperparameters_cafee_DEA = rep(NA, repl),
+  
+  technique_cafee_BDEA = rep(NA, repl),
   hyperparameters_cafee_BDEA = rep(NA, repl),
   
   # ==================== #
@@ -83,12 +82,12 @@ for (i in 1:length(archivos)) {
   data[i, 1:4] <- simulaciones[i, 2:5]
   
   # hyperparameters information
-  data[i, 6:7] <- simulaciones[i, c(7, 9)]
+  data[i, 5:8] <- simulaciones[i, c(6, 9)]
   
   # how manny NA_scenarios are there
   # dataset error
-  data[i, 28] <- sum(is.na(simulaciones$corr_yD_cafee_DEA))
-  data[i, 29] <- sum(is.na(simulaciones$corr_yD_cafee_BDEA))
+  data[i, 29] <- sum(is.na(simulaciones$corr_yD_cafee_DEA))
+  data[i, 30] <- sum(is.na(simulaciones$corr_yD_cafee_BDEA))
   
   simulaciones <- simulaciones %>%
     mutate_at(c("mse_DEA", "mse_BDEA", "mse_cafee_DEA", "mse_cafee_BDEA"), ~ifelse(. > 1000, NA, .))
@@ -102,7 +101,7 @@ for (i in 1:length(archivos)) {
   
   # NA by data
   error_data <- error_cafee - error_total
-  data[i, 30] <- error_data
+  data[i, 31] <- error_data
   
   
   
@@ -117,23 +116,35 @@ for (i in 1:length(archivos)) {
     
   }
   
-  # correlation
-  data[i, 6] <- mean(simulaciones$corr_yD_DEA)
-  data[i, 7] <- mean(simulaciones$corr_yD_BDEA)
-  data[i, 8] <- mean(simulaciones$corr_yD_cafee_DEA)
-  data[i, 9] <- mean(simulaciones$corr_yD_cafee_BDEA)
+  # correlation person
+  data[i, 9] <- mean(simulaciones$corr_pearson_yD_DEA)
+  data[i, 10] <- mean(simulaciones$corr_pearson_yD_BDEA)
+  data[i, 11] <- mean(simulaciones$corr_pearson_yD_cafee_DEA)
+  data[i, 12] <- mean(simulaciones$corr_pearson_yD_cafee_BDEA)
+  
+  # correlation sperman
+  data[i, 13] <- mean(simulaciones$corr_spearman_yD_DEA)
+  data[i, 14] <- mean(simulaciones$corr_spearman_yD_BDEA)
+  data[i, 15] <- mean(simulaciones$corr_spearman_yD_cafee_DEA)
+  data[i, 16] <- mean(simulaciones$corr_spearman_yD_cafee_BDEA)
+  
+  # correlation kedall
+  data[i, 17] <- mean(simulaciones$corr_kendall_yD_DEA)
+  data[i, 18] <- mean(simulaciones$corr_kendall_yD_BDEA)
+  data[i, 19] <- mean(simulaciones$corr_kendall_yD_cafee_DEA)
+  data[i, 20] <- mean(simulaciones$corr_kendall_yD_cafee_BDEA)
     
   # mse
-  data[i, 10] <- mean(simulaciones$mse_DEA)
-  data[i, 11] <- mean(simulaciones$mse_BDEA)
-  data[i, 12] <- mean(simulaciones$mse_cafee_DEA)
-  data[i, 13] <- mean(simulaciones$mse_cafee_BDEA)
+  data[i, 21] <- mean(simulaciones$mse_DEA)
+  data[i, 22] <- mean(simulaciones$mse_BDEA)
+  data[i, 23] <- mean(simulaciones$mse_cafee_DEA)
+  data[i, 24] <- mean(simulaciones$mse_cafee_BDEA)
     
   # bias 
-  data[i, 14] <- mean(simulaciones$bias_DEA)
-  data[i, 15] <- mean(simulaciones$bias_BDEA)
-  data[i, 16] <- mean(simulaciones$bias_cafee_DEA)
-  data[i, 17] <- mean(simulaciones$bias_cafee_BDEA)
+  data[i, 25] <- mean(simulaciones$bias_DEA)
+  data[i, 26] <- mean(simulaciones$bias_BDEA)
+  data[i, 27] <- mean(simulaciones$bias_cafee_DEA)
+  data[i, 28] <- mean(simulaciones$bias_cafee_BDEA)
   
 }
 
