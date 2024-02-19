@@ -82,7 +82,7 @@ for (i in 1:length(archivos)) {
   data[i, 1:4] <- simulaciones[i, 2:5]
   
   # hyperparameters information
-  data[i, 5:8] <- simulaciones[i, c(6, 9)]
+  data[i, 5:8] <- simulaciones[i, c(6:9)]
   
   # how manny NA_scenarios are there
   # dataset error
@@ -97,7 +97,7 @@ for (i in 1:length(archivos)) {
   error_cafee <- length(which(apply(simulaciones[, c("mse_DEA", "mse_BDEA", "mse_cafee_DEA", "mse_cafee_BDEA")], 1, function(row) any(is.na(row)))))
   
   # error total
-  error_total <- data[i, 28] + data[i, 29]
+  error_total <- data[i, 29] + data[i, 30]
   
   # NA by data
   error_data <- error_cafee - error_total
@@ -141,10 +141,10 @@ for (i in 1:length(archivos)) {
   data[i, 24] <- mean(simulaciones$mse_cafee_BDEA)
     
   # bias 
-  data[i, 25] <- mean(simulaciones$bias_DEA)
-  data[i, 26] <- mean(simulaciones$bias_BDEA)
-  data[i, 27] <- mean(simulaciones$bias_cafee_DEA)
-  data[i, 28] <- mean(simulaciones$bias_cafee_BDEA)
+  data[i, 25] <- mean(abs(simulaciones$bias_DEA))
+  data[i, 26] <- mean(abs(simulaciones$bias_BDEA))
+  data[i, 27] <- mean(abs(simulaciones$bias_cafee_DEA))
+  data[i, 28] <- mean(abs(simulaciones$bias_cafee_BDEA))
   
 }
 
