@@ -178,6 +178,12 @@ for (i in 1:num_CNT) {
 
 dataframe[, 3:ncol(dataframe)] <- round(dataframe[, 3:ncol(dataframe)], digits = 2)
 
+
+# pruebas 
+f <- unique(data_PISA2012$ST03Q01)
+
+
+
 # ============ #
 # Data Cordero #
 # ============ #
