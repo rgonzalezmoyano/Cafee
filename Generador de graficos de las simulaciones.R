@@ -17,21 +17,21 @@ for (ruido in noise) {
   
   data_1_25_0 <- data %>% 
     filter(noise == ruido) %>% 
-    select(scenario, noise, N, corr_kendall_yD_DEA, corr_kendall_yD_BDEA, corr_kendall_yD_cafee_DEA, corr_kendall_yD_cafee_BDEA)
+    select(scenario, noise, N, corr_spearman_yD_DEA, corr_spearman_yD_BDEA, corr_spearman_yD_cafee_DEA, corr_spearman_yD_cafee_BDEA)
   #data_1_25_0$scenario <- as.factor(data_1_25_0$scenario)
   
   grafico <- ggplot(data = data_1_25_0, aes(x = scenario)) +
-    geom_line(aes(y = corr_kendall_yD_DEA, color = "yD_DEA")) +
-    geom_point(aes(y = corr_kendall_yD_DEA, color = "yD_DEA")) +
+    geom_line(aes(y = corr_spearman_yD_DEA, color = "yD_DEA")) +
+    geom_point(aes(y = corr_spearman_yD_DEA, color = "yD_DEA")) +
     
-    geom_line(aes(y = corr_kendall_yD_BDEA, color = "yD_BDEA")) +
-    geom_point(aes(y = corr_kendall_yD_BDEA, color = "yD_BDEA")) +
+    geom_line(aes(y = corr_spearman_yD_BDEA, color = "yD_BDEA")) +
+    geom_point(aes(y = corr_spearman_yD_BDEA, color = "yD_BDEA")) +
     
-    geom_line(aes(y = corr_kendall_yD_cafee_DEA, color = "yD_cafee_DEA")) +
-    geom_point(aes(y = corr_kendall_yD_cafee_DEA, color = "yD_cafee_DEA")) +
+    geom_line(aes(y = corr_spearman_yD_cafee_DEA, color = "yD_cafee_DEA")) +
+    geom_point(aes(y = corr_spearman_yD_cafee_DEA, color = "yD_cafee_DEA")) +
     
-    geom_line(aes(y = corr_kendall_yD_cafee_BDEA, color = "yD_cafee_BDEA")) +
-    geom_point(aes(y = corr_kendall_yD_cafee_BDEA, color = "yD_cafee_BDEA")) +
+    geom_line(aes(y = corr_spearman_yD_cafee_BDEA, color = "yD_cafee_BDEA")) +
+    geom_point(aes(y = corr_spearman_yD_cafee_BDEA, color = "yD_cafee_BDEA")) +
     
     scale_x_continuous(breaks = c(1, 3, 6, 9, 12)) +
     scale_y_continuous(limits = c(0, 1)) +
@@ -82,30 +82,30 @@ for (input in scenario) {
   
   data_1_25_0 <- data %>% 
     filter(scenario == input) %>% 
-    select(scenario, noise, N, corr_kendall_yD_DEA, corr_kendall_yD_BDEA, corr_kendall_yD_cafee_DEA, corr_kendall_yD_cafee_BDEA)
+    select(scenario, noise, N, corr_spearman_yD_DEA, corr_spearman_yD_BDEA, corr_spearman_yD_cafee_DEA, corr_spearman_yD_cafee_BDEA)
 
   grafico <- ggplot(data = data_1_25_0, aes(x = N)) +
-    geom_line(aes(y = corr_kendall_yD_DEA, color = "yD_DEA")) +
-    geom_point(aes(y = corr_kendall_yD_DEA, color = "yD_DEA")) +
+    geom_line(aes(y = corr_spearman_yD_DEA, color = "yD_DEA")) +
+    geom_point(aes(y = corr_spearman_yD_DEA, color = "yD_DEA")) +
     
-    geom_line(aes(y = corr_kendall_yD_BDEA, color = "yD_BDEA")) +
-    geom_point(aes(y = corr_kendall_yD_BDEA, color = "yD_BDEA")) +
+    geom_line(aes(y = corr_spearman_yD_BDEA, color = "yD_BDEA")) +
+    geom_point(aes(y = corr_spearman_yD_BDEA, color = "yD_BDEA")) +
     
-    geom_line(aes(y = corr_kendall_yD_cafee_DEA, color = "yD_cafee_DEA")) +
-    geom_point(aes(y = corr_kendall_yD_cafee_DEA, color = "yD_cafee_DEA")) +
+    geom_line(aes(y = corr_spearman_yD_cafee_DEA, color = "yD_cafee_DEA")) +
+    geom_point(aes(y = corr_spearman_yD_cafee_DEA, color = "yD_cafee_DEA")) +
     
-    geom_line(aes(y = corr_kendall_yD_cafee_BDEA, color = "yD_cafee_BDEA")) +
-    geom_point(aes(y = corr_kendall_yD_cafee_BDEA, color = "yD_cafee_BDEA")) +
+    geom_line(aes(y = corr_spearman_yD_cafee_BDEA, color = "yD_cafee_BDEA")) +
+    geom_point(aes(y = corr_spearman_yD_cafee_BDEA, color = "yD_cafee_BDEA")) +
     
     scale_x_continuous(breaks = c(25, 50, 150, 200)) +
-    scale_y_continuous(limits = c(0, 1)) +
+    scale_y_continuous(limits = c(0.8, 1)) +
     
     facet_wrap(~noise) +
     
     labs(
       title = paste("Correlaciones con inputs =", input, " aumentando N"),
       y = "Correlación",
-      x = "Input"
+      x = "N"
     ) +
     
     theme_bw() +
@@ -153,21 +153,21 @@ data2$scenario <- as.factor(data2$scenario)
 data2$ratio_obs_por_input <- round(data2$ratio_obs_por_input, 3)
 data2 <- data2[data2$noise == 0.05, ]
 
-data_filtrado <- data2[c("scenario", "N", "ratio_obs_por_input", "corr_kendall_yD_DEA", "corr_kendall_yD_BDEA", "corr_kendall_yD_cafee_DEA", "corr_kendall_yD_cafee_BDEA")]
+data_filtrado <- data2[c("scenario", "N", "ratio_obs_por_input", "corr_spearman_yD_DEA", "corr_spearman_yD_BDEA", "corr_spearman_yD_cafee_DEA", "corr_spearman_yD_cafee_BDEA")]
 
-data_DEA <- data2[c("scenario", "N", "ratio_obs_por_input", "corr_kendall_yD_DEA")]
+data_DEA <- data2[c("scenario", "N", "ratio_obs_por_input", "corr_spearman_yD_DEA")]
 data_DEA$corr <- "corr_yD_DEA"
 names(data_DEA)[4] <- "correlation"
 
-data_BDEA <- data2[c("scenario", "N", "ratio_obs_por_input", "corr_kendall_yD_BDEA")]
+data_BDEA <- data2[c("scenario", "N", "ratio_obs_por_input", "corr_spearman_yD_BDEA")]
 data_BDEA$corr <- "corr_yD_BDEA"
 names(data_BDEA)[4] <- "correlation"
 
-data_cafee_DEA <- data2[c("scenario", "N", "ratio_obs_por_input", "corr_kendall_yD_cafee_DEA")]
+data_cafee_DEA <- data2[c("scenario", "N", "ratio_obs_por_input", "corr_spearman_yD_cafee_DEA")]
 data_cafee_DEA$corr <- "corr_yD_cafee_DEA"
 names(data_cafee_DEA)[4] <- "correlation"
 
-data_cafee_BDEA <- data2[c("scenario", "N", "ratio_obs_por_input", "corr_kendall_yD_cafee_BDEA")]
+data_cafee_BDEA <- data2[c("scenario", "N", "ratio_obs_por_input", "corr_spearman_yD_cafee_BDEA")]
 data_cafee_BDEA$corr <- "corr_yD_cafee_BDEA"
 names(data_cafee_BDEA)[4] <- "correlation"
 
@@ -181,7 +181,7 @@ grafico <- ggplot(data = new_data) +
   labs(
     title = paste("Correlaciones al aumentar observaciones por input con noise = 0.05"),
     y = "Correlación",
-    x = "Inputs"
+    x = "Obsevaciones por input"
   ) +
   theme_bw() +
   theme(
@@ -205,21 +205,21 @@ for (ruido in noise) {
   
   data_1_25_0 <- data2 %>% 
     filter(noise == ruido) %>% 
-    select(scenario, noise, N, corr_kendall_yD_DEA, corr_kendall_yD_BDEA, corr_kendall_yD_cafee_DEA, corr_kendall_yD_cafee_BDEA, obs_per_inpt)
+    select(scenario, noise, N, corr_spearman_yD_DEA, corr_spearmea_yD_BDEA, corr_spearman_yD_cafee_DEA, corr_spearman_yD_cafee_BDEA, obs_per_inpt)
   #data_1_25_0$scenario <- as.factor(data_1_25_0$scenario)
   
   grafico <- ggplot(data = data_1_25_0, aes(x = obs_per_inpt)) +
-    geom_line(aes(y = corr_kendall_yD_DEA, color = "yD_DEA")) +
-    geom_point(aes(y = corr_kendall_yD_DEA, color = "yD_DEA")) +
+    geom_line(aes(y = corr_spearman_yD_DEA, color = "yD_DEA")) +
+    geom_point(aes(y = corr_spearman_yD_DEA, color = "yD_DEA")) +
     
-    geom_line(aes(y = corr_kendall_yD_BDEA, color = "yD_BDEA")) +
-    geom_point(aes(y = corr_kendall_yD_BDEA, color = "yD_BDEA")) +
+    geom_line(aes(y = corr_spearmea_yD_BDEA, color = "yD_BDEA")) +
+    geom_point(aes(y = corr_spearmea_yD_BDEA, color = "yD_BDEA")) +
     
-    geom_line(aes(y = corr_kendall_yD_cafee_DEA, color = "yD_cafee_DEA")) +
-    geom_point(aes(y = corr_kendall_yD_cafee_DEA, color = "yD_cafee_DEA")) +
+    geom_line(aes(y = corr_spearman_yD_cafee_DEA, color = "yD_cafee_DEA")) +
+    geom_point(aes(y = corr_spearman_yD_cafee_DEA, color = "yD_cafee_DEA")) +
     
-    geom_line(aes(y = corr_kendall_yD_cafee_BDEA, color = "yD_cafee_BDEA")) +
-    geom_point(aes(y = corr_kendall_yD_cafee_BDEA, color = "yD_cafee_BDEA")) +
+    geom_line(aes(y = corr_spearman_yD_cafee_BDEA, color = "yD_cafee_BDEA")) +
+    geom_point(aes(y = corr_spearman_yD_cafee_BDEA, color = "yD_cafee_BDEA")) +
     
     scale_y_continuous(limits = c(0, 1)) +
     
