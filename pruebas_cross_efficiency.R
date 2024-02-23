@@ -228,9 +228,10 @@ for (std_dev in noise) {
       matrix_cross_efficiency <- cross_efficiency$Arbitrary$cross_eff
       matrix_cross_efficiency
       
-      mean_matrix_cross_efficiency <- colMeans(matrix_cross_efficiency)
+      mean_matrix_cross_efficiency <- rowMeans(matrix_cross_efficiency)
       mean_matrix_cross_efficiency
-      sol <- a$sol
+      
+      write.xlsx(data, file = "prueba_cross_efficiency.xlsx", row.names = FALSE)
       
       
     }
