@@ -10,13 +10,14 @@ library(caret)
 library(Benchmarking)
 library(magrittr)
 library(dplyr)
+library(deaR)
 
 # ===
 # parameters
 # ===
 
 DGP <- "cobb_douglas_XnY1"
-N <- 5
+N <- 25
 noise <- c(0, 0.02, 0.05)
 nX <- 1
 
@@ -53,6 +54,16 @@ simulaciones <- data.frame (
   corr_pearson_yD_BDEA = rep(NA, repl),
   corr_spearman_yD_BDEA = rep(NA, repl),
   corr_kendall_yD_BDEA = rep(NA, repl),
+  
+  # cross-efficiency
+  corr_pearson_yD_cross_eff = rep(NA, repl),
+  corr_spearman_yD_cross_eff = rep(NA, repl),
+  corr_kendall_yD_cross_eff = rep(NA, repl),
+  
+  # super-efficiency
+  corr_pearson_yD_super_eff = rep(NA, repl),
+  corr_spearman_yD_super_eff = rep(NA, repl),
+  corr_kendall_yD_super_eff = rep(NA, repl),
   
   # cafee_DEA
   corr_pearson_yD_cafee_DEA = rep(NA, repl),
@@ -125,6 +136,8 @@ for (std_dev in noise) {
   
   simulaciones$noise <- std_dev
   
+  list_information <- list()
+  
   for (i in 1:repl) {
     
     repeat {
@@ -151,15 +164,50 @@ for (std_dev in noise) {
         score_yD = rep(NA, N),
         score_DEA = rep(NA, N),
         score_BDEA = rep(NA, N),
+        score_cross_eff = rep(NA, N),
+        score_super_eff = rep(NA, N),
         score_cafee_DEA = rep(NA, N),
         score_cafee_BDEA = rep(NA, N)
-      )
+      ) 
+      
+      pvalues_spearman <- data.frame (
+        pvalues_yD = NA,
+        pvalues_DEA = NA,
+        pvalues_BDEA = NA,
+        pvalues_cross_eff = NA,
+        pvalues_super_eff = NA,
+        pvalues_cafee_DEA = NA,
+        pvalues_cafee_BDEA = NA
+      ) 
+      
+      pvalues_kendall <- data.frame (
+        pvalues_yD = NA,
+        pvalues_DEA = NA,
+        pvalues_BDEA = NA,
+        pvalues_cross_eff = NA,
+        pvalues_super_eff = NA,
+        pvalues_cafee_DEA = NA,
+        pvalues_cafee_BDEA = NA
+      ) 
       
       # ======== #
       # score yD #
       # ======== #
       
       scores$score_yD <- data[, "yD"] / data[, y]
+      
+      # Pvalues
+      pvalues_spearman$pvalues_yD <- cor.test(
+        x = data[, "yD"], y = data[, y] * scores$score_yD,
+        alternative = "two.sided",
+        method = "spearman",
+        conf.level = 0.95)[["p.value"]]
+      
+      pvalues_kendall$pvalues_yD <- cor.test(
+        x = data[, "yD"], y = data[, y] * scores$score_yD,
+        alternative = "two.sided",
+        method = "kendall",
+        conf.level = 0.95)[["p.value"]]
       
       # ========= #
       # score DEA #
@@ -180,6 +228,85 @@ for (std_dev in noise) {
       )
       
       scores$score_DEA <- as.vector(bcc_scores)
+      
+      # Pvalues 
+      pvalues_spearman$pvalues_DEA <- cor.test(
+        x = data[, "yD"], y = data[, y] * scores$score_DEA,
+        alternative = "two.sided",
+        method = "spearman",
+        conf.level = 0.95)[["p.value"]]
+      
+      pvalues_kendall$pvalues_DEA <- cor.test(
+        x = data[, "yD"], y = data[, y] * scores$score_DEA,
+        alternative = "two.sided",
+        method = "kendall",
+        conf.level = 0.95)[["p.value"]]
+      
+      # ====================== #
+      # score cross-efficiency #
+      # ====================== #
+      
+      data_deaR <- make_deadata (
+        datadea = data,
+        dmus = NULL,
+        inputs = x, 
+        outputs = y
+      )
+      
+      cross_efficiency <- cross_efficiency (
+        data_deaR, 
+        orientation = "oo",
+        rts = "crs",
+        selfapp = FALSE,
+        correction = FALSE,
+        M2 = FALSE,
+        M3 = FALSE
+      )
+      
+      matrix_cross_efficiency <- cross_efficiency$Arbitrary$cross_eff
+      
+      mean_cross_efficiency <- colMeans(matrix_cross_efficiency)
+      
+      scores$score_cross_eff <- as.vector(mean_cross_efficiency)
+      
+      # Pvalues
+      pvalues_spearman$pvalues_cross_eff <- cor.test(
+        x = data[, "yD"], y = data[, y] * scores$score_cross_eff,
+        alternative = "two.sided",
+        method = "spearman",
+        conf.level = 0.95)[["p.value"]]
+      
+      pvalues_kendall$pvalues_cross_eff <- cor.test(
+        x = data[, "yD"], y = data[, y] * scores$score_cross_eff,
+        alternative = "two.sided",
+        method = "kendall",
+        conf.level = 0.95)[["p.value"]]
+      
+      # ================ #
+      # super efficiency #
+      # ================ #
+      
+      result_super_efficiency <- sdea (
+        X = as.matrix(data[, x]),
+        Y = as.matrix(data[, y]),
+        RTS = "crs",
+        ORIENTATION = "out"
+      )$eff
+      
+      scores$score_super_eff <- as.vector(result_super_efficiency)
+      
+      # Pvalues
+      pvalues_spearman$pvalues_super_eff <- cor.test(
+        x = data[, "yD"], y = data[, y] * scores$score_super_eff,
+        alternative = "two.sided",
+        method = "spearman",
+        conf.level = 0.95)[["p.value"]]
+      
+      pvalues_kendall$pvalues_super_eff <- cor.test(
+        x = data[, "yD"], y = data[, y] * scores$score_super_eff,
+        alternative = "two.sided",
+        method = "kendall",
+        conf.level = 0.95)[["p.value"]]
       
       # =========================== #
       # score BD (Bootstraping DEA) #
@@ -203,36 +330,21 @@ for (std_dev in noise) {
         bootstrapping_dea <- try_bdea
         scores$score_BDEA <- as.vector(bootstrapping_dea)
         
+        # Pvalues
+        pvalues_spearman$pvalues_BDEA <- cor.test(
+          x = data[, "yD"], y = data[, y] * scores$score_BDEA,
+          alternative = "two.sided",
+          method = "spearman",
+          conf.level = 0.95)[["p.value"]]
+        
+        pvalues_kendall$pvalues_BDEA <- cor.test(
+          x = data[, "yD"], y = data[, y] * scores$score_BDEA,
+          alternative = "two.sided",
+          method = "kendall",
+          conf.level = 0.95)[["p.value"]]
+        
         break
       }
-      
-      # ====================== #
-      # score cross-efficiency #
-      # ====================== #
-      library(deaR)
-      library(xlsx)
-      data_deaR <- make_deadata(datadea = data,
-                                dmus = NULL,
-                                inputs = x, 
-                                outputs = y)
-      
-      cross_efficiency <- cross_efficiency(data_deaR, 
-                                           orientation = "oo",
-                                           #dmu_eval = 3,
-                                           rts = "crs",
-                                           selfapp = FALSE,
-                                           correction = FALSE,
-                                           M2 = FALSE,
-                                           M3 = FALSE)
-      
-      matrix_cross_efficiency <- cross_efficiency$Arbitrary$cross_eff
-      matrix_cross_efficiency
-      
-      mean_matrix_cross_efficiency <- rowMeans(matrix_cross_efficiency)
-      mean_matrix_cross_efficiency
-      
-      write.xlsx(data, file = "prueba_cross_efficiency.xlsx", row.names = FALSE)
-      
       
     }
     
@@ -284,45 +396,66 @@ for (std_dev in noise) {
     for (target_method in label_type) {
       
       # Result
-      try_final_model <- tryCatch (
-        {
-          final_model <- efficiency_estimation (
-            data = data,
-            x = x,
-            y = y,
-            orientation = orientation,
-            trControl = trControl,
-            method = methods,
-            target_method = target_method,
-            metric = "F1",
-            hold_out = hold_out
-          )
-          
-          scores_cafee <- compute_scores (
-            data = data,
-            x = x,
-            y = y,
-            final_model = final_model,
-            orientation = orientation
-          )
-          
-          if (target_method == "additive") {
-            scores["score_cafee_DEA"] <- as.vector(scores_cafee)
-            
-            simulaciones$technique_cafee_DEA[i] <- final_model[["method"]]
-            simulaciones$hyperparameters_cafee_DEA[i] <- toString(final_model[["bestTune"]])
-            
-          } else if (target_method == "bootstrapping_dea") {
-            scores["score_cafee_BDEA"] <- as.vector(scores_cafee)
-            
-            simulaciones$technique_cafee_BDEA[i] <- final_model[["method"]]
-            simulaciones$hyperparameters_cafee_BDEA[i] <- toString(final_model[["bestTune"]])
-            
-          }
-          
-        },
-        error = function(e) NULL
+      final_model <- efficiency_estimation (
+        data = data,
+        x = x,
+        y = y,
+        orientation = orientation,
+        trControl = trControl,
+        method = methods,
+        target_method = target_method,
+        metric = "F1",
+        hold_out = hold_out
       )
+          
+      scores_cafee <- compute_scores (
+        data = data,
+        x = x,
+        y = y,
+        final_model = final_model,
+        orientation = orientation
+      )
+          
+      if (target_method == "additive") {
+        scores["score_cafee_DEA"] <- as.vector(scores_cafee)
+        
+        # Pvalues
+        pvalues_spearman$pvalues_cafee_DEA <- cor.test (
+          x = data[, "yD"], y = data[, y] * scores$score_cafee_DEA,
+          alternative = "two.sided",
+          method = "spearman",
+          conf.level = 0.95)[["p.value"]]
+        
+        pvalues_kendall$pvalues_cafee_DEA <- cor.test (
+          x = data[, "yD"], y = data[, y] * scores$score_cafee_DEA,
+          alternative = "two.sided",
+          method = "kendall",
+          conf.level = 0.95)[["p.value"]]
+        
+        # hyperparameters information   
+        simulaciones$technique_cafee_DEA[i] <- final_model[["method"]]
+        simulaciones$hyperparameters_cafee_DEA[i] <- toString(final_model[["bestTune"]])
+            
+      } else if (target_method == "bootstrapping_dea") {
+        scores["score_cafee_BDEA"] <- as.vector(scores_cafee)
+        
+        # Pvalues
+        pvalues_spearman$pvalues_cafee_BDEA <- cor.test (
+          x = data[, "yD"], y = data[, y] * scores$score_cafee_BDEA,
+          alternative = "two.sided",
+          method = "spearman",
+          conf.level = 0.95)[["p.value"]]
+        
+        pvalues_kendall$pvalues_cafee_BDEA <- cor.test (
+          x = data[, "yD"], y = data[, y] * scores$score_cafee_BDEA,
+          alternative = "two.sided",
+          method = "kendall",
+          conf.level = 0.95)[["p.value"]]
+            
+        simulaciones$technique_cafee_BDEA[i] <- final_model[["method"]]
+        simulaciones$hyperparameters_cafee_BDEA[i] <- toString(final_model[["bestTune"]])
+            
+      }
       
     }
     
@@ -383,6 +516,64 @@ for (std_dev in noise) {
       cor (
         scores$score_yD,
         scores$score_BDEA,
+        use = "everything",
+        method = "kendall"
+      )
+    )
+    
+    # corr yD vs score_cross_efficiency
+    
+    simulaciones$corr_pearson_yD_cross_eff[i] <- as.numeric (
+      cor (
+        scores$score_yD,
+        scores$score_cross_eff,
+        use = "everything",
+        method = "pearson"
+      )
+    )
+    
+    simulaciones$corr_spearman_yD_cross_eff[i] <- as.numeric (
+      cor (
+        scores$score_yD,
+        scores$score_cross_eff,
+        use = "everything",
+        method = "spearman"
+      )
+    )
+    
+    simulaciones$corr_kendall_yD_cross_eff[i] <- as.numeric (
+      cor (
+        scores$score_yD,
+        scores$score_cross_eff,
+        use = "everything",
+        method = "kendall"
+      )
+    )
+    
+    # corr yD vs score_super_efficiency
+    
+    simulaciones$corr_pearson_yD_super_eff[i] <- as.numeric (
+      cor (
+        scores$score_yD,
+        scores$score_super_eff,
+        use = "everything",
+        method = "pearson"
+      )
+    )
+    
+    simulaciones$corr_spearman_yD_super_eff[i] <- as.numeric (
+      cor (
+        scores$score_yD,
+        scores$score_super_eff,
+        use = "everything",
+        method = "spearman"
+      )
+    )
+    
+    simulaciones$corr_kendall_yD_super_eff[i] <- as.numeric (
+      cor (
+        scores$score_yD,
+        scores$score_super_eff,
         use = "everything",
         method = "kendall"
       )
@@ -559,6 +750,18 @@ for (std_dev in noise) {
     
     # round results
     simulaciones[, 10:ncol(simulaciones)] <- round(simulaciones[, 10:ncol(simulaciones)], 3)
+    
+    # save scores and pvalues
+    # second level of the list
+    list <- list()
+    
+    list$scores <- scores
+    list$pvalues_spearman <- pvalues_spearman
+    list$pvalues_kendall <- pvalues_kendall
+    
+    # firslist# first level of the list
+    
+    list_information[[i]] <- list
   }
   
   # to character to save name
@@ -601,6 +804,8 @@ for (std_dev in noise) {
   file <- paste(DGP, "_", scenario_char, "_", N_char, "_", noise_char, ".RData", sep = "")
   save(simulaciones, file = file)
   
+  file_information <- paste("information_", DGP, "_", scenario_char, "_", N_char, "_", noise_char, ".RData", sep = "")
+  save(simulaciones, file = file_information)
   # ========== #
   # local save #
   # ========== #

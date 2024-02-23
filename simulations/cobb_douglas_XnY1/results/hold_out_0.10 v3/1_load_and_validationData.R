@@ -103,8 +103,6 @@ for (i in 1:length(archivos)) {
   error_data <- error_cafee - error_total
   data[i, 31] <- error_data
   
-  
-  
   # filter Na scenarios
   NA_values <- any(is.na(simulaciones))
   
