@@ -806,6 +806,7 @@ for (std_dev in noise) {
   
   file_information <- paste("information_", DGP, "_", scenario_char, "_", N_char, "_", noise_char, ".RData", sep = "")
   save(simulaciones, file = file_information)
+  
   # ========== #
   # local save #
   # ========== #
