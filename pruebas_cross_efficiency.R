@@ -25,7 +25,7 @@ nX <- 1
 # Table
 # ===
 
-repl <- 100
+repl <- 3
 
 simulaciones <- data.frame (
   # general
@@ -264,8 +264,8 @@ for (std_dev in noise) {
       )
       
       matrix_cross_efficiency <- cross_efficiency$Arbitrary$cross_eff
-      
-      mean_cross_efficiency <- colMeans(matrix_cross_efficiency)
+      matrix_cross_efficiency <- t(matrix_cross_efficiency)
+      mean_cross_efficiency <- rowMeans(matrix_cross_efficiency)
       
       scores$score_cross_eff <- as.vector(mean_cross_efficiency)
       
@@ -825,4 +825,3 @@ for (std_dev in noise) {
   # 
   # setwd(directory)
 }
-
