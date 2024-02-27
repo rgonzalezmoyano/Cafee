@@ -38,7 +38,15 @@ reffcy <- function (
       nX = parms[["nX"]]
       )
 
-  } else if (DGP == "translog_X2Y2") {
+  } else if (DGP == "cobb_douglas_XnY1_CRS") {
+    
+    data <- cobb_douglas_XnY1_CRS (
+      N = parms[["N"]],
+      nX = parms[["nX"]]
+    )
+    
+  }
+  else if (DGP == "translog_X2Y2") {
 
     data <- translog_X2Y2 (
       N = parms[["N"]],
@@ -160,6 +168,95 @@ cobb_douglas_XnY1 <- function (
       data[, "x7"] ** 0.08 * data[, "x8"] ** 0.05 * data[, "x9"] ** 0.05 *
       data[, "x10"] ** 0.05 * data[, "x11"] ** 0.025 * data[, "x12"] ** 0.025 *
       data[, "x13"] ** 0.025 * data[, "x14"] ** 0.025 * data[, "x15"] ** 0.15
+    # Output generation
+    data["y"]  <- data["yD"] * exp(- u)
+  }
+  return(data)
+}
+
+
+#' @title 1 output ~ nX inputs Cobb-Douglas CRS Data Generation Process
+#'
+#' @description This function is used to simulate a 1 output ~ nX inputs \code{data.frame} with a Cobb-Douglas CRS Data Generation Process.
+#'
+#' @param N Sample size.
+#' @param nX Number of inputs. Possible values: \code{1}, \code{3}, \code{6}, \code{9}, \code{12} and \code{15}.
+#'
+#' @importFrom stats runif rnorm
+#'
+#' @return \code{data.frame} with the simulated data: nX inputs, 1 output (y) and the theoretical frontier (yD).
+#'
+#' @keywords internal
+
+cobb_douglas_XnY1_CRS <- function (
+    N, nX
+) {
+  
+  if(!(nX %in% c(1, 3, 6, 9, 12, 15))){
+    stop(paste(nX, "is not allowed"))
+  }
+  
+  colnames <- c(paste("x", 1:nX, sep = ""), "y")
+  
+  data <- as.data.frame (
+    matrix (
+      ncol = length(colnames),
+      nrow = N,
+      dimnames = list(NULL, colnames)
+    )
+  )
+  
+  # Input generation
+  for (x in 1:nX){
+    data[, x] <- runif(n = N, min = 1, max = 10)
+  }
+  
+  # Inefficiency generation
+  u <- abs(rnorm(n = N, mean = 0, sd = 0.4))
+  
+  if (nX == 1) {
+    
+    # Theoretical frontier
+    data[, "yD"] <- 3 * data[, "x1"] ** (0.5 * 2)
+    # Output generation
+    data[, "y"]  <- data[, "yD"] * exp(- u)
+    
+  } else if (nX == 3) {
+    
+    # Theoretical frontier
+    data[, "yD"] <- 3 * data[, "x1"] ** (0.05 * 2) * data[, "x2"] ** (0.15 * 2) * data[, "x3"] ** (0.3 * 2)
+    # Output generation
+    data[, "y"]  <- data[, "yD"] * exp(- u)
+    
+  } else if (nX == 6) {
+    
+    # Theoretical frontier
+    data[, "yD"]  <- 3 * data[, "x1"] ** (0.05 * 2) * data[, "x2"] ** (0.001 * 2) * data[, "x3"] ** (0.004 * 2) * data[, "x4"] ** (0.045 * 2) * data[, "x5"] ** (0.1 * 2) * data[, "x6"] ** (0.3 * 2)
+    # Output generation
+    data[, "y"]  <- data[, "yD"] * exp(- u)
+    
+  } else if (nX == 9) {
+    
+    # Theoretical frontier
+    data["yD"] <- 3 * data[, "x1"] ** (0.005 * 2) * data[, "x2"] ** (0.001 * 2) * data[, "x3"] ** (0.004 * 2) * data[, "x4"] ** (0.005 * 2) * data[, "x5"] ** (0.001 * 2) * data[, "x6"] ** (0.004 * 2) * data[, "x7"] ** (0.08 * 2) * data[, "x8"] ** (0.1 * 2) * data[, "x9"] ** (0.3 * 2)
+    # Output generation
+    data["y"]  <- data["yD"] * exp(- u)
+    
+  } else if (nX == 12) {
+    
+    # Theoretical frontier
+    data["yD"] <- 3 * data[, "x1"] ** (0.005 * 2) * data[, "x2"] ** (0.001 * 2) * data[, "x3"] ** (0.004 * 2) * data[, "x4"] ** (0.005 * 2) * data[, "x5"] ** (0.001 * 2) * data[, "x6"] ** (0.004 *2) * data[, "x7"] ** (0.08 * 2) * data[, "x8"] ** (0.05 * 2) * data[, "x9"] ** (0.05 * 2) * data[, "x10"] ** (0.075 * 2) * data[, "x11"] ** (0.025 * 2) * data[, "x12"] ** (0.2 * 2)
+    # Output generation
+    data["y"]  <- data["yD"]  * exp(- u)
+    
+  } else {
+    
+    # Theoretical frontier
+    data["yD"] <- 3 * data[, "x1"] ** (0.005 * 2) * data[, "x2"] ** (0.001 * 2) * data[, "x3"] ** (0.004 * 2) *
+      data[, "x4"] ** (0.005 * 2) * data[, "x5"] ** (0.001 * 2) * data[, "x6"] ** (0.004 * 2) *
+      data[, "x7"] ** (0.08 * 2) * data[, "x8"] ** (0.05 * 2) * data[, "x9"] ** (0.05 * 2) *
+      data[, "x10"] ** (0.05 * 2) * data[, "x11"] ** (0.025 * 2) * data[, "x12"] ** (0.025 * 2) *
+      data[, "x13"] ** (0.025 * 2) * data[, "x14"] ** (0.025 * 2) * data[, "x15"] ** (0.15 * 2)
     # Output generation
     data["y"]  <- data["yD"] * exp(- u)
   }
