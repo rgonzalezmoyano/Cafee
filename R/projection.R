@@ -151,7 +151,7 @@ compute_scores <- function (
         } else { # OUTPUT ORIENTATION
           
           
-          if (prob_eff > 0.5) {
+          if (prob_eff > final_model[["cut_off"]]) {
             
             # ======================== #
             # case dmu super-efficient #
@@ -166,7 +166,7 @@ compute_scores <- function (
             # ====================== #
             
             # calculate increments to make not efficient class the minority
-            while (prob_eff < 0.5) {
+            while (prob_eff < final_model[["cut_off"]]) {
               
               if (any(data[i, y] + (data[i, y] * incr) > max_value_y * 2)) {
                 

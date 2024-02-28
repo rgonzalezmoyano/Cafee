@@ -17,34 +17,46 @@ library(deaR)
 # ===
 
 DGP <- "cobb_douglas_XnY1"
-N <- 200
+N <- 25
 noise <- c(0, 0.02, 0.05)
-nX <- 12
+nX <- 1
 
 # ===
 # Table
 # ===
 
-repl <- 1
+repl <- 100
 
 simulaciones <- data.frame (
-  # general
+  
+  # ======= #
+  # general #
+  # ======= #
+  
   id = rep(NA, repl),
   DGP = rep(NA, repl),
   scenario = rep(NA, repl),
   N = rep(NA, repl),
   noise = rep(NA, repl),
   
-  # information technique
+  # ===================== #
+  # information technique #
+  # ===================== #
+  
   # cafee_DEA
   technique_cafee_DEA = rep(NA, repl),
   hyperparameters_cafee_DEA = rep(NA, repl),
+  cut_off_cafee_DEA = rep(NA, repl),
   
   # cafee_BDEA
   technique_cafee_BDEA = rep(NA, repl),
   hyperparameters_cafee_BDEA = rep(NA, repl),
+  cut_off_cafee_BDEA = rep(NA, repl),
   
-  # correlations
+  # ============ #
+  # correlations #
+  # ============ #
+  
   # DEA
   corr_pearson_yD_DEA = rep(NA, repl),
   corr_spearman_yD_DEA = rep(NA, repl),
@@ -65,25 +77,43 @@ simulaciones <- data.frame (
   corr_spearman_yD_super_eff = rep(NA, repl),
   corr_kendall_yD_super_eff = rep(NA, repl),
   
-  # cafee_DEA
-  corr_pearson_yD_cafee_DEA = rep(NA, repl),
-  corr_spearman_yD_cafee_DEA = rep(NA, repl),
-  corr_kendall_yD_cafee_DEA = rep(NA, repl),
+  # score_cafee_DEA
+  corr_pearson_yD_score_cafee_DEA = rep(NA, repl),
+  corr_spearman_yD_score_cafee_DEA = rep(NA, repl),
+  corr_kendall_yD_score_cafee_DEA = rep(NA, repl),
   
-  # cafee_BDEA
-  corr_pearson_yD_cafee_BDEA = rep(NA, repl),
-  corr_spearman_yD_cafee_BDEA = rep(NA, repl),
-  corr_kendall_yD_cafee_BDEA = rep(NA, repl),
+  # score_cafee_BDEA
+  corr_pearson_yD_score_cafee_BDEA = rep(NA, repl),
+  corr_spearman_yD_score_cafee_BDEA = rep(NA, repl),
+  corr_kendall_yD_score_cafee_BDEA = rep(NA, repl),
+  
+  # p_cafee_DEA
+  corr_pearson_yD_p_cafee_DEA = rep(NA, repl),
+  corr_spearman_yD_p_cafee_DEA = rep(NA, repl),
+  corr_kendall_yD_p_cafee_DEA = rep(NA, repl),
+  
+  # p_cafee_BDEA
+  corr_pearson_yD_p_cafee_BDEA = rep(NA, repl),
+  corr_spearman_yD_p_cafee_BDEA = rep(NA, repl),
+  corr_kendall_yD_p_cafee_BDEA = rep(NA, repl),
+  
+  # ===== #
+  # error #
+  # ===== #
   
   # mse
   mse_DEA = rep(NA, repl),
   mse_BDEA = rep(NA, repl),
+  mse_cross_eff = rep(NA, repl),
+  mse_super_eff = rep(NA, repl),
   mse_cafee_DEA = rep(NA, repl),
   mse_cafee_BDEA = rep(NA, repl),
   
   # bias
   bias_DEA = rep(NA, repl),
   bias_BDEA = rep(NA, repl),
+  bias_cross_eff = rep(NA, repl),
+  bias_super_eff = rep(NA, repl),
   bias_cafee_DEA = rep(NA, repl),
   bias_cafee_BDEA = rep(NA, repl)
   
@@ -419,6 +449,11 @@ for (std_dev in noise) {
       if (target_method == "additive") {
         scores["score_cafee_DEA"] <- as.vector(scores_cafee)
         
+        # probability to be not efficient
+        p_cafee_DEA <- predict(final_model, data, type = "prob")
+        
+        
+        
         # Pvalues
         pvalues_spearman$pvalues_cafee_DEA <- cor.test (
           x = data[, "yD"], y = data[, y] * scores$score_cafee_DEA,
@@ -431,6 +466,9 @@ for (std_dev in noise) {
           alternative = "two.sided",
           method = "kendall",
           conf.level = 0.95)[["p.value"]]
+        
+        # cut_off
+        simulaciones$cut_off_cafee_DEA[i] <- final_model[["cut_off"]]
         
         # hyperparameters information   
         simulaciones$technique_cafee_DEA[i] <- final_model[["method"]]
@@ -451,6 +489,9 @@ for (std_dev in noise) {
           alternative = "two.sided",
           method = "kendall",
           conf.level = 0.95)[["p.value"]]
+        
+        # cut_off
+        simulaciones$cut_off_cafee_BDEA[i] <- final_model[["cut_off"]]
             
         simulaciones$technique_cafee_BDEA[i] <- final_model[["method"]]
         simulaciones$hyperparameters_cafee_BDEA[i] <- toString(final_model[["bestTune"]])
@@ -689,13 +730,13 @@ for (std_dev in noise) {
     diff_error <- scores[, "score_yD"] - scores[, "score_DEA"]
     
     simulaciones$mse_DEA[i] <- round(mean(diff_error ^ 2), 3)
-    simulaciones$bias_DEA[i] <- round(mean(diff_error), 3)
+    simulaciones$bias_DEA[i] <- abs(round(mean(diff_error), 3))
     
     # BDEA measures
     diff_error <- scores[, "score_yD"] - scores[, "score_BDEA"]
     
     simulaciones$mse_BDEA[i] <- round(mean(diff_error ^ 2), 3)
-    simulaciones$bias_BDEA[i] <- round(mean(diff_error), 3)
+    simulaciones$bias_BDEA[i] <- abs(round(mean(diff_error), 3))
     
     # cafee_DEA measures
     if (any(is.na(scores$score_cafee_DEA)) == FALSE) {
@@ -720,7 +761,7 @@ for (std_dev in noise) {
     }
     
     simulaciones$mse_cafee_DEA[i] <- round(mean(diff_error ^ 2), 3)
-    simulaciones$bias_cafee_DEA[i] <- round(mean(diff_error), 3)
+    simulaciones$bias_cafee_DEA[i] <- abs(round(mean(diff_error), 3))
     
     # cafee_BDEA measures
     
@@ -746,7 +787,7 @@ for (std_dev in noise) {
     }
     
     simulaciones$mse_cafee_BDEA[i] <- round(mean(diff_error ^ 2), 3)
-    simulaciones$bias_cafee_BDEA[i] <- round(mean(diff_error), 3)
+    simulaciones$bias_cafee_BDEA[i] <- abs(round(mean(diff_error), 3))
     
     # round results
     simulaciones[, 10:ncol(simulaciones)] <- round(simulaciones[, 10:ncol(simulaciones)], 3)
@@ -758,10 +799,13 @@ for (std_dev in noise) {
     list$scores <- scores
     list$pvalues_spearman <- pvalues_spearman
     list$pvalues_kendall <- pvalues_kendall
+    list$cut_off_cafee_DEA <- cut_off_cafee_DEA
+    list$cut_off_cafee_BDEA <- cut_off_cafee_BDEA
     
-    # firslist# first level of the list
+    # first level of the list
     
     list_information[[i]] <- list
+    
   }
   
   # to character to save name
