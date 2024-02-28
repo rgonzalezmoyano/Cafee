@@ -17,15 +17,15 @@ library(deaR)
 # ===
 
 DGP <- "cobb_douglas_XnY1"
-N <- 10
+N <- 200
 noise <- c(0, 0.02, 0.05)
-nX <- 1
+nX <- 12
 
 # ===
 # Table
 # ===
 
-repl <- 2
+repl <- 1
 
 simulaciones <- data.frame (
   # general
@@ -139,7 +139,7 @@ for (std_dev in noise) {
   list_information <- list()
   
   for (i in 1:repl) {
-    
+    print(i)
     repeat {
       
       # ===
@@ -383,7 +383,7 @@ for (std_dev in noise) {
     
     methods <- list (
       "svmPoly" = list(
-        "degree" = c(1, 2, 3, 4, 5, 6),
+        "degree" = c(1, 2, 3, 4, 5, 6, 7),
         "scale" = c(0.001, 0.1, 1, 10),
         "C" = c(0.001, 0.1, 1, 10, 100, 1000)
       )
