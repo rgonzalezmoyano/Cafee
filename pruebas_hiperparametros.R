@@ -1,3 +1,4 @@
+library(readxl)
 recopilacion_datos <- read_excel("simulations/cobb_douglas_XnY1/results/hold_out_0.10 v3/recopilacion_datos.xlsx")
 
 data <- recopilacion_datos
