@@ -7,13 +7,14 @@
 #' @param y Column indexes of output variables in \code{data}.
 #' @param final_model The best-fitted model used for efficiency score computation.
 #' @param orientation The direction in which data should be projected to calculate efficiency scores.
+#' @param cut_off Probability levels for determining efficient class scores.
 #'
 #' @return A numeric vector containing the efficiency scores for each observation in the input data.
 #'
 #' @export
 
 compute_scores <- function (
-    data, x, y, final_model, orientation
+    data, x, y, final_model, orientation, cut_off
 ) {
     
     # vector of optimal scores
@@ -150,8 +151,7 @@ compute_scores <- function (
           
         } else { # OUTPUT ORIENTATION
           
-          
-          if (prob_eff > final_model[["cut_off"]]) {
+          if (prob_eff > cut_off) {
             
             # ======================== #
             # case dmu super-efficient #
