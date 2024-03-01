@@ -25,7 +25,7 @@ nX <- 12
 # Table
 # ===
 
-repl <- 50
+repl <- 10
 
 simulaciones <- data.frame (
   
