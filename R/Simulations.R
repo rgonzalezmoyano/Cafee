@@ -5,6 +5,7 @@
 #' @param DGP Data Generation Process:
 #' \itemize{
 #'    \item{\code{"cobb_douglas_XnY1"}}: Cobb-Douglas Data Generation Process for a XnY1 scenario. Check \code{help("cobb_douglas_XnY1")}.
+#'    \item{\code{"cobb_douglas_XnY1_CRS"}}: Cobb-Douglas Data Generation Process with CRS for a XnY1 scenario. Check \code{help("cobb_douglas_XnY1_CRS")}.
 #'    \item{\code{"translog_X2Y2"}}: Translog Data Generation Process for a X2Y2 scenario. Check \code{help("translog_X2Y2")}.
 #'    \item{\code{"add_scenario_XnY1"}}: Additive Data Generation Process for a XnY1 scenario. Check \code{help("add_scenario_XnY1")}.
 #'    \item{\code{"mult_scenario_XnY1"}}: Multiplicative Data Generation Process for a XnY1 scenario. Check \code{help("mult_scenario_XnY1")}.
