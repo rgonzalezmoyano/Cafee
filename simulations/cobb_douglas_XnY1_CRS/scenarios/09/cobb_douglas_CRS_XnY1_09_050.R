@@ -25,10 +25,10 @@ library(deaR)
 # parameters
 # ===
 
-DGP <- "cobb_douglas_XnY1_CRS"
+DGP <- "cobb_douglas_CRS_XnY1"
 N <- 50
 noise <- c(0, 0.02, 0.05)
-nX <- 1
+nX <- 9
 
 # ===
 # Table
@@ -197,7 +197,7 @@ for (std_dev in noise) {
       # ===
       
       data <- reffcy (
-        DGP = "cobb_douglas_XnY1",
+        DGP = DGP,
         parms = list (
           N = N,
           nX = nX
@@ -733,213 +733,221 @@ for (std_dev in noise) {
       )
     )
     
-    ###
-    # corr yD vs score_cafee_DEA_50
-    ###
-    if (any(is.na(scores$score_cafee_DEA_50)) == FALSE) {
+    if ("additive" %in% label_type) {
       
-      # there are not NA cases
-      filtered_data <- scores
+      ###
+      # corr yD vs score_cafee_DEA_50
+      ###
+      if (any(is.na(scores$score_cafee_DEA_50)) == FALSE) {
       
-    } else {
-      
-      # there are NA cases
-      # all are missing
-      if (length(which(is.na(scores$score_cafee_DEA_50))) == N) {
-        
+        # there are not NA cases
         filtered_data <- scores
-        
+      
       } else {
+      
+        # there are NA cases
+        # all are missing
+        if (length(which(is.na(scores$score_cafee_DEA_50))) == N) {
         
-        idx_NA_cafee_DEA_50 <- which(is.na(scores$score_cafee_DEA_50))
-        filtered_data <- scores[- idx_NA_cafee_DEA_50, ]
+          filtered_data <- scores
         
+        } else {
+        
+          idx_NA_cafee_DEA_50 <- which(is.na(scores$score_cafee_DEA_50))
+          filtered_data <- scores[- idx_NA_cafee_DEA_50, ]
+        
+        }
+      
       }
+    
+      simulaciones$corr_pearson_yD_score_cafee_DEA_50[i] <- as.numeric (
+        cor (
+          filtered_data$score_yD, 
+          filtered_data$score_cafee_DEA_50, 
+          use = "everything", 
+          method = "pearson"
+        )
+      )
+    
+      simulaciones$corr_spearman_yD_score_cafee_DEA_50[i] <- as.numeric (
+        cor (
+          filtered_data$score_yD, 
+          filtered_data$score_cafee_DEA_50, 
+          use = "everything", 
+          method = "spearman"
+        )
+      )
+    
+      simulaciones$corr_kendall_yD_score_cafee_DEA_50[i] <- as.numeric (
+        cor (
+          filtered_data$score_yD, 
+          filtered_data$score_cafee_DEA_50, 
+          use = "everything", 
+          method = "kendall"
+        )
+      )
+    
+      ###
+      # corr yD vs score_cafee_DEA_cut_off
+      ###
+      if (any(is.na(scores$score_cafee_DEA_cut_off)) == FALSE) {
+      
+        # there are not NA cases
+        filtered_data <- scores
+      
+      } else {
+      
+        # there are NA cases
+        # all are missing
+        if (length(which(is.na(scores$score_cafee_DEA_cut_off))) == N) {
+        
+          filtered_data <- scores
+        
+        } else {
+        
+          idx_NA_cafee_DEA_cut_off <- which(is.na(scores$score_cafee_DEA_cut_off))
+          filtered_data <- scores[- idx_NA_cafee_DEA_cut_off, ]
+        
+        }
+      
+      }
+    
+      simulaciones$corr_pearson_yD_score_cafee_DEA_cut_off[i] <- as.numeric (
+        cor (
+          filtered_data$score_yD, 
+          filtered_data$score_cafee_DEA_cut_off, 
+          use = "everything", 
+          method = "pearson"
+        )
+      )
+    
+      simulaciones$corr_spearman_yD_score_cafee_DEA_cut_off[i] <- as.numeric (
+        cor (
+          filtered_data$score_yD, 
+          filtered_data$score_cafee_DEA_cut_off, 
+          use = "everything", 
+          method = "spearman"
+        )
+      )
+    
+      simulaciones$corr_kendall_yD_score_cafee_DEA_cut_off[i] <- as.numeric (
+        cor (
+          filtered_data$score_yD, 
+          filtered_data$score_cafee_DEA_cut_off, 
+          use = "everything", 
+          method = "kendall"
+        )
+      )
       
     }
-    
-    simulaciones$corr_pearson_yD_score_cafee_DEA_50[i] <- as.numeric (
-      cor (
-        filtered_data$score_yD, 
-        filtered_data$score_cafee_DEA_50, 
-        use = "everything", 
-        method = "pearson"
-      )
-    )
-    
-    simulaciones$corr_spearman_yD_score_cafee_DEA_50[i] <- as.numeric (
-      cor (
-        filtered_data$score_yD, 
-        filtered_data$score_cafee_DEA_50, 
-        use = "everything", 
-        method = "spearman"
-      )
-    )
-    
-    simulaciones$corr_kendall_yD_score_cafee_DEA_50[i] <- as.numeric (
-      cor (
-        filtered_data$score_yD, 
-        filtered_data$score_cafee_DEA_50, 
-        use = "everything", 
-        method = "kendall"
-      )
-    )
-    
-    ###
-    # corr yD vs score_cafee_DEA_cut_off
-    ###
-    if (any(is.na(scores$score_cafee_DEA_cut_off)) == FALSE) {
+  
+    if ("bootstrapping_dea" %in% label_type) {
       
-      # there are not NA cases
-      filtered_data <- scores
+      ###
+      # corr yD vs score_cafee_BDEA_50
+      ###
       
-    } else {
+      if (any(is.na(scores$score_cafee_BDEA_50)) == FALSE) {
       
-      # there are NA cases
-      # all are missing
-      if (length(which(is.na(scores$score_cafee_DEA_cut_off))) == N) {
-        
+        # there are not NA cases
         filtered_data <- scores
-        
+      
       } else {
+      
+        # there are NA cases
+        # all are missing
+        if (length(which(is.na(scores$score_cafee_BDEA_50))) == N) {
         
-        idx_NA_cafee_DEA_cut_off <- which(is.na(scores$score_cafee_DEA_cut_off))
-        filtered_data <- scores[- idx_NA_cafee_DEA_cut_off, ]
+          filtered_data <- scores
         
+        } else {
+        
+          idx_NA_cafee_BDEA_50 <- which(is.na(scores$score_cafee_BDEA_50))
+          filtered_data <- scores[- idx_NA_cafee_BDEA_50, ]
+        
+        }
+      
       }
-      
-    }
     
-    simulaciones$corr_pearson_yD_score_cafee_DEA_cut_off[i] <- as.numeric (
-      cor (
-        filtered_data$score_yD, 
-        filtered_data$score_cafee_DEA_cut_off, 
-        use = "everything", 
-        method = "pearson"
+      simulaciones$corr_pearson_yD_score_cafee_BDEA_50[i] <- as.numeric (
+        cor (
+          filtered_data$score_yD,
+          filtered_data$score_cafee_BDEA_50,
+          use = "everything",
+          method = "pearson"
+        )
       )
-    )
     
-    simulaciones$corr_spearman_yD_score_cafee_DEA_cut_off[i] <- as.numeric (
-      cor (
-        filtered_data$score_yD, 
-        filtered_data$score_cafee_DEA_cut_off, 
-        use = "everything", 
-        method = "spearman"
+      simulaciones$corr_spearman_yD_score_cafee_BDEA_50[i] <- as.numeric ( 
+        cor (
+          filtered_data$score_yD,
+          filtered_data$score_cafee_BDEA_50,
+          use = "everything",
+          method = "spearman"
+        )
       )
-    )
     
-    simulaciones$corr_kendall_yD_score_cafee_DEA_cut_off[i] <- as.numeric (
-      cor (
-        filtered_data$score_yD, 
-        filtered_data$score_cafee_DEA_cut_off, 
-        use = "everything", 
-        method = "kendall"
+      simulaciones$corr_kendall_yD_score_cafee_BDEA_50[i] <- as.numeric (
+        cor (
+          filtered_data$score_yD,
+          filtered_data$score_cafee_BDEA_50,
+          use = "everything",
+          method = "kendall"
+        )
       )
-    )
     
-    ###
-    # corr yD vs score_cafee_BDEA_50
-    ###
-    if (any(is.na(scores$score_cafee_BDEA_50)) == FALSE) {
+      ###
+      # corr yD vs score_cafee_BDEA_cut_off
+      ###
+      if (any(is.na(scores$score_cafee_BDEA_cut_off)) == FALSE) {
       
-      # there are not NA cases
-      filtered_data <- scores
-      
-    } else {
-      
-      # there are NA cases
-      # all are missing
-      if (length(which(is.na(scores$score_cafee_BDEA_50))) == N) {
-        
+        # there are not NA cases
         filtered_data <- scores
-        
+      
       } else {
+      
+        # there are NA cases
+        # all are missing
+        if (length(which(is.na(scores$score_cafee_BDEA_cut_off))) == N) {
         
-        idx_NA_cafee_BDEA_50 <- which(is.na(scores$score_cafee_BDEA_50))
-        filtered_data <- scores[- idx_NA_cafee_BDEA_50, ]
+          filtered_data <- scores
         
+        } else {
+        
+          idx_NA_cafee_BDEA_cut_off <- which(is.na(scores$score_cafee_BDEA_cut_off))
+          filtered_data <- scores[- idx_NA_cafee_BDEA_cut_off, ]
+        
+        }
+      
       }
-      
+    
+      simulaciones$corr_pearson_yD_score_cafee_BDEA_cut_off[i] <- as.numeric (
+        cor (
+          filtered_data$score_yD,
+          filtered_data$score_cafee_BDEA_cut_off,
+          use = "everything",
+          method = "pearson"
+        )
+      )
+    
+      simulaciones$corr_spearman_yD_score_cafee_BDEA_cut_off[i] <- as.numeric ( 
+        cor (
+          filtered_data$score_yD,
+          filtered_data$score_cafee_BDEA_cut_off,
+          use = "everything",
+          method = "spearman"
+        )
+      )
+    
+      simulaciones$corr_kendall_yD_score_cafee_BDEA_cut_off[i] <- as.numeric (
+        cor (
+          filtered_data$score_yD,
+          filtered_data$score_cafee_BDEA_cut_off,
+          use = "everything",
+          method = "kendall"
+        )
+      )
     }
-    
-    simulaciones$corr_pearson_yD_score_cafee_BDEA_50[i] <- as.numeric (
-      cor (
-        filtered_data$score_yD,
-        filtered_data$score_cafee_BDEA_50,
-        use = "everything",
-        method = "pearson"
-      )
-    )
-    
-    simulaciones$corr_spearman_yD_score_cafee_BDEA_50[i] <- as.numeric ( 
-      cor (
-        filtered_data$score_yD,
-        filtered_data$score_cafee_BDEA_50,
-        use = "everything",
-        method = "spearman"
-      )
-    )
-    
-    simulaciones$corr_kendall_yD_score_cafee_BDEA_50[i] <- as.numeric (
-      cor (
-        filtered_data$score_yD,
-        filtered_data$score_cafee_BDEA_50,
-        use = "everything",
-        method = "kendall"
-      )
-    )
-    
-    ###
-    # corr yD vs score_cafee_BDEA_cut_off
-    ###
-    if (any(is.na(scores$score_cafee_BDEA_cut_off)) == FALSE) {
-      
-      # there are not NA cases
-      filtered_data <- scores
-      
-    } else {
-      
-      # there are NA cases
-      # all are missing
-      if (length(which(is.na(scores$score_cafee_BDEA_cut_off))) == N) {
-        
-        filtered_data <- scores
-        
-      } else {
-        
-        idx_NA_cafee_BDEA_cut_off <- which(is.na(scores$score_cafee_BDEA_cut_off))
-        filtered_data <- scores[- idx_NA_cafee_BDEA_cut_off, ]
-        
-      }
-      
-    }
-    
-    simulaciones$corr_pearson_yD_score_cafee_BDEA_cut_off[i] <- as.numeric (
-      cor (
-        filtered_data$score_yD,
-        filtered_data$score_cafee_BDEA_cut_off,
-        use = "everything",
-        method = "pearson"
-      )
-    )
-    
-    simulaciones$corr_spearman_yD_score_cafee_BDEA_cut_off[i] <- as.numeric ( 
-      cor (
-        filtered_data$score_yD,
-        filtered_data$score_cafee_BDEA_cut_off,
-        use = "everything",
-        method = "spearman"
-      )
-    )
-    
-    simulaciones$corr_kendall_yD_score_cafee_BDEA_cut_off[i] <- as.numeric (
-      cor (
-        filtered_data$score_yD,
-        filtered_data$score_cafee_BDEA_cut_off,
-        use = "everything",
-        method = "kendall"
-      )
-    )
     
     ###
     # corr yD vs p_cafee_DEA
@@ -1029,108 +1037,115 @@ for (std_dev in noise) {
     simulaciones$mse_super_eff[i] <- round(mean(diff_error ^ 2), 3)
     simulaciones$bias_super_eff[i] <- abs(round(mean(diff_error), 3))
     
-    # cafee_DEA_50 measures
-    if (any(is.na(scores$score_cafee_DEA_50)) == FALSE) {
-      
-      # there are not NA cases
-      diff_error <- scores[, "score_yD"] - scores[, "score_cafee_DEA_50"]
-      
-    } else {
-      
-      # there are NA cases
-      # all are missing
-      if (length(which(is.na(scores$score_cafee_DEA_50))) == N) {
+    if ("additive" %in% label_type) {
+    
+      # cafee_DEA_50 measures
+      if (any(is.na(scores$score_cafee_DEA_50)) == FALSE) {
         
-        diff_error <- as.vector(matrix(NA, nrow = N, ncol = 1))
+        # there are not NA cases
+        diff_error <- scores[, "score_yD"] - scores[, "score_cafee_DEA_50"]
         
       } else {
         
-        diff_error <- scores[- idx_NA_cafee_DEA_50, "score_yD"] - scores[- idx_NA_cafee_DEA_50, "score_cafee_DEA_50"]
+        # there are NA cases
+        # all are missing
+        if (length(which(is.na(scores$score_cafee_DEA_50))) == N) {
+          
+          diff_error <- as.vector(matrix(NA, nrow = N, ncol = 1))
+          
+        } else {
+          
+          diff_error <- scores[- idx_NA_cafee_DEA_50, "score_yD"] - scores[- idx_NA_cafee_DEA_50, "score_cafee_DEA_50"]
+          
+        }
         
       }
       
-    }
-    
-    simulaciones$mse_cafee_DEA_50[i] <- round(mean(diff_error ^ 2), 3)
-    simulaciones$bias_cafee_DEA_50[i] <- abs(round(mean(diff_error), 3))
-    
-    # cafee_DEA_cut_off measures
-    if (any(is.na(scores$score_cafee_DEA_cut_off)) == FALSE) {
+      simulaciones$mse_cafee_DEA_50[i] <- round(mean(diff_error ^ 2), 3)
+      simulaciones$bias_cafee_DEA_50[i] <- abs(round(mean(diff_error), 3))
       
-      # there are not NA cases
-      diff_error <- scores[, "score_yD"] - scores[, "score_cafee_DEA_cut_off"]
-      
-    } else {
-      
-      # there are NA cases
-      # all are missing
-      if (length(which(is.na(scores$score_cafee_DEA_cut_off))) == N) {
+      # cafee_DEA_cut_off measures
+      if (any(is.na(scores$score_cafee_DEA_cut_off)) == FALSE) {
         
-        diff_error <- as.vector(matrix(NA, nrow = N, ncol = 1))
+        # there are not NA cases
+        diff_error <- scores[, "score_yD"] - scores[, "score_cafee_DEA_cut_off"]
         
       } else {
         
-        diff_error <- scores[- idx_NA_cafee_DEA_cut_off, "score_yD"] - scores[- idx_NA_cafee_DEA_cut_off, "score_cafee_DEA_cut_off"]
+        # there are NA cases
+        # all are missing
+        if (length(which(is.na(scores$score_cafee_DEA_cut_off))) == N) {
+          
+          diff_error <- as.vector(matrix(NA, nrow = N, ncol = 1))
+          
+        } else {
+          
+          diff_error <- scores[- idx_NA_cafee_DEA_cut_off, "score_yD"] - scores[- idx_NA_cafee_DEA_cut_off, "score_cafee_DEA_cut_off"]
+          
+        }
         
       }
       
+      simulaciones$mse_cafee_DEA_cut_off[i] <- round(mean(diff_error ^ 2), 3)
+      simulaciones$bias_cafee_DEA_cut_off[i] <- abs(round(mean(diff_error), 3))
+    
     }
     
-    simulaciones$mse_cafee_DEA_cut_off[i] <- round(mean(diff_error ^ 2), 3)
-    simulaciones$bias_cafee_DEA_cut_off[i] <- abs(round(mean(diff_error), 3))
-    
+    if ("bootstrapping_dea" %in% label_type) {
+      
     # cafee_BDEA_50 measures
     
-    if (any(is.na(scores$score_cafee_BDEA_50)) == FALSE) {
-      
-      # there are not NA cases
-      diff_error <- scores[, "score_yD"] - scores[, "score_cafee_BDEA_50"]
-      
-    } else {
-      
-      # there are NA cases
-      # all are missing
-      if (length(which(is.na(scores$score_cafee_BDEA_50))) == N) {
+      if (any(is.na(scores$score_cafee_BDEA_50)) == FALSE) {
         
-        diff_error <- as.vector(matrix(NA, nrow = N, ncol = 1))
+        # there are not NA cases
+        diff_error <- scores[, "score_yD"] - scores[, "score_cafee_BDEA_50"]
         
       } else {
         
-        diff_error <- scores[- idx_NA_cafee_BDEA_50, "score_yD"] - scores[- idx_NA_cafee_BDEA_50, "score_cafee_BDEA_50"]
+        # there are NA cases
+        # all are missing
+        if (length(which(is.na(scores$score_cafee_BDEA_50))) == N) {
+          
+          diff_error <- as.vector(matrix(NA, nrow = N, ncol = 1))
+          
+        } else {
+          
+          diff_error <- scores[- idx_NA_cafee_BDEA_50, "score_yD"] - scores[- idx_NA_cafee_BDEA_50, "score_cafee_BDEA_50"]
+          
+        }
         
       }
       
-    }
-    
-    simulaciones$mse_cafee_BDEA_50[i] <- round(mean(diff_error ^ 2), 3)
-    simulaciones$bias_cafee_BDEA_50[i] <- abs(round(mean(diff_error), 3))
-    
-    # cafee_BDEA_cut_off measures
-    
-    if (any(is.na(scores$score_cafee_BDEA_cut_off)) == FALSE) {
+      simulaciones$mse_cafee_BDEA_50[i] <- round(mean(diff_error ^ 2), 3)
+      simulaciones$bias_cafee_BDEA_50[i] <- abs(round(mean(diff_error), 3))
       
-      # there are not NA cases
-      diff_error <- scores[, "score_yD"] - scores[, "score_cafee_BDEA_cut_off"]
+      # cafee_BDEA_cut_off measures
       
-    } else {
-      
-      # there are NA cases
-      # all are missing
-      if (length(which(is.na(scores$score_cafee_DEA))) == N) {
+      if (any(is.na(scores$score_cafee_BDEA_cut_off)) == FALSE) {
         
-        diff_error <- as.vector(matrix(NA, nrow = N, ncol = 1))
+        # there are not NA cases
+        diff_error <- scores[, "score_yD"] - scores[, "score_cafee_BDEA_cut_off"]
         
       } else {
         
-        diff_error <- scores[- idx_NA_cafee_BDEA_cut_off, "score_yD"] - scores[- idx_NA_cafee_BDEA_cut_off, "score_cafee_BDEA_cut_off"]
+        # there are NA cases
+        # all are missing
+        if (length(which(is.na(scores$score_cafee_DEA))) == N) {
+          
+          diff_error <- as.vector(matrix(NA, nrow = N, ncol = 1))
+          
+        } else {
+          
+          diff_error <- scores[- idx_NA_cafee_BDEA_cut_off, "score_yD"] - scores[- idx_NA_cafee_BDEA_cut_off, "score_cafee_BDEA_cut_off"]
+          
+        }
         
       }
       
+      simulaciones$mse_cafee_BDEA_cut_off[i] <- round(mean(diff_error ^ 2), 3)
+      simulaciones$bias_cafee_BDEA_cut_off[i] <- abs(round(mean(diff_error), 3))
+    
     }
-    
-    simulaciones$mse_cafee_BDEA_cut_off[i] <- round(mean(diff_error ^ 2), 3)
-    simulaciones$bias_cafee_BDEA_cut_off[i] <- abs(round(mean(diff_error), 3))
-    
     # round results
     simulaciones[, 12:ncol(simulaciones)] <- round(simulaciones[, 12:ncol(simulaciones)], 3)
     
@@ -1210,3 +1225,4 @@ for (std_dev in noise) {
   # 
   # setwd(directory)
 }
+

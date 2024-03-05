@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH --job-name=CRS_09_200     	 	# Nombre del trabajo
+#SBATCH --job-name=C12_025     	 		# Nombre del trabajo
 #SBATCH --ntasks=1				        # Una única tarea
 #SBATCH --cpus-per-task=1			    # Cores solicitados
 #SBATCH --mem-per-cpu=4096		        # Memoria solicitada MB/core
-#SBATCH --output=/home/PI/ricardo.gonzalezm/cafee/nX_09/%j.log	    # Fichero de salida
-#SBATCH --error=/home/PI/ricardo.gonzalezm/cafee/nX_09/%j.err		# Fichero de error
+#SBATCH --output=/home/PI/ricardo.gonzalezm/cafee/nX_12/%j.log	    # Fichero de salida
+#SBATCH --error=/home/PI/ricardo.gonzalezm/cafee/nX_12/%j.err		# Fichero de error
 #SBATCH --mail-user=ricardo.gonzalezm@umh.es		# Email donde enviar eventos
 #SBATCH --mail-type=BEGIN,END,FAIL	    # Eventos a enviar por email
 #SBATCH --time=12-0						# Días de duración: 12 días
@@ -12,9 +12,9 @@
 export OMP_NUM_THREADS=${SLURM_CPUS_ON_NODE}
  
 module load R/4.2.2
-cd /home/PI/ricardo.gonzalezm/cafee/nX_09
+cd /home/PI/ricardo.gonzalezm/cafee/nX_12
 
-#Rscript cobb_douglas_CRS_XnY1_09_025.R
-#Rscript cobb_douglas_CRS_XnY1_09_050.R
-#Rscript cobb_douglas_CRS_XnY1_09_150.R
-Rscript cobb_douglas_CRS_XnY1_09_200.R
+Rscript cobb_douglas_CRS_XnY1_12_025.R
+#Rscript cobb_douglas_CRS_XnY1_12_050.R
+#Rscript cobb_douglas_CRS_XnY1_12_150.R
+#Rscript cobb_douglas_CRS_XnY1_12_200.R

@@ -25,10 +25,10 @@ library(deaR)
 # parameters
 # ===
 
-DGP <- "cobb_douglas_XnY1"
-N <- 150
+DGP <- "cobb_douglas_CRS_XnY1"
+N <- 25
 noise <- c(0, 0.02, 0.05)
-nX <- 6
+nX <- 9
 
 # ===
 # Table
