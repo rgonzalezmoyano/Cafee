@@ -226,32 +226,46 @@ efficiency_estimation <- function (
   
   # avoid messages for some methods
   verb_methods <- c("gbm", "svmPoly")
-  
-  if (names(methods[best_model_index]) %in% verb_methods) {
-    final_model <- train (
-      form = class_efficiency ~.,
-      data = data,
-      method = row.names(selected_model),
-      tuneGrid = parms_vals[[best_model_index]],
-      verbose = FALSE,
-      trControl = trainControl(method = "none", classProbs = TRUE)
-    )
-  } else {
-    final_model <- train (
-      form = class_efficiency ~.,
-      data = data,
-      method = row.names(selected_model),
-      tuneGrid = parms_vals[[best_model_index]],
-      trControl = trainControl(method = "none", classProbs = TRUE)
-    )
-  }
 
-  cut_off <- select_cut_off (
-    data = valid_data,
-    final_model = final_model
-  )
-  
-  final_model$cut_off <- cut_off
+  repeat {
+    if (names(methods[best_model_index]) %in% verb_methods) {
+      final_model <- train (
+        form = class_efficiency ~.,
+        data = data,
+        method = row.names(selected_model),
+        tuneGrid = parms_vals[[best_model_index]],
+        verbose = FALSE,
+        trControl = trainControl(method = "none", classProbs = TRUE)
+      )
+    } else {
+      final_model <- train (
+        form = class_efficiency ~.,
+        data = data,
+        method = row.names(selected_model),
+        tuneGrid = parms_vals[[best_model_index]],
+        trControl = trainControl(method = "none", classProbs = TRUE)
+      )
+    }
+      
+      #print(predict(final_model, valid_data, type = "prob"))
+      
+      try_cut_off <- tryCatch (
+        {
+          cut_off <- select_cut_off (
+            data = valid_data,
+            final_model = final_model
+            )
+          },
+        error = function(e) NULL
+      )
+    
+      if (!is.null(try_cut_off)) {
+       
+        cut_off <- try_cut_off
+        final_model$cut_off <- cut_off
+        break
+      }
+  }
   
   return(final_model)
 }

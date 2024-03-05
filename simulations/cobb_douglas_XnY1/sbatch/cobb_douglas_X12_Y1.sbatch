@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=VRS_12_200     	 		# Nombre del trabajo
+#SBATCH --job-name=V12_025     	 		# Nombre del trabajo
 #SBATCH --ntasks=1				        # Una única tarea
 #SBATCH --cpus-per-task=1			    # Cores solicitados
 #SBATCH --mem-per-cpu=4096		        # Memoria solicitada MB/core
@@ -14,7 +14,7 @@ export OMP_NUM_THREADS=${SLURM_CPUS_ON_NODE}
 module load R/4.2.2
 cd /home/PI/ricardo.gonzalezm/cafee/nX_12
 
-#Rscript cobb_douglas_XnY1_12_025.R
+Rscript cobb_douglas_XnY1_12_025.R
 #Rscript cobb_douglas_XnY1_12_050.R
 #Rscript cobb_douglas_XnY1_12_150.R
-Rscript cobb_douglas_XnY1_12_200.R
+#Rscript cobb_douglas_XnY1_12_200.R

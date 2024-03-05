@@ -39,9 +39,9 @@ reffcy <- function (
       nX = parms[["nX"]]
       )
 
-  } else if (DGP == "cobb_douglas_XnY1_CRS") {
+  } else if (DGP == "cobb_douglas_CRS_XnY1") {
     
-    data <- cobb_douglas_XnY1_CRS (
+    data <- cobb_douglas_CRS_XnY1 (
       N = parms[["N"]],
       nX = parms[["nX"]]
     )
@@ -189,7 +189,7 @@ cobb_douglas_XnY1 <- function (
 #'
 #' @keywords internal
 
-cobb_douglas_XnY1_CRS <- function (
+cobb_douglas_CRS_XnY1 <- function (
     N, nX
 ) {
   
