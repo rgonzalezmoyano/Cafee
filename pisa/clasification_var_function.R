@@ -11,6 +11,7 @@ library(dplyr)
 # ========= #
 load("C:/Users/Ricardo/Downloads/PISA_2012.RData")
 data <- a$data
+info <- a$names
 
 value_detection <- function (data) {
   
@@ -22,4 +23,9 @@ value_detection <- function (data) {
   data_dim <- apply(data, MARGIN = 2, FUN = function(x) length(unique(x)))
   
   idx_liker <- which(data_dim < 10)
+  
+  data_lkr <- data[idx_liker]
+  
+  
+  
 }
