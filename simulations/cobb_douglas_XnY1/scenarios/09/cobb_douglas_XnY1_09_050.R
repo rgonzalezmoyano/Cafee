@@ -27,7 +27,8 @@ library(deaR)
 
 DGP <- "cobb_douglas_XnY1"
 N <- 50
-noise <- c(0, 0.02, 0.05)
+#noise <- c(0, 0.02, 0.05)
+noise <- c(0.02, 0.05)
 nX <- 9
 
 # ===

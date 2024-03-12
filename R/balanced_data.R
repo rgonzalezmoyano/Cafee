@@ -269,7 +269,7 @@ create_dmu <- function (
     }
     
     # observations in the 1st decil
-    rows_fst_dec <- c(1:nrow(rows_fst_dec))[rowSums(rows_fst_dec) == 2]
+    rows_fst_dec <- c(1:nrow(rows_fst_dec))[rowSums(rows_fst_dec) >= (ncol(data) - 1) / 2]
     
     # select the indexes to input projection
     idx_inp <- setdiff(rows_fst_dec, idx_eff)
@@ -277,7 +277,7 @@ create_dmu <- function (
     # select the indexes to output projection
     size <- min(length(setdiff(c(1:nrow(data)), c(idx_inp, idx_eff))), new_dmus - length(idx_inp))
 
-    idx_out <- sample(setdiff(c(1:nrow(data)), c(idx_inp, idx_eff)), size = size)
+    idx_out <- sample(setdiff(c(1:nrow(data)), c(idx_inp, idx_eff)), size = max(size, 0))
     
     # project inefficient data 
     proj_data_out <- as.data.frame(cbind(data[, x], data[, y] * bcc_scores_out[, 1]))
