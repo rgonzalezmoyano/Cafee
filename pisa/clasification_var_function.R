@@ -13,6 +13,7 @@ load("C:/Users/Ricardo/Downloads/PISA_2012.RData")
 data <- a$data
 info <- a$names
 
+<<<<<<< HEAD
 # assign factor variable
 idx_change_factor <- c(19)
 
@@ -30,11 +31,27 @@ for(factor_idx in idx_change_factor) {
 # ======================== #
 # define type of variables #
 # ======================== #
+=======
+# dimensions
+nrow <- length(unique(data$SCHOOLID))
+ncol <- as.numeric(length(names(data))) - 1 # No STIDSTD 
+
+new_data <- matrix(
+  data = NA,
+  ncol = ncol,
+  nrow = nrow
+  )
+
+new_data <- as.data.frame(new_data)
+
+# First: ID information
+>>>>>>> 2684bbeb7c354a6938fa625a5a0223d86c726ac0
 for (i in 1:5) {
   data[[i]] <- as.factor(data[[i]])
   print(paste(info$vble[i], "is", info$name[i]))
 }
 
+<<<<<<< HEAD
 a <- as.factor(data$CNT)
 
 
@@ -169,6 +186,19 @@ for (i in 1:nrow(new_data)) {
 
 
 
+=======
+for (i in 6:7) {
+  data[[i]] <- as.numeric(data[[i]])
+  print(paste(info$vble[i], "is", info$name[i]))
+}
+
+# in
+info_data <- data[, 1:7]
+
+info_data <- info_data[-7] %>% 
+  group_by(SCHOOLID) %>% 
+  
+>>>>>>> 2684bbeb7c354a6938fa625a5a0223d86c726ac0
 
 
 
