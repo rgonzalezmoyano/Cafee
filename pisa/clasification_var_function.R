@@ -67,7 +67,9 @@ names(new_data) <- names(data)
 
 # bucle
 for (i in 1:nrow(new_data)) {
-  print(i)
+  paste("Iteración:", print(i))
+  print(i/18139)
+  print("")
   # ID
   new_data[i, 635] <- unique(data$ID_PISA)[i]
   
@@ -233,3 +235,11 @@ for (i in 1:nrow(new_data)) {
   }
   
 }
+
+
+
+
+
+# save data
+file <- paste("pisa/data_PISA_2012_1_to_319", ".RData", sep = "")
+save(save_new_data, file = file)
