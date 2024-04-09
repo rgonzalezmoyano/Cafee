@@ -9,10 +9,21 @@ library(dplyr)
 # ========= #
 # Load data #
 # ========= #
+# parametros de la simulacion
+args = commandArgs(trailingOnly=TRUE)
+if (length(args)!=2) {
+  stop("Missing arguments: Rcript.R numArgs", call.=FALSE)
+}
+ini <- as.numeric(args[1])
+fin <- as.numeric(args[2])
+
 load("C:/Users/Ricardo/Downloads/PISA_2012.RData")
 data <- a$data
 info <- a$names
 
+# ===== #
+# Index #
+# ===== #
 # assign factor variable
 idx_change_factor <- c(4, 9, 10, 11, 12, 14, 21:26, 28:31, 34:37, 39, 40:41, 43:60, 120:124,
                        133:136,  147:171, 284:301, 333:339, 348:376, 378:387, 389:390,
@@ -31,6 +42,9 @@ idx_change_num <- c(42, 141:146, 172:179, 405:407, 411, 414:420, 424:434, 437:43
 all_vector <-c(idx_change_factor, likert, idx_change_num)
 diff <- setdiff(1:635, all_vector)
 
+# ========= #
+# Transform #
+# ========= #
 # Transform variable to YES == 1 and NO == 2
 get_last_char <- function(row) {
   last_char <- substr(row, nchar(row), nchar(row))
@@ -47,9 +61,10 @@ data$ST26Q17 <- apply(as.matrix(data$ST26Q17), MARGIN = 1, FUN = get_last_char)
 
 # create ID_key
 data$ID_PISA <- paste0(data$CNT, data$SCHOOLID)
+ID_for <- unique(data$ID_PISA)[ini:fin]
 
 # dimensions
-nrow = length(unique(data$ID_PISA))
+nrow = length(ID_for)
 ncol <- as.numeric(length(names(data)))
 
 
@@ -65,10 +80,15 @@ new_data <- as.data.frame(new_data)
 # names
 names(new_data) <- names(data)
 
+# ===================== #
+# select data bucle for #
+# ===================== #
+
+
 # bucle
 for (i in 1:nrow(new_data)) {
   paste("Iteración:", print(i))
-  print((i/18139)*100)
+  print(i/18139)
   print("")
   # ID
   new_data[i, 635] <- unique(data$ID_PISA)[i]
@@ -241,5 +261,5 @@ for (i in 1:nrow(new_data)) {
 
 
 # save data
-file <- paste("pisa/data_PISA_2012", ".RData", sep = "")
+file <- paste("data_PISA_2012_",ini, "_to_", fin, ".RData", sep = "")
 save(new_data, file = file)
