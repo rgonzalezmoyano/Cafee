@@ -26,6 +26,8 @@ library(haven)
 # load data
 # ===
 data_2018 <- read_dta("C:/Users/Ricardo/Downloads/Data Spain PISA 2018.dta")
+data_2018$Region <- as.factor(data_2018$Region)
+data_2018$SCHLTYPE <- as.factor(data_2018$SCHLTYPE)
 
 # preProces
 data_NA <- data_2018[which(is.na(data_2018$SCHLTYPE)), ]
@@ -59,7 +61,7 @@ for (i in 1:nrow(inf_NA)) {
 
 # save errors and NA in models
 inf_NA
-  
+
 # ===
 # Information to cafee
 # ===
@@ -67,6 +69,7 @@ inf_NA
 # x and y indexes
 x <- c(3:5)
 y <- c(10, 7, 6)
+z <- c(2, 8)
 
 # different types to label
 target_method <- "additive"
@@ -101,29 +104,29 @@ methods <- list (
     "decay" = c(0, 0.1, 0.01, 0.001)  # Tasa de decaimiento del peso
   )
 )
-    
+
 # =========== #
 # score cafee #
 # =========== #    
-    
+
 # efficiency orientation
 orientation <- "output"
-    
+
 # metrics for model evaluation
 MySummary <- function (data, lev = NULL, model = NULL) {
-                
+  
   # accuracy and kappa
   acc_kpp <- defaultSummary(data, lev, model)
-                
+  
   # AUC, sensitivity and specificity
   auc_sen_spe <- twoClassSummary(data, lev, model)
-                
+  
   # precision and recall
   pre_rec <- prSummary(data, lev, model)
-                
+  
   c(acc_kpp, auc_sen_spe, pre_rec)
 } 
-    
+
 # Parameters for controlling the training process
 trControl <- trainControl (
   method = "cv",
@@ -132,12 +135,14 @@ trControl <- trainControl (
   classProbs = TRUE,
   savePredictions = "all"
 )
-    
+
 hold_out <- 0.10
-    
+
 # https://topepo.github.io/caret/train-models-by-tag.html
-    
+
 metric = "F1"
+
+convexity <- TRUE
 
 ID_analysis <- c(unique(data_2018$Region), 18)
 
@@ -145,7 +150,8 @@ ID_analysis <- c(unique(data_2018$Region), 18)
 list_region <- list()
 
 for (region in ID_analysis) {
-
+  if (i == 18) {
+    stop()
   }
   print(paste("REGION:", region))
   
@@ -160,7 +166,7 @@ for (region in ID_analysis) {
     
     data <- data %>% 
       filter(Region == region)
-  
+    
   }
   
   # new  dataset of scores result
@@ -191,14 +197,16 @@ for (region in ID_analysis) {
       data = data,
       x = x,
       y = y,
+      z = z,
       orientation = orientation,
       trControl = trControl,
       method = methods[i],
       target_method = target_method,
       metric = "F1",
-      hold_out = hold_out
+      hold_out = hold_out,
+      convexity = convexity
     )
-  
+    
     # bset cut off is selected 
     scores_cafee <- compute_scores (
       data = data,
@@ -232,17 +240,17 @@ for (region in ID_analysis) {
 } # end bucle for (region)
 
 
-     
-        
-       
- 
-  
-  # ====== #
-  # server #
-  # ====== #
-  
-  file <- paste(DGP, "_", scenario_char, "_", N_char, "_", noise_char, ".RData", sep = "")
-  save(simulaciones, file = file)
-  
-  file_information <- paste("information_", DGP, "_", scenario_char, "_", N_char, "_", noise_char, ".RData", sep = "")
-  save(list_information, file = file_information)
+
+
+
+
+
+# ====== #
+# server #
+# ====== #
+
+file <- paste(DGP, "_", scenario_char, "_", N_char, "_", noise_char, ".RData", sep = "")
+save(simulaciones, file = file)
+
+file_information <- paste("information_", DGP, "_", scenario_char, "_", N_char, "_", noise_char, ".RData", sep = "")
+save(list_information, file = file_information)

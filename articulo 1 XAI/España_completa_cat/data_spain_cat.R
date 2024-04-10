@@ -26,53 +26,28 @@ library(haven)
 # load data
 # ===
 data_2018 <- read_dta("C:/Users/Ricardo/Downloads/Data Spain PISA 2018.dta")
+data_2018$Region <- as.factor(data_2018$Region)
+data_2018$SCHLTYPE <- as.factor(data_2018$SCHLTYPE)
 
-# preProces
-data_NA <- data_2018[which(is.na(data_2018$SCHLTYPE)), ]
-borrar <- table(data_NA$Region)
 
-inf_NA <- matrix(
-  data = NA,
-  ncol = 3,
-  nrow = length(unique(data_2018$Region))
-)
-
-inf_NA <- as.data.frame(inf_NA)
-
-names(inf_NA) <- c("region", "num_NA", "percent_NA")
-
-idx_reg <- sort(unique(data_2018$Region))
-
-inf_NA$region <- idx_reg
-
-for (i in 1:nrow(inf_NA)) {
-  
-  i_data <- data_2018 %>% 
-    filter(Region == i)
-  
-  value <- sum(apply(i_data, 1, anyNA))
-  
-  inf_NA$num_NA[i] <- value
-  inf_NA$percent_NA[i] <- round(value / nrow(i_data) * 100, 2)
-  
-}
-
-# save errors and NA in models
-inf_NA
-  
 # ===
-# Information to cafee
+# Table
 # ===
 
 # x and y indexes
 x <- c(3:5)
-y <- c(10, 7, 6)
+y <- c(10, 7, 6, 2, 8)
 
 # different types to label
 target_method <- "additive"
 
 set.seed(314)
+  
+list_information <- list()
 
+# ======= #
+# svmPoly #
+# ======= #
 methods <- list (
   # svm
   "svmPoly" = list(
@@ -101,6 +76,13 @@ methods <- list (
     "decay" = c(0, 0.1, 0.01, 0.001)  # Tasa de decaimiento del peso
   )
 )
+
+scores <- matrix (
+  ncol = length(methods),
+  nrow = nrow(data_2018)
+)
+
+scores <- as.data.frame(scores)
     
 # =========== #
 # score cafee #
@@ -139,99 +121,47 @@ hold_out <- 0.10
     
 metric = "F1"
 
-ID_analysis <- c(unique(data_2018$Region), 18)
+data <- data_2018  
 
-# save scores region
-list_region <- list()
-
-for (region in ID_analysis) {
-
-  }
-  print(paste("REGION:", region))
-  
-  # get all data
-  data <- data_2018
-  
-  # filter per region
-  if (region != 18) {
-    
-    idx_NA <- which(is.na(data$SCHLTYPE))
-    data <- data[-idx_NA,]
-    
-    data <- data %>% 
-      filter(Region == region)
-  
-  }
-  
-  # new  dataset of scores result
-  scores <- matrix (
-    ncol = length(methods) + 1,
-    nrow = nrow(data)
+for (i in 1:length(methods)) {
+  print(i)
+  # Result
+  final_model <- efficiency_estimation (
+    data = data,
+    x = x,
+    y = y,
+    orientation = orientation,
+    trControl = trControl,
+    method = methods[i],
+    target_method = target_method,
+    metric = "F1",
+    hold_out = hold_out
   )
   
-  # change to data.frame
-  scores <- as.data.frame(scores)
+  # ======================== #
+  # bset cut off is selected #
+  # ======================== #
+  scores_cafee <- compute_scores (
+    data = data,
+    x = x,
+    y = y,
+    final_model = final_model,
+    orientation = orientation,
+    cut_off = final_model[["cut_off"]]
+  )        
   
-  # change names
-  score_names <- c(names(methods), "region")
-  names(scores) <- score_names
+  # information
+  list <- list()
   
-  # save model information
-  list_method <- list()
+  list[[1]] <- final_model$method
+  list[[2]] <- final_model$bestTune
   
-  # bucle region
-  for (i in 1:length(methods)) {
-    
-    # console information
-    print(paste("METODO:", i))
-    print("")
-    
-    # model result
-    final_model <- efficiency_estimation (
-      data = data,
-      x = x,
-      y = y,
-      orientation = orientation,
-      trControl = trControl,
-      method = methods[i],
-      target_method = target_method,
-      metric = "F1",
-      hold_out = hold_out
-    )
+  list_information[[i]] <- list
   
-    # bset cut off is selected 
-    scores_cafee <- compute_scores (
-      data = data,
-      x = x,
-      y = y,
-      final_model = final_model,
-      orientation = orientation,
-      cut_off = final_model[["cut_off"]]
-    )  
-    
-    scores[i] <- scores_cafee
-    
-    # information model
-    list <- list()
-    
-    list[[1]] <- final_model$method
-    list[[2]] <- final_model$bestTune
-    
-    list_method[[i]] <- list
-    
-  } # end bucle for (methods)
-  
-  scores$region <- region
-  
-  information_region <- list()
-  information_region[[1]] <- scores
-  information_region[[2]] <- list_method
-  
-  list_region[[region]] <- information_region
-  
-} # end bucle for (region)
+  scores[[i]] <- scores_cafee 
+}
 
-
+names(scores) <- names(methods)
      
         
        
