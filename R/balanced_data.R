@@ -10,7 +10,7 @@
 #' @return It returns a \code{data.frame} with the newly created set of DMUs incorporated.
 
 balance_data <- function (
-      data, x, y, convexity
+      data, data_factor, x, y, z, convexity
     ) {
   
   # number of inputs
@@ -19,63 +19,135 @@ balance_data <- function (
   # number of outputs
   nY <- length(y)
   
+  nZ <- length(z)
+  
   # number of samples
   N <- nrow(data)
   
-  # ================== #
-  # enough sample size #
-  # ================== #
+  # returns of scale
+  # by default
+  rts <- "variable"
   
-  if (N < 150) {
-    
-    # create new "n" observations
-    grow_n <- 150 - N
-    
+  if (convexity == FALSE) {
+    rts == "constant"
+  }
+  
+  # =================== #
+  # balance proportions #
+  # =================== #
+
+  # proportions
+  props <- prop.table(table(data$class_efficiency))
+
+  # proportion of dmus efficient
+  prop_eff <- props["efficient"]
+
+  # proportion of dmus not efficient
+  prop_ineff <- props["not_efficient"]
+
+  # number of dmus efficient
+  n_eff <- prop_eff * nrow(data)
+
+  # number of dmus not efficient
+  n_ineff <- prop_ineff * nrow(data)
+
+  if (prop_eff > prop_ineff) {
+
+    # ======================= #
+    # create inefficient DMUs #
+    # ======================= #
+
+    # number of dmus to create
+    new_dmus <- ceiling(((- 0.50 * n_ineff) + (0.50 * n_eff)) / 0.50)
+
     # create new inefficient observations
     ineff_dmu <- create_dmu (
       data = data,
       x = x,
       y = y,
-      N = grow_n / 2,
+      N = new_dmus,
       type = "inefficient"
     )
-    
-    # create efficient observations
+
+    data <- rbind(data, ineff_dmu)
+
+  } else {
+
+    # ===================== #
+    # create efficient DMUs #
+    # ===================== #
+
+    # number of dmus to create
+    new_dmus <- ceiling(((- 0.50 * n_eff) + (0.50 * n_ineff)) / 0.50)
+
+    # create new efficient observations
     eff_dmu <- create_dmu (
       data = data,
+      data_factor = data_factor,
       x = x,
       y = y,
-      N = grow_n / 2,
+      z = z,
+      N = new_dmus,
       type = "efficient"
     )
-    
-    data <- rbind(data, ineff_dmu, eff_dmu)
-    data <- data[complete.cases(data), ]
+
+    data <- rbind(data, eff_dmu)
+
   }
-  
-  
-  
-  # ============== #
-  # sub - frontier #
-  # ============== #
-  
-  # frontier
-  eff_data <- data[data$class_efficiency == "efficient", ]
-  
-  # perturbations
-  perturbations <- data.frame(matrix(runif(nrow(eff_data) * (ncol(eff_data) - 1), 0, 0.1), nrow = nrow(eff_data)))
-  
-  # sub - frontier data
-  sfd_data <- data.frame (
-    eff_data[, x] + eff_data[, x] * perturbations[, x],
-    eff_data[, y] - eff_data[, y] * perturbations[, y],
-    "class_efficiency" = "not_efficient"
-  )
-  
-  colnames(sfd_data) <- colnames(data)
-  
-  # add to data
-  data <- rbind(data, sfd_data)
+  # # ================== #
+  # # enough sample size #
+  # # ================== #
+  # 
+  # if (N < 150) {
+  #   
+  #   # create new "n" observations
+  #   grow_n <- 150 - N
+  #   
+  #   # create new inefficient observations
+  #   ineff_dmu <- create_dmu (
+  #     data = data,
+  #     x = x,
+  #     y = y,
+  #     N = grow_n / 2,
+  #     type = "inefficient"
+  #   )
+  #   
+  #   # create efficient observations
+  #   eff_dmu <- create_dmu (
+  #     data = data,
+  #     x = x,
+  #     y = y,
+  #     N = grow_n / 2,
+  #     type = "efficient"
+  #   )
+  #   
+  #   data <- rbind(data, ineff_dmu, eff_dmu)
+  #   data <- data[complete.cases(data), ]
+  # }
+  # 
+  # 
+  # 
+  # # ============== #
+  # # sub - frontier #
+  # # ============== #
+  # 
+  # # frontier
+  # eff_data <- data[data$class_efficiency == "efficient", ]
+  # 
+  # # perturbations
+  # perturbations <- data.frame(matrix(runif(nrow(eff_data) * (ncol(eff_data) - 1), 0, 0.1), nrow = nrow(eff_data)))
+  # 
+  # # sub - frontier data
+  # sfd_data <- data.frame (
+  #   eff_data[, x] + eff_data[, x] * perturbations[, x],
+  #   eff_data[, y] - eff_data[, y] * perturbations[, y],
+  #   "class_efficiency" = "not_efficient"
+  # )
+  # 
+  # colnames(sfd_data) <- colnames(data)
+  # 
+  # # add to data
+  # data <- rbind(data, sfd_data)
   
   # # =================== #
   # # balance proportions #
@@ -154,7 +226,7 @@ balance_data <- function (
 #' @return It returns a \code{data.frame} with the newly created set of DMUs incorporated.
 
 create_dmu <- function (
-    data, x, y, N, type
+    data, data_factor, x, y, z, N, type
     ) {
   
   # number of inputs
@@ -162,6 +234,9 @@ create_dmu <- function (
   
   # number of outputs
   nY <- length(y)
+  
+  # number of environment variables
+  nZ <- length(z)
   
   if (type == "inefficient") {
     
@@ -263,9 +338,10 @@ create_dmu <- function (
     
     # efficient DMUs
     idx_eff <- c(1:nrow(data))[bcc_scores_out - 1 < 0.001]
+    c(1:nrow(data))[bcc_scores_inp > 0.99]
   
     # compute 1st decile
-    rows_fst_dec <- matrix(0, nrow = nrow(data), ncol = ncol(data) - 1)
+    rows_fst_dec <- matrix(0, nrow = nrow(data), ncol = ncol(data) - 1 - length(z))
     
     for (i in 1:ncol(rows_fst_dec)) {
       rows_fst_dec[, i] <- data[, i] <= quantile(data[, i], probs = 0.25)
@@ -292,8 +368,12 @@ create_dmu <- function (
     proj_data_out$class_efficiency <- "efficient"
     proj_data_inp$class_efficiency <- "efficient"
     
+    # add factor variables
+    proj_data_out <- cbind(proj_data_out, data_factor)
+    proj_data_inp <- cbind(proj_data_inp, data_factor)
+    
     # create DMUs by orientation
-    new_dmu_values <- as.data.frame(matrix(data = NA, nrow = new_dmus, ncol = nX + nY + 1)) 
+    new_dmu_values <- as.data.frame(matrix(data = NA, nrow = new_dmus, ncol = nX + nY + 1 + nZ)) 
     names(new_dmu_values) <- names(data)
     
     # projection

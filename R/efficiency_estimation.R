@@ -40,10 +40,12 @@ efficiency_estimation <- function (
   # reorder index 'x' and 'y' in data
   x <- 1:(ncol(data) - length(y))
   y <- (length(x) + 1):ncol(data)
+  z <- (ncol(data) + 1):(ncol(data) + ncol(data_factor))
   
   # number of inputs / outputs as inputs and number of outputs
   nX <- length(x)
   nY <- length(y)
+  nZ <- length(z)
   
   if (target_method == "bootstrapping_dea") {
     
@@ -106,6 +108,11 @@ efficiency_estimation <- function (
     levels(data$class_efficiency) <- c("efficient", "not_efficient")
   }
   
+  pre_data <- data
+  
+  # add factor variables
+  data <- cbind(data, data_factor)
+  
   # save a copy of the original data
   eval_data <- data
   
@@ -116,10 +123,14 @@ efficiency_estimation <- function (
   if (max(obs_prop[1], obs_prop[2]) > 0.50 | nrow(data) < 150) {
     data <- balance_data (
       data = data,
+      data_factor = data_factor,
       x = x,
       y = y,
+      z = z,
       convexity = convexity
     )
+    
+    data <- na.omit(data)
   }
 
   # Create train and validation data
