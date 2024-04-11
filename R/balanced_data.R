@@ -5,11 +5,12 @@
 #' @param data A \code{data.frame} containing the variables used in the model.
 #' @param x Column indexes of the input variables in the \code{data}.
 #' @param y Column indexes of the output variables in the \code{data}.
+#' @param convexity Assumption of returns to scale in \code{data}.
 #'
 #' @return It returns a \code{data.frame} with the newly created set of DMUs incorporated.
 
 balance_data <- function (
-      data, x, y
+      data, x, y, convexity
     ) {
   
   # number of inputs

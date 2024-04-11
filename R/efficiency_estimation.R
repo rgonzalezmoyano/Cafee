@@ -5,12 +5,14 @@
 #' @param data A \code{data.frame} or \code{matrix} containing the variables in the model.
 #' @param x Column indexes of input variables in \code{data}.
 #' @param y Column indexes of output variables in \code{data}.
+#' @param z Column indexes of environment variables in \code{data}.
 #' @param orientation A \code{string}, equal to \code{"input"} (input-oriented) or \code{"output} (output-oriented).
 #' @param target_method Methodology for labeling the data.
 #' @param trControl Parameters for controlling the training process (from the \code{'caret'} package).
 #' @param methods A \code{list} of selected machine learning models and their hyperparameters.
 #' @param metric A \code{string} specifying the summary metric for classification to select the optimal model. Default includes \code{"Balanced_accuracy"} due to (normally) unbalanced data.
 #' @param hold_out A \code{number} value (5-20) for validation data percentage during training (default: 0.2).
+#' @param convexity Assumption of returns to scale in \code{data}.
 #'
 #' @importFrom caret trainControl train createDataPartition defaultSummary prSummary
 #' @importFrom dplyr select_if %>% arrange top_n sample_n
@@ -21,16 +23,19 @@
 #' @export
 
 efficiency_estimation <- function (
-    data, x, y, orientation, target_method,
-    trControl, methods, metric, hold_out
+    data, x, y, z, orientation, target_method,
+    trControl, methods, metric, hold_out, convexity
     ) {
 
+  # save factor variables
+  data_factor <- data[, z]
+  
   # pre-processing
   data <- preprocessing (
     data = data, 
     x = x, 
     y = y
-    )
+  )
 
   # reorder index 'x' and 'y' in data
   x <- 1:(ncol(data) - length(y))
@@ -112,7 +117,8 @@ efficiency_estimation <- function (
     data <- balance_data (
       data = data,
       x = x,
-      y = y
+      y = y,
+      convexity = convexity
     )
   }
 
