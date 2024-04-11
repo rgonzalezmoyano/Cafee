@@ -80,6 +80,8 @@ new_data <- as.data.frame(new_data)
 # names
 names(new_data) <- names(data)
 
+data <- data %>% 
+  filter(ID_PISA %in% ID_for)
 # ===================== #
 # select data bucle for #
 # ===================== #
