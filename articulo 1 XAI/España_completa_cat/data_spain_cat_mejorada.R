@@ -21,6 +21,8 @@ library(magrittr)
 library(dplyr)
 library(deaR)
 library(haven)
+library(data.table)
+library(Boruta)
 
 # ===
 # load data
@@ -77,37 +79,37 @@ target_method <- "additive"
 set.seed(314)
 
 methods <- list (
-  "svmPoly" = list(
-      "degree" = c(1, 2),
-      "scale" = c(0.1, 1, 10),
-      "C" = c(0.1, 1, 10)
-    )
-  # # svm
   # "svmPoly" = list(
-  #   "degree" = c(1, 2, 3, 4, 5),
-  #   "scale" = c(0.001, 0.1, 1, 10, 100),
-  #   "C" = c(0.001, 0.1, 1, 10, 100)
-  # ),
-  # "svmRadial" = list(
-  #   "sigma" = c(0.01, 0.1, 1, 10, 100),
-  #   "C" = c(0.001, 0.1, 1, 10, 100)
-  # ),
-  # 
-  # # random forest
-  # "rf" = list (
-  #   mtry = c(1, 2)
-  # ),
-  # 
-  # # CART
-  # "rpart" = list (
-  #   cp = c(0.001, 0.01, 0.1, 0.2, 0.3)
-  # ),
-  # 
-  # # neuronal network
-  # "nnet" = list(
-  #   "size" = c(1, 5, 10, 20),  # Número de nodos en la capa oculta
-  #   "decay" = c(0, 0.1, 0.01, 0.001)  # Tasa de decaimiento del peso
-  # )
+  #     "degree" = c(1, 2),
+  #     "scale" = c( 0.1, 1, 10),
+  #     "C" = c(0.1, 1, 10)
+  #   )
+  # svm
+  "svmPoly" = list(
+    "degree" = c(1, 2, 3, 4, 5),
+    "scale" = c(0.001, 0.1, 1, 10, 100),
+    "C" = c(0.001, 0.1, 1, 10, 100)
+  ),
+  "svmRadial" = list(
+    "sigma" = c(0.01, 0.1, 1, 10, 100),
+    "C" = c(0.001, 0.1, 1, 10, 100)
+  ),
+
+  # random forest
+  "rf" = list (
+    mtry = c(1, 2)
+  ),
+
+  # CART
+  "rpart" = list (
+    cp = c(0.001, 0.01, 0.1, 0.2, 0.3)
+  ),
+
+  # neuronal network
+  "nnet" = list(
+    "size" = c(1, 5, 10, 20),  # Número de nodos en la capa oculta
+    "decay" = c(0, 0.1, 0.01, 0.001)  # Tasa de decaimiento del peso
+  )
 )
 
 # =========== #
@@ -180,7 +182,7 @@ for (i in 1:length(methods)) {
   # console information
   print(paste("METODO:", i))
   print("")
-  data <- data[1:50, ]
+  
   # model result
   final_model <- efficiency_estimation (
     data = data,
@@ -201,6 +203,7 @@ for (i in 1:length(methods)) {
     data = data,
     x = x,
     y = y,
+    z = z,
     final_model = final_model,
     orientation = orientation,
     cut_off = final_model[["cut_off"]]
@@ -222,10 +225,13 @@ for (i in 1:length(methods)) {
   information_region[[1]] <- scores
   information_region[[2]] <- list_method
   
-  list_region[[region]] <- information_region
+  save(information_region, file = "resultados_art_XAI.RData")
 
-
-
+# Importance of variables
+summary(data)
+  
+library(data.table)
+library(Boruta)
 
 
 

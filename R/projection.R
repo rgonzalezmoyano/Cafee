@@ -5,6 +5,7 @@
 #' @param data A \code{data.frame} or \code{matrix} containing the variables in the model.
 #' @param x Column indexes of input variables in \code{data}.
 #' @param y Column indexes of output variables in \code{data}.
+#' @param z Column indexes of environment variables in \code{data}.
 #' @param final_model The best-fitted model used for efficiency score computation.
 #' @param orientation The direction in which data should be projected to calculate efficiency scores.
 #' @param cut_off Probability levels for determining efficient class scores.
@@ -14,7 +15,7 @@
 #' @export
 
 compute_scores <- function (
-    data, x, y, final_model, orientation, cut_off
+    data, x, y, z, final_model, orientation, cut_off
 ) {
     
     # vector of optimal scores
@@ -28,7 +29,7 @@ compute_scores <- function (
     min_value_y <- apply(X = as.matrix(data[, y]), MARGIN = 2, FUN = min)
     
     for (i in 1:nrow(data)) {
-      
+
       # probability of being efficient
       prob_eff <- predict(final_model, data[i, ], type = "prob")[1]
       
@@ -179,8 +180,8 @@ compute_scores <- function (
                 incr <- incr + 0.01
                 
                 # the dmu with the increments of 
-                new_point <- cbind(data[i, x], data[i, y] * (1 + incr))
-                colnames(new_point) <- names(data[c(x, y)])
+                new_point <- cbind(data[i, x], data[i, y] * (1 + incr), data[i, z])
+                colnames(new_point) <- names(data[c(x, y, z)])
                 
                 prob_eff <- predict(final_model, new_point, type = "prob")[1]
                 
