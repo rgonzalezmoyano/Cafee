@@ -77,7 +77,6 @@ z <- c(2, 8) # environment variables
 target_method <- "additive"
 
 set.seed(314)
-
 methods <- list (
   # "svmPoly" = list(
   #     "degree" = c(1, 2),
@@ -159,7 +158,7 @@ data <- data[-idx_NA,]
 
 # save scores region
 list_region <- list()
-  
+
 # new  dataset of scores result
 scores <- matrix (
   ncol = length(methods),
@@ -177,7 +176,7 @@ names(scores) <- score_names
 list_method <- list()  
   
 # bucle region
-for (i in 1:length(methods)) {
+for (i in 2:length(methods)) {
   
   # console information
   print(paste("METODO:", i))
@@ -211,27 +210,29 @@ for (i in 1:length(methods)) {
   
   scores[i] <- scores_cafee
   
+  # Importance of variables
+  importance <- varImp(object = final_model)
+  print(importance)
+  
   # information model
   list <- list()
   
   list[[1]] <- final_model$method
   list[[2]] <- final_model$bestTune
+  list[[3]] <- importance
   
   list_method[[i]] <- list
   
+  
 } # end bucle for (methods)  
   
-  information_region <- list()
-  information_region[[1]] <- scores
-  information_region[[2]] <- list_method
+information_region <- list()
+information_region[[1]] <- scores
+information_region[[2]] <- list_method
   
-  save(information_region, file = "resultados_art_XAI.RData")
+save(information_region, file = "resultados_art_XAI.RData")
 
-# Importance of variables
-summary(data)
-  
-library(data.table)
-library(Boruta)
+
 
 
 
