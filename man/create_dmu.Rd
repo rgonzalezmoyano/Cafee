@@ -4,7 +4,7 @@
 \alias{create_dmu}
 \title{Create New DMUs to reach 150 dmus}
 \usage{
-create_dmu(data, x, y, N, type)
+create_dmu(data, data_factor, x, y, z, N, type)
 }
 \arguments{
 \item{data}{A \code{data.frame} containing the variables used in the model.}

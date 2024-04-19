@@ -132,21 +132,6 @@ efficiency_estimation <- function (
     
     data <- na.omit(data)
   }
-
-  # # borrar
-  # boruta.model <- Boruta(class_efficiency~., data = data, doTrace = 2)
-  # print(boruta.model)
-  # plot(boruta.model)
-  # 
-  # boruta.model2 <- TentativeRoughFix(boruta.model)
-  # print(boruta.model2)
-  # plot(boruta.model2)
-  # 
-  # getSelectedAttributes(boruta.model2, withTentative = F)
-  # 
-  # e <- attStats(boruta.model2)
-  # ranking <- data.table(attribute=rownames(e), e)[order(-meanImp)]
-  # print(ranking)
   
   # Create train and validation data
   valid_index <- createDataPartition (
@@ -299,7 +284,8 @@ efficiency_estimation <- function (
       }
   }
   
-  return(final_model)
+  return(final_model = final_model)
+  
 }
 
 #' @title Select cut-off point in Classification Algorithm

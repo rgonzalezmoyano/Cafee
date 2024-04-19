@@ -4,7 +4,7 @@
 \alias{balance_data}
 \title{Create New DMUs to Balance Data}
 \usage{
-balance_data(data, x, y)
+balance_data(data, data_factor, x, y, z, convexity)
 }
 \arguments{
 \item{data}{A \code{data.frame} containing the variables used in the model.}
@@ -12,6 +12,8 @@ balance_data(data, x, y)
 \item{x}{Column indexes of the input variables in the \code{data}.}
 
 \item{y}{Column indexes of the output variables in the \code{data}.}
+
+\item{convexity}{Assumption of returns to scale in \code{data}.}
 }
 \value{
 It returns a \code{data.frame} with the newly created set of DMUs incorporated.

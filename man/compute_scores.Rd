@@ -4,7 +4,7 @@
 \alias{compute_scores}
 \title{Projections to the Hyperplane}
 \usage{
-compute_scores(data, x, y, final_model, orientation)
+compute_scores(data, x, y, z, final_model, orientation, cut_off)
 }
 \arguments{
 \item{data}{A \code{data.frame} or \code{matrix} containing the variables in the model.}
@@ -13,9 +13,13 @@ compute_scores(data, x, y, final_model, orientation)
 
 \item{y}{Column indexes of output variables in \code{data}.}
 
+\item{z}{Column indexes of environment variables in \code{data}.}
+
 \item{final_model}{The best-fitted model used for efficiency score computation.}
 
 \item{orientation}{The direction in which data should be projected to calculate efficiency scores.}
+
+\item{cut_off}{Probability levels for determining efficient class scores.}
 }
 \value{
 A numeric vector containing the efficiency scores for each observation in the input data.

@@ -21,8 +21,8 @@ library(magrittr)
 library(dplyr)
 library(deaR)
 library(haven)
-library(data.table)
-library(Boruta)
+library(e1071)
+library(rminer)
 
 # ===
 # load data
@@ -82,7 +82,7 @@ methods <- list (
   #     "degree" = c(1, 2),
   #     "scale" = c( 0.1, 1, 10),
   #     "C" = c(0.1, 1, 10)
-  #   )
+  #   ),
   # svm
   "svmPoly" = list(
     "degree" = c(1, 2, 3, 4, 5),
@@ -93,21 +93,32 @@ methods <- list (
     "sigma" = c(0.01, 0.1, 1, 10, 100),
     "C" = c(0.001, 0.1, 1, 10, 100)
   ),
+  
+  # knn
+  "knn" = list (
+     k = 1:17
+   ),
 
+  # MARS
+  # "earth" = list (
+  #   nprune = c(5, 10, 15, 20, 25),
+  #   degree = c(1)
+  # ),
+  
   # random forest
   "rf" = list (
-    mtry = c(1, 2)
+    mtry = c(2, 3)
   ),
-
+  
   # CART
   "rpart" = list (
-    cp = c(0.001, 0.01, 0.1, 0.2, 0.3)
+    cp = c(0.001, 0.01, 0.1, 0.2, 0.3, 0.5, 0.7)
   ),
-
+  
   # neuronal network
   "nnet" = list(
-    "size" = c(1, 5, 10, 20),  # Número de nodos en la capa oculta
-    "decay" = c(0, 0.1, 0.01, 0.001)  # Tasa de decaimiento del peso
+    "size" = c(1, 5, 10, 20, 40),
+    "decay" = c(0, 0.1, 0.01, 0.001)
   )
 )
 
@@ -152,7 +163,7 @@ convexity <- TRUE
 
 # preProcess
 data <- data_2018
-
+# data <- data[1:30, ]
 idx_NA <- which(is.na(data$SCHLTYPE))
 data <- data[-idx_NA,]
 
@@ -174,9 +185,9 @@ names(scores) <- score_names
 
 # save model information
 list_method <- list()  
-  
+
 # bucle region
-for (i in 2:length(methods)) {
+for (i in 1:length(methods)) {
   
   # console information
   print(paste("METODO:", i))
@@ -211,8 +222,85 @@ for (i in 2:length(methods)) {
   scores[i] <- scores_cafee
   
   # Importance of variables
+  # varImp Caret
   importance <- varImp(object = final_model)
   print(importance)
+
+  plot <- plot(importance)
+  
+  if (names(methods[i]) == "svmPoly") {
+    
+    # necesary data to calculate importance
+    train_data <- final_model[["trainingData"]]
+    
+    # con rminer pero no escala
+    m_poly <- fit(
+      .outcome~.,
+      data = train_data,
+      model = "ksvm",
+      kernel = "polydot",
+      scale = "none",
+      kpar = list(
+        degree = final_model$bestTune$degree,
+        scale = final_model$bestTune$scale
+      ),
+      C = final_model$bestTune$C
+    )
+
+    svm.imp <- Importance(m_poly, data = train_data)
+    imp_value <- svm.imp$imp
+    
+    importance <- matrix(
+      data = NA,
+      ncol = 2,
+      nrow = length(names(train_data))
+      )
+    
+    importance <- as.data.frame(importance)
+    
+    importance$V1 <- names(train_data)
+    importance$V2 <- imp_value
+    
+    names(importance) <- c("", "Overall")
+    
+    importance <- importance[order(-importance$Overall), ]
+  
+  } else if (names(methods[i]) == "svmRadial") {
+      
+    # necesary data to calculate importance
+    train_data <- final_model[["trainingData"]]
+    
+    # con rminer pero no escala
+    m_poly <- fit(
+      .outcome~.,
+      data = train_data,
+      model = "ksvm",
+      kernel = "rbfdot",
+      scale = "none",
+      C = final_model$bestTune$C,
+      kpar = list(sigma = final_model$bestTune$sigma)
+    )
+    
+    svm.imp <- Importance(m_poly, data = train_data)
+    imp_value <- svm.imp$imp
+    
+    importance <- matrix(
+      data = NA,
+      ncol = 2,
+      nrow = length(names(train_data))
+    )
+    
+    importance <- as.data.frame(importance)
+    
+    importance$V1 <- names(train_data)
+    importance$V2 <- imp_value
+    
+    names(importance) <- c("", "Overall")
+    
+    importance <- importance[order(-importance$Overall), ]
+    
+    }
+
   
   # information model
   list <- list()
@@ -220,9 +308,9 @@ for (i in 2:length(methods)) {
   list[[1]] <- final_model$method
   list[[2]] <- final_model$bestTune
   list[[3]] <- importance
+  list[[4]] <- plot
   
   list_method[[i]] <- list
-  
   
 } # end bucle for (methods)  
   
