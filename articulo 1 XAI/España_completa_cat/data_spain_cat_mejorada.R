@@ -84,20 +84,20 @@ methods <- list (
   #     "C" = c(0.1, 1, 10)
   #   ),
   # svm
-  "svmPoly" = list(
-    "degree" = c(1, 2, 3, 4, 5),
-    "scale" = c(0.001, 0.1, 1, 10, 100),
-    "C" = c(0.001, 0.1, 1, 10, 100)
-  ),
-  "svmRadial" = list(
-    "sigma" = c(0.01, 0.1, 1, 10, 100),
-    "C" = c(0.001, 0.1, 1, 10, 100)
-  ),
+  # "svmPoly" = list(
+  #   "degree" = c(1, 2, 3, 4, 5),
+  #   "scale" = c(0.001, 0.1, 1, 10, 100),
+  #   "C" = c(0.001, 0.1, 1, 10, 100)
+  # ),
+  # "svmRadial" = list(
+  #   "sigma" = c(0.01, 0.1, 1, 10, 100),
+  #   "C" = c(0.001, 0.1, 1, 10, 100)
+  # ),
   
   # knn
   "knn" = list (
      k = 1:17
-   ),
+   )
 
   # MARS
   # "earth" = list (
@@ -105,21 +105,21 @@ methods <- list (
   #   degree = c(1)
   # ),
   
-  # random forest
-  "rf" = list (
-    mtry = c(2, 3)
-  ),
-  
-  # CART
-  "rpart" = list (
-    cp = c(0.001, 0.01, 0.1, 0.2, 0.3, 0.5, 0.7)
-  ),
-  
-  # neuronal network
-  "nnet" = list(
-    "size" = c(1, 5, 10, 20, 40),
-    "decay" = c(0, 0.1, 0.01, 0.001)
-  )
+  # # random forest
+  # "rf" = list (
+  #   mtry = c(2, 3)
+  # ),
+  # 
+  # # CART
+  # "rpart" = list (
+  #   cp = c(0.001, 0.01, 0.1, 0.2, 0.3, 0.5, 0.7)
+  # ),
+  # 
+  # # neuronal network
+  # "nnet" = list(
+  #   "size" = c(1, 5, 10, 20, 40),
+  #   "decay" = c(0, 0.1, 0.01, 0.001)
+  # )
 )
 
 # =========== #
@@ -298,6 +298,20 @@ for (i in 1:length(methods)) {
     names(importance) <- c("", "Overall")
     
     importance <- importance[order(-importance$Overall), ]
+    
+  } else if (names(methods[i]) == "knn") {
+      
+    # necesary data to calculate importance
+    train_data <- final_model[["trainingData"]]
+    
+    # con rminer pero no escala
+    m_knn <- fit(
+      .outcome~.,
+      data = train_data,
+      model = "kknn",
+      scale = "none",
+      k = final_model$bestTune$k
+    )
     
     }
 
