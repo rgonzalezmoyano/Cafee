@@ -94,27 +94,27 @@ methods <- list (
   #   "C" = c(0.001, 0.1, 1, 10, 100)
   # ),
   
-  # knn
-  "knn" = list (
-     k = 1:17
-   )
+  # # knn
+  # "knn" = list (
+  #    k = 1:17
+  #  ),
 
-  # MARS
+  # # MARS
   # "earth" = list (
   #   nprune = c(5, 10, 15, 20, 25),
   #   degree = c(1)
   # ),
   
-  # # random forest
-  # "rf" = list (
-  #   mtry = c(2, 3)
-  # ),
-  # 
+  # random forest
+  "rf" = list (
+    mtry = c(100000)
+  )
+
   # # CART
   # "rpart" = list (
   #   cp = c(0.001, 0.01, 0.1, 0.2, 0.3, 0.5, 0.7)
   # ),
-  # 
+
   # # neuronal network
   # "nnet" = list(
   #   "size" = c(1, 5, 10, 20, 40),
@@ -271,7 +271,7 @@ for (i in 1:length(methods)) {
     train_data <- final_model[["trainingData"]]
     
     # con rminer pero no escala
-    m_poly <- fit(
+    m_rad <- fit(
       .outcome~.,
       data = train_data,
       model = "ksvm",
@@ -281,7 +281,7 @@ for (i in 1:length(methods)) {
       kpar = list(sigma = final_model$bestTune$sigma)
     )
     
-    svm.imp <- Importance(m_poly, data = train_data)
+    svm.imp <- Importance(m_rad, data = train_data)
     imp_value <- svm.imp$imp
     
     importance <- matrix(
@@ -312,6 +312,24 @@ for (i in 1:length(methods)) {
       scale = "none",
       k = final_model$bestTune$k
     )
+    
+    knn.imp <- Importance(m_knn, data = train_data)
+    imp_value <- knn.imp$imp
+    
+    importance <- matrix(
+      data = NA,
+      ncol = 2,
+      nrow = length(names(train_data))
+    )
+    
+    importance <- as.data.frame(importance)
+    
+    importance$V1 <- names(train_data)
+    importance$V2 <- imp_value
+    
+    names(importance) <- c("", "Overall")
+    
+    importance <- importance[order(-importance$Overall), ]
     
     }
 
