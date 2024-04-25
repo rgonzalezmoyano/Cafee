@@ -107,7 +107,7 @@ methods <- list (
   
   # random forest
   "rf" = list (
-    mtry = c(100000)
+    mtry = c(3)
   )
 
   # # CART
