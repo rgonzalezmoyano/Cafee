@@ -21,44 +21,102 @@ train_ml <- function (
   for (a in 1:length(methods)) {
 
       # parameters grid
-      tune_grid <- unique(expand.grid(methods[[a]]))
+      tune_grid <- unique(expand.grid(methods[[a]]$hyparams))
       
       # avoid messages for some methods
       verb_methods <- c("gbm", "svmPoly")
       
-      if (names(methods[a]) %in% verb_methods) {
-        # Tune models
-        model <- train (
-          form = class_efficiency ~ .,
-          data = data,
-          method = names(methods[a]),
-          trControl = trControl,
-          tuneGrid = tune_grid,
-          verbose = FALSE
-        )
-      } else {
-        # Tune models
-        model <- train (
-          form = class_efficiency ~ .,
-          data = data,
-          method = names(methods[a]),
-          trControl = trControl,
-          tuneGrid = tune_grid
-        )
-      }
+      if (names(methods[a]) == "rf") {
+        
+        modellist <- list()
     
-      # compute F1 score
-      prec <- model[["results"]]["Precision"]
-      sens <- model[["results"]]["Sens"]
+        # ntree parameter change
+        for (ntree in methods[[a]]$options$ntree) {
+          
+          # Tune model rf
+          model <- train (
+            form = class_efficiency ~ .,
+            data = data,
+            method = names(methods[a]),
+            trControl = trControl,
+            tuneGrid = tune_grid,
+            ntree = ntree
+          ) 
+          
+          key <- toString(ntree)
+          modellist[[key]] <- c(method = names(methods[a]), ntree = ntree, model$results)
+          
+        }
+       
+        # dataframe results
+        model_rf <- matrix(
+          data = NA,
+          ncol = 21,
+          nrow = length(methods[[a]]$options$ntree)
+        )
+        
+        # to dataframe
+        model_rf <- as.data.frame(model_rf)
+        
+        # paste iteration intormation
+        for (row in 1:length(methods[[a]]$options$ntree)) {
+          
+          model_rf[row, ] <-  modellist[[row]]
+          
+        }
+        
+        # add names
+        names_result <- c("method", "ntree", unique(names(model$results)))
+        names(model_rf) <- names_result
+        
+        # select best configuration
+        selected_model <- model_rf %>%
+          arrange(desc(F), desc(Spec), desc(AUC), desc(Kappa), desc(Accuracy))
+        
+        best_model_fit[[a]] <- selected_model[1, ]
+        
+      } else if (names(methods[a]) == "nnet") {
+        
+        a <- 1
+      }
+        
+        
+        
       
-      model[["results"]]["F1"] <- (2 * prec * sens) / (sens + prec)
       
-      # select best configuration
-      best_config <- model[["results"]] %>%
-        arrange(desc(F1), desc(Spec), desc(AUC), desc(Kappa), desc(Accuracy))
-      
-      best_model_fit[[a]] <- best_config[1, ]
-      names(best_model_fit)[a] <- names(methods[a])
+      # if (names(methods[a]) %in% verb_methods) {
+      #   # Tune models
+      #   model <- train (
+      #     form = class_efficiency ~ .,
+      #     data = data,
+      #     method = names(methods[a]),
+      #     trControl = trControl,
+      #     tuneGrid = tune_grid,
+      #     verbose = FALSE
+      #   )
+      # } else {
+      #   # Tune models
+      #   model <- train (
+      #     form = class_efficiency ~ .,
+      #     data = data,
+      #     method = names(methods[a]),
+      #     trControl = trControl,
+      #     tuneGrid = tune_grid
+      #   )
+      # }
+      # 
+      # # compute F1 score
+      # prec <- model[["results"]]["Precision"]
+      # sens <- model[["results"]]["Sens"]
+      # 
+      # model[["results"]]["F1"] <- (2 * prec * sens) / (sens + prec)
+      # 
+      # # select best configuration
+      # best_config <- model[["results"]] %>%
+      #   arrange(desc(F1), desc(Spec), desc(AUC), desc(Kappa), desc(Accuracy))
+      # 
+      # best_model_fit[[a]] <- best_config[1, ]
+      # names(best_model_fit)[a] <- names(methods[a])
       
   }
 

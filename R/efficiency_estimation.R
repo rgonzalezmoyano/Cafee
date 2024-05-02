@@ -151,7 +151,7 @@ efficiency_estimation <- function (
     data = train_data,
     trControl = trControl,
     methods = methods
-    )
+  )
 
   # Best training 
   confusion_matrix <- vector("list", length = length(methods))
@@ -160,6 +160,9 @@ efficiency_estimation <- function (
   parms_vals <- vector("list", length = length(methods))
   names(parms_vals) <- names(methods)
   
+  option_vals <- vector("list", length = length(methods))
+  names(option_vals) <- names(methods)
+  
   # ================= #
   # SELECT BEST MODEL #
   # ================= #
@@ -167,39 +170,73 @@ efficiency_estimation <- function (
   for (i in 1:length(methods)) {
     
     # parameter position
-    parms_posn <- which(names(ml_model[[i]]) %in% names(methods[[i]])) 
+    parms_posn <- which(names(ml_model[[i]]) %in% names(methods[[i]]$hyparams)) 
     
     # parameter values
     parms_vals[[i]] <- as.data.frame(ml_model[[i]])[, parms_posn]
     
+    if (ml_model[[i]]["method"] %in% c("rf", "nnet")) {
+      
+      # option position
+      option_posn <- which(names(ml_model[[i]]) %in% names(methods[[i]]$options)) 
+      
+      # optin values
+      option_vals[[i]] <- as.data.frame(ml_model[[i]])[, option_posn]
+      
+    }
+    
     # rename parameters if is null
     if (is.null(names(parms_vals[[i]]))) {
       parms_vals[[i]] <- as.data.frame(parms_vals[[i]])
-      names(parms_vals[[i]]) <- names(methods[[i]])
+      names(parms_vals[[i]]) <- names(methods[[i]]$hyparams)
     }
     
     # avoid messages for some methods
     verb_methods <- c("gbm", "svmPoly")
     
-    if (names(methods[i]) %in% verb_methods) {
-      # tune models
+    if (names(methods[i]) == "rf") {
+      
       best_ml_model <- train (
         form = class_efficiency ~.,
         data = train_data,
         method = names(methods[i]),
         tuneGrid = parms_vals[[i]],
-        verbose = FALSE
+        trControl = trainControl(method = "none", classProbs = TRUE),
+        ntree = option_vals[[i]]
       )
       
-    } else {
-      # Tune models
+    } else if (names(methods[i]) == "nnet") {
+      
       best_ml_model <- train (
         form = class_efficiency ~.,
         data = train_data,
         method = names(methods[i]),
-        tuneGrid = parms_vals[[i]]
+        tuneGrid = parms_vals[[i]],
+        trControl = trainControl(method = "none", classProbs = TRUE),
+        ntree = option_vals[[i]] # change
       )
+      
     }
+    
+    # if (names(methods[i]) %in% verb_methods) {
+    #   # tune models
+    #   best_ml_model <- train (
+    #     form = class_efficiency ~.,
+    #     data = train_data,
+    #     method = names(methods[i]),
+    #     tuneGrid = parms_vals[[i]],
+    #     verbose = FALSE
+    #   )
+    #   
+    # } else {
+    #   # Tune models
+    #   best_ml_model <- train (
+    #     form = class_efficiency ~.,
+    #     data = train_data,
+    #     method = names(methods[i]),
+    #     tuneGrid = parms_vals[[i]]
+    #   )
+    # }
     
     y_obs <- valid_data$class_efficiency
     y_hat <- predict(best_ml_model, valid_data)
@@ -235,7 +272,7 @@ efficiency_estimation <- function (
   selected_model <- selected_model[1, ]
   
   # index of the best model in ml_model
-  best_model_index <- which(row.names(selected_model) == names(ml_model))
+  best_model_index <- which(row.names(selected_model) == ml_model[[i]]["method"]) # names(ml_model)
   
   # ============== #
   # FIT BEST MODEL #
@@ -245,13 +282,14 @@ efficiency_estimation <- function (
   verb_methods <- c("gbm", "svmPoly")
 
   repeat {
-    if (names(methods[best_model_index]) %in% verb_methods) {
+    if (names(methods[best_model_index]) == "rf") {
       final_model <- train (
         form = class_efficiency ~.,
         data = data,
         method = row.names(selected_model),
         tuneGrid = parms_vals[[best_model_index]],
-        verbose = FALSE,
+        ntree = option_vals[[i]],
+        # verbose = FALSE,
         trControl = trainControl(method = "none", classProbs = TRUE)
       )
     } else {
@@ -263,8 +301,6 @@ efficiency_estimation <- function (
         trControl = trainControl(method = "none", classProbs = TRUE)
       )
     }
-      
-      #print(predict(final_model, valid_data, type = "prob"))
       
       try_cut_off <- tryCatch (
         {
@@ -284,7 +320,7 @@ efficiency_estimation <- function (
       }
   }
   
-  return(final_model = final_model)
+  return(list(final_model = final_model, selected_model_metrics = selected_model))
   
 }
 

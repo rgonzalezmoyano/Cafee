@@ -94,31 +94,20 @@ methods <- list (
   #   "C" = c(0.001, 0.1, 1, 10, 100)
   # ),
   
-  # # knn
-  # "knn" = list (
-  #    k = 1:17
-  #  ),
-
-  # # MARS
-  # "earth" = list (
-  #   nprune = c(5, 10, 15, 20, 25),
-  #   degree = c(1)
-  # ),
-  
   # random forest
   "rf" = list (
-    mtry = c(3)
+    options = list (
+      ntree = c(100, 500, 1000)
+    ),
+    hyparams = list(
+      mtry = c(3)
+    )
   )
-
-  # # CART
-  # "rpart" = list (
-  #   cp = c(0.001, 0.01, 0.1, 0.2, 0.3, 0.5, 0.7)
-  # ),
 
   # # neuronal network
   # "nnet" = list(
-  #   "size" = c(1, 5, 10, 20, 40),
-  #   "decay" = c(0, 0.1, 0.01, 0.001)
+  #   "size" = c(1, 5, 10, 20, 40, 80),
+  #   "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
   # )
 )
 
@@ -148,6 +137,7 @@ MySummary <- function (data, lev = NULL, model = NULL) {
 trControl <- trainControl (
   method = "cv",
   number = 5,
+  p = 0.75,
   summaryFunction = MySummary,
   classProbs = TRUE,
   savePredictions = "all"
@@ -214,9 +204,9 @@ for (i in 1:length(methods)) {
     x = x,
     y = y,
     z = z,
-    final_model = final_model,
+    final_model = final_model$final_model,
     orientation = orientation,
-    cut_off = final_model[["cut_off"]]
+    cut_off = final_model[["final_model"]][["cut_off"]]
   )  
   
   scores[i] <- scores_cafee
