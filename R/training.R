@@ -78,45 +78,58 @@ train_ml <- function (
       } else if (names(methods[a]) == "nnet") {
         
         a <- 1
+        
+      } else {
+        
+        if (names(methods[a]) %in% verb_methods) {
+          
+          # Tune models
+          model <- train (
+            form = class_efficiency ~ .,
+            data = data,
+            method = names(methods[a]),
+            trControl = trControl,
+            tuneGrid = tune_grid,
+            verbose = FALSE
+          )
+          
+        } else {
+          # Tune models
+          model <- train (
+            form = class_efficiency ~ .,
+            data = data,
+            method = names(methods[a]),
+            trControl = trControl,
+            tuneGrid = tune_grid
+          )
+        }
+
+        # compute F1 score
+        prec <- model[["results"]]["Precision"]
+        sens <- model[["results"]]["Sens"]
+
+        model[["results"]]["F1"] <- (2 * prec * sens) / (sens + prec)
+
+        # select best configuration
+        best_config <- model[["results"]] %>%
+          arrange(desc(F1), desc(Spec), desc(AUC), desc(Kappa), desc(Accuracy))
+        
+        names_result <- c("method", unique(names(model$results)))
+        
+        #best_model_fit[[a]] <- best_config[1, ]
+        
+        best_model_fit[[a]] <- cbind(model$method, best_config[1, ])
+        best_model_fit[[a]] <- cbind(model$method, best_config[1, ])
+        
+        names(best_model_fit[[a]]) <- names_result
+        names(best_model_fit[a]) <- model$method
       }
         
         
         
       
       
-      # if (names(methods[a]) %in% verb_methods) {
-      #   # Tune models
-      #   model <- train (
-      #     form = class_efficiency ~ .,
-      #     data = data,
-      #     method = names(methods[a]),
-      #     trControl = trControl,
-      #     tuneGrid = tune_grid,
-      #     verbose = FALSE
-      #   )
-      # } else {
-      #   # Tune models
-      #   model <- train (
-      #     form = class_efficiency ~ .,
-      #     data = data,
-      #     method = names(methods[a]),
-      #     trControl = trControl,
-      #     tuneGrid = tune_grid
-      #   )
-      # }
-      # 
-      # # compute F1 score
-      # prec <- model[["results"]]["Precision"]
-      # sens <- model[["results"]]["Sens"]
-      # 
-      # model[["results"]]["F1"] <- (2 * prec * sens) / (sens + prec)
-      # 
-      # # select best configuration
-      # best_config <- model[["results"]] %>%
-      #   arrange(desc(F1), desc(Spec), desc(AUC), desc(Kappa), desc(Accuracy))
-      # 
-      # best_model_fit[[a]] <- best_config[1, ]
-      # names(best_model_fit)[a] <- names(methods[a])
+      
       
   }
 

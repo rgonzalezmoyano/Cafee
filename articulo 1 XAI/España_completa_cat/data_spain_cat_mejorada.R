@@ -78,11 +78,13 @@ target_method <- "additive"
 
 set.seed(314)
 methods <- list (
-  # "svmPoly" = list(
-  #     "degree" = c(1, 2),
-  #     "scale" = c( 0.1, 1, 10),
-  #     "C" = c(0.1, 1, 10)
-  #   ),
+  "svmPoly" = list(
+    hyparams = list(
+      "degree" = c(1, 2),
+      "scale" = c( 0.1, 1, 10),
+      "C" = c(0.1, 1, 10)
+    )
+  )
   # svm
   # "svmPoly" = list(
   #   "degree" = c(1, 2, 3, 4, 5),
@@ -95,14 +97,14 @@ methods <- list (
   # ),
   
   # random forest
-  "rf" = list (
-    options = list (
-      ntree = c(100, 500, 1000)
-    ),
-    hyparams = list(
-      mtry = c(3)
-    )
-  )
+  # "rf" = list (
+  #   options = list (
+  #     ntree = c(5) # c(100, 500, 1000)
+  #   ),
+  #   hyparams = list(
+  #     mtry = c(4)
+  #   )
+  # )
 
   # # neuronal network
   # "nnet" = list(
@@ -137,7 +139,6 @@ MySummary <- function (data, lev = NULL, model = NULL) {
 trControl <- trainControl (
   method = "cv",
   number = 5,
-  p = 0.75,
   summaryFunction = MySummary,
   classProbs = TRUE,
   savePredictions = "all"
@@ -213,10 +214,21 @@ for (i in 1:length(methods)) {
   
   # Importance of variables
   # varImp Caret
-  importance <- varImp(object = final_model)
+  importance <- varImp(object = final_model$final_model)
   print(importance)
 
   plot <- plot(importance)
+  
+  if (names(methods[i]) == "rf") {
+  
+  data_oob <- as.data.frame(final_model[["final_model"]][["finalModel"]][["err.rate"]])
+  ntrees <- c(1:final_model$final_model$dots$ntree)
+
+  data_oob_plot <- cbind(ntrees, data_oob)
+
+  ggplot(data = data_oob_plot) +
+    geom_line(aes(x = ntrees, y = OOB))
+  }
   
   if (names(methods[i]) == "svmPoly") {
     
@@ -289,7 +301,7 @@ for (i in 1:length(methods)) {
     
     importance <- importance[order(-importance$Overall), ]
     
-  } else if (names(methods[i]) == "knn") {
+  } else if (names(methods[i]) == "rf") {
       
     # necesary data to calculate importance
     train_data <- final_model[["trainingData"]]

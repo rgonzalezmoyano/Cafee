@@ -160,8 +160,12 @@ efficiency_estimation <- function (
   parms_vals <- vector("list", length = length(methods))
   names(parms_vals) <- names(methods)
   
-  option_vals <- vector("list", length = length(methods))
-  names(option_vals) <- names(methods)
+  if (ml_model[[i]]["method"] %in% c("rf", "nnet")) {
+    
+    option_vals <- vector("list", length = length(methods))
+    names(option_vals) <- names(methods)
+    
+  }
   
   # ================= #
   # SELECT BEST MODEL #
@@ -218,25 +222,26 @@ efficiency_estimation <- function (
       
     }
     
-    # if (names(methods[i]) %in% verb_methods) {
-    #   # tune models
-    #   best_ml_model <- train (
-    #     form = class_efficiency ~.,
-    #     data = train_data,
-    #     method = names(methods[i]),
-    #     tuneGrid = parms_vals[[i]],
-    #     verbose = FALSE
-    #   )
-    #   
-    # } else {
-    #   # Tune models
-    #   best_ml_model <- train (
-    #     form = class_efficiency ~.,
-    #     data = train_data,
-    #     method = names(methods[i]),
-    #     tuneGrid = parms_vals[[i]]
-    #   )
-    # }
+    if (names(methods[i]) %in% verb_methods) {
+      
+      # tune models
+      best_ml_model <- train (
+        form = class_efficiency ~.,
+        data = train_data,
+        method = names(methods[i]),
+        tuneGrid = parms_vals[[i]],
+        verbose = FALSE
+      )
+
+    } else {
+      # Tune models
+      best_ml_model <- train (
+        form = class_efficiency ~.,
+        data = train_data,
+        method = names(methods[i]),
+        tuneGrid = parms_vals[[i]]
+      )
+    }
     
     y_obs <- valid_data$class_efficiency
     y_hat <- predict(best_ml_model, valid_data)
@@ -290,9 +295,23 @@ efficiency_estimation <- function (
         tuneGrid = parms_vals[[best_model_index]],
         ntree = option_vals[[i]],
         # verbose = FALSE,
-        trControl = trainControl(method = "none", classProbs = TRUE)
+        #trControl = trainControl(method = "none", classProbs = TRUE)
+        trControl = trainControl(method = "oob")
       )
+      
+      # plot_rf <- train (
+      #   form = class_efficiency ~.,
+      #   data = data,
+      #   method = row.names(selected_model),
+      #   tuneGrid = parms_vals[[best_model_index]],
+      #   ntree = max(methods[i]$rf$options$ntree),
+      #   # verbose = FALSE,
+      #   trControl = trainControl(method = "oob")
+      # )
+      
     } else {
+      
+      # generic ml model: svm...
       final_model <- train (
         form = class_efficiency ~.,
         data = data,
@@ -300,6 +319,7 @@ efficiency_estimation <- function (
         tuneGrid = parms_vals[[best_model_index]],
         trControl = trainControl(method = "none", classProbs = TRUE)
       )
+      
     }
       
       try_cut_off <- tryCatch (
