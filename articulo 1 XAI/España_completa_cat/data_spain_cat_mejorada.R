@@ -78,13 +78,13 @@ target_method <- "additive"
 
 set.seed(314)
 methods <- list (
-  "svmPoly" = list(
-    hyparams = list(
-      "degree" = c(1, 2),
-      "scale" = c( 0.1, 1, 10),
-      "C" = c(0.1, 1, 10)
-    )
-  )
+  # "svmPoly" = list(
+  #   hyparams = list(
+  #     "degree" = c(1, 2),
+  #     "scale" = c( 0.1, 1, 10),
+  #     "C" = c(0.1, 1, 10)
+  #   )
+  # ),
   # svm
   # "svmPoly" = list(
   #   "degree" = c(1, 2, 3, 4, 5),
@@ -97,14 +97,14 @@ methods <- list (
   # ),
   
   # random forest
-  # "rf" = list (
-  #   options = list (
-  #     ntree = c(5) # c(100, 500, 1000)
-  #   ),
-  #   hyparams = list(
-  #     mtry = c(4)
-  #   )
-  # )
+  "rf" = list (
+    options = list (
+      ntree = c(500) # c(100, 500, 1000)
+    ),
+    hyparams = list(
+      mtry = c(4)
+    )
+  )
 
   # # neuronal network
   # "nnet" = list(
@@ -212,32 +212,80 @@ for (i in 1:length(methods)) {
   
   scores[i] <- scores_cafee
   
-  # Importance of variables
-  # varImp Caret
-  importance <- varImp(object = final_model$final_model)
-  print(importance)
-
-  plot <- plot(importance)
+  # # Importance of variables
+  # # varImp Caret
+  # importance <- varImp(object = final_model$final_model)
+  # print(importance)
+  # 
+  # plot <- plot(importance)
   
   if (names(methods[i]) == "rf") {
   
-  data_oob <- as.data.frame(final_model[["final_model"]][["finalModel"]][["err.rate"]])
-  ntrees <- c(1:final_model$final_model$dots$ntree)
+    data_oob <- as.data.frame(final_model[["final_model"]][["finalModel"]][["err.rate"]])
+    ntrees <- c(1:final_model$final_model$dots$ntree)
 
-  data_oob_plot <- cbind(ntrees, data_oob)
+    data_oob_plot <- cbind(ntrees, data_oob)
 
-  ggplot(data = data_oob_plot) +
-    geom_line(aes(x = ntrees, y = OOB))
+    ggplot(data = data_oob_plot) +
+      geom_line(aes(x = ntrees, y = OOB))
+  
+    # importance by r miner
+    # necesary data to calculate importance
+    train_data <- final_model$final_model[["trainingData"]]
+    names(train_data)[1] <- "ClassEfficiency"
+    
+    # con rminer pero no escala
+    m_rf <- fit(
+      ClassEfficiency ~.,
+      data = train_data,
+      model = "randomForest",
+      scale = "none",
+      mtry = methods$rf$hyparams$mtry,
+      ntree = methods$rf$options$ntree
+    )
+  
+    rf.imp <- Importance(m_rf, data = train_data)
+    imp_value <- rf.imp$imp
+  
+    importance <- matrix(
+      data = NA,
+      ncol = 2,
+      nrow = length(names(train_data))
+    )
+  
+    importance <- as.data.frame(importance)
+  
+    importance$V1 <- names(train_data)
+    importance$V2 <- imp_value
+  
+    names(importance) <- c("", "Overall")
+  
+    importance <- importance[order(-importance$Overall), ]
+  
+    importance
+  
+    # comprobar m_rf
+    scores_cafee_m_rf <- compute_scores (
+      data = data,
+      x = x,
+      y = y,
+      z = z,
+      final_model = m_rf,
+      orientation = orientation,
+      cut_off = final_model[["final_model"]][["cut_off"]]
+    )  
+  
   }
   
   if (names(methods[i]) == "svmPoly") {
     
     # necesary data to calculate importance
-    train_data <- final_model[["trainingData"]]
+    train_data <- final_model$final_model[["trainingData"]]
+    names(train_data)[1] <- "ClassEfficiency"
     
     # con rminer pero no escala
     m_poly <- fit(
-      .outcome~.,
+      ClassEfficiency~.,
       data = train_data,
       model = "ksvm",
       kernel = "polydot",
@@ -270,11 +318,12 @@ for (i in 1:length(methods)) {
   } else if (names(methods[i]) == "svmRadial") {
       
     # necesary data to calculate importance
-    train_data <- final_model[["trainingData"]]
+    train_data <- final_model$final_model[["trainingData"]]
+    names(train_data)[1] <- "ClassEfficiency"
     
     # con rminer pero no escala
     m_rad <- fit(
-      .outcome~.,
+      ClassEfficiency~.,
       data = train_data,
       model = "ksvm",
       kernel = "rbfdot",
@@ -301,37 +350,9 @@ for (i in 1:length(methods)) {
     
     importance <- importance[order(-importance$Overall), ]
     
-  } else if (names(methods[i]) == "rf") {
-      
-    # necesary data to calculate importance
-    train_data <- final_model[["trainingData"]]
+  } else if (names(methods[i]) == "nnet") {
     
-    # con rminer pero no escala
-    m_knn <- fit(
-      .outcome~.,
-      data = train_data,
-      model = "kknn",
-      scale = "none",
-      k = final_model$bestTune$k
-    )
-    
-    knn.imp <- Importance(m_knn, data = train_data)
-    imp_value <- knn.imp$imp
-    
-    importance <- matrix(
-      data = NA,
-      ncol = 2,
-      nrow = length(names(train_data))
-    )
-    
-    importance <- as.data.frame(importance)
-    
-    importance$V1 <- names(train_data)
-    importance$V2 <- imp_value
-    
-    names(importance) <- c("", "Overall")
-    
-    importance <- importance[order(-importance$Overall), ]
+    print("FALTA NNET")
     
     }
 
