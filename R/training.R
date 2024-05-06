@@ -40,7 +40,8 @@ train_ml <- function (
             method = names(methods[a]),
             trControl = trControl,
             tuneGrid = tune_grid,
-            ntree = ntree
+            ntree = ntree,
+            metric = "F"
           ) 
           
           key <- toString(ntree)
@@ -77,10 +78,25 @@ train_ml <- function (
         
       } else if (names(methods[a]) == "nnet") {
         
-        a <- 1
+        # Tune model nnet
+        model <- train (
+          form = class_efficiency ~ .,
+          data = data,
+          method = names(methods[a]),
+          trControl = trControl,
+          tuneGrid = tune_grid,
+          metric = "F"
+        ) 
+      
+        # select best configuration
+        selected_model <- model[["results"]] %>%
+          arrange(desc(F), desc(Spec), desc(AUC), desc(Kappa), desc(Accuracy))
+      
+        best_model_fit[[a]] <- selected_model[1, ]
         
       } else {
         
+        # svm and others methods
         if (names(methods[a]) %in% verb_methods) {
           
           # Tune models
@@ -124,14 +140,9 @@ train_ml <- function (
         names(best_model_fit[[a]]) <- names_result
         names(best_model_fit[a]) <- model$method
       }
-        
-        
-        
-      
-      
-      
       
   }
 
   return(best_model_fit)
+  
 }

@@ -85,32 +85,41 @@ methods <- list (
   #     "C" = c(0.1, 1, 10)
   #   )
   # ),
-  # svm
+  
+  # # svm
   # "svmPoly" = list(
-  #   "degree" = c(1, 2, 3, 4, 5),
-  #   "scale" = c(0.001, 0.1, 1, 10, 100),
-  #   "C" = c(0.001, 0.1, 1, 10, 100)
+  #     hyparams = list(
+  #       "degree" = c(1, 2, 3, 4, 5),
+  #       "scale" = c(0.001, 0.1, 1, 10, 100),
+  #       "C" = c(0.001, 0.1, 1, 10, 100)
+  #     )
   # ),
   # "svmRadial" = list(
-  #   "sigma" = c(0.01, 0.1, 1, 10, 100),
-  #   "C" = c(0.001, 0.1, 1, 10, 100)
+  #   hyparams = list(
+  #     "sigma" = c(0.01, 0.1, 1, 10, 100),
+  #     "C" = c(0.001, 0.1, 1, 10, 100)
+  #   )
   # ),
   
-  # random forest
-  "rf" = list (
-    options = list (
-      ntree = c(500) # c(100, 500, 1000)
-    ),
-    hyparams = list(
-      mtry = c(4)
-    )
-  )
-
-  # # neuronal network
-  # "nnet" = list(
-  #   "size" = c(1, 5, 10, 20, 40, 80),
-  #   "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
+  # # random forest
+  # "rf" = list (
+  #   options = list (
+  #     ntree = c(500) # c(100, 500, 1000)
+  #   ),
+  #   hyparams = list(
+  #     mtry = c(4)
+  #   )
   # )
+
+  # neuronal network
+  "nnet" = list(
+    hyparams = list(
+      "size" = c(1, 5, 10, 20, 40, 80),
+      "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
+      )
+    
+  )
+  
 )
 
 # =========== #
