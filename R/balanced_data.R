@@ -94,6 +94,7 @@ balance_data <- function (
     data <- rbind(data, eff_dmu)
 
   }
+  
   # # ================== #
   # # enough sample size #
   # # ================== #
@@ -337,8 +338,9 @@ create_dmu <- function (
     )
     
     # efficient DMUs
-    idx_eff <- c(1:nrow(data))[bcc_scores_out - 1 < 0.001]
-    c(1:nrow(data))[bcc_scores_inp > 0.99]
+    
+    idx_eff <- c(1:nrow(data))[bcc_scores_out < 1.001]
+    idx_eff <- c(1:nrow(data))[bcc_scores_inp > 0.999] # 
   
     # compute 1st decile
     rows_fst_dec <- matrix(0, nrow = nrow(data), ncol = ncol(data) - 1 - length(z))

@@ -93,7 +93,7 @@ efficiency_estimation <- function (
      )
      
     # determine efficient and inefficient DMUs
-    class_efficiency <- ifelse(add_scores[, 1] <= 0.0001, 1, 0)
+    class_efficiency <- ifelse(add_scores[, 1] <= 0.00001, 1, 0)
 
     data <- as.data.frame (
       cbind(data, class_efficiency)
@@ -120,7 +120,7 @@ efficiency_estimation <- function (
   obs_prop <- prop.table(table(data$class_efficiency))
 
   # check presence of imbalanced data
-  if (max(obs_prop[1], obs_prop[2]) > 0.50 | nrow(data) < 150) {
+  if (max(obs_prop[1], obs_prop[2]) > 0.50) {
     data <- balance_data (
       data = data,
       data_factor = data_factor,
@@ -160,10 +160,10 @@ efficiency_estimation <- function (
   parms_vals <- vector("list", length = length(methods))
   names(parms_vals) <- names(methods)
   
-  if (ml_model[[i]]["method"] %in% c("rf", "nnet")) {
+  if (ml_model[[1]][["method"]] %in% c("rf", "nnet")) {
     
-    option_vals <- vector("list", length = length(methods))
-    names(option_vals) <- names(methods)
+    option_vals <- vector("list", length = length(methods$nnet$options))
+    names(option_vals) <- names(methods$nnet$options)
     
   }
   
@@ -217,7 +217,7 @@ efficiency_estimation <- function (
         method = names(methods[i]),
         tuneGrid = parms_vals[[i]],
         trControl = trainControl(method = "none", classProbs = TRUE),
-        ntree = option_vals[[i]] # change
+         # change
       )
       
     }

@@ -116,7 +116,11 @@ methods <- list (
     hyparams = list(
       "size" = c(1, 5, 10, 20, 40, 80),
       "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
-      )
+      ),
+    options = list (
+      maxit = 1000,
+      lineout = TRUE
+    )
     
   )
   
@@ -157,7 +161,7 @@ hold_out <- 0.10
 
 # https://topepo.github.io/caret/train-models-by-tag.html
 
-metric = "F1"
+metric = "Accuracy"
 
 convexity <- TRUE
 

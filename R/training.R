@@ -79,19 +79,28 @@ train_ml <- function (
       } else if (names(methods[a]) == "nnet") {
         
         # Tune model nnet
-        model <- train (
+        model_nnet <- train (
           form = class_efficiency ~ .,
           data = data,
           method = names(methods[a]),
           trControl = trControl,
           tuneGrid = tune_grid,
-          metric = "F"
+          metric = "Accuracy",
+          maxit = methods$nnet$options$maxit,
+          lineout = methods$nnet$options$lineout
         ) 
       
         # select best configuration
-        selected_model <- model[["results"]] %>%
+        selected_model <- model_nnet[["results"]] %>%
           arrange(desc(F), desc(Spec), desc(AUC), desc(Kappa), desc(Accuracy))
       
+        # add names
+        selected_model <- cbind(
+          data.frame(
+            method = names(methods[a])
+          ), selected_model
+        )
+        
         best_model_fit[[a]] <- selected_model[1, ]
         
       } else {
