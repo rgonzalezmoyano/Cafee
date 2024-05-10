@@ -150,7 +150,8 @@ efficiency_estimation <- function (
   ml_model <- train_ml (
     data = train_data,
     trControl = trControl,
-    methods = methods
+    methods = methods,
+    metric = metric
   )
 
   # Best training 
@@ -179,7 +180,7 @@ efficiency_estimation <- function (
     # parameter values
     parms_vals[[i]] <- as.data.frame(ml_model[[i]])[, parms_posn]
     
-    if (ml_model[[i]]["method"] %in% c("rf", "nnet")) {
+    if (ml_model[[1]]["method"] %in% c("rf", "nnet")) {
       
       # option position
       option_posn <- which(names(ml_model[[i]]) %in% names(methods[[i]]$options)) 
@@ -217,9 +218,10 @@ efficiency_estimation <- function (
         method = names(methods[i]),
         tuneGrid = parms_vals[[i]],
         trControl = trainControl(method = "none", classProbs = TRUE),
-         # change
+        maxit = methods$nnet$options$maxit
+        #linout = methods$nnet$options$lineout
       )
-      
+     
     }
     
     if (names(methods[i]) %in% verb_methods) {
@@ -308,6 +310,19 @@ efficiency_estimation <- function (
       #   # verbose = FALSE,
       #   trControl = trainControl(method = "oob")
       # )
+      
+    } else if (names(methods[best_model_index]) == "nnet") {
+      
+      final_model <- train (
+        form = class_efficiency ~.,
+        data = data,
+        method = row.names(selected_model),
+        tuneGrid = parms_vals[[best_model_index]],
+        ntree = option_vals[[i]],
+        # verbose = FALSE,
+        trControl = trainControl(method = "none", classProbs = TRUE),
+        maxit = methods$nnet$options$maxit
+      )
       
     } else {
       

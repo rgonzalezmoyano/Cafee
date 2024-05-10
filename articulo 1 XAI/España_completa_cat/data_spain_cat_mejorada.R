@@ -109,17 +109,17 @@ methods <- list (
   #   hyparams = list(
   #     mtry = c(4)
   #   )
-  # )
+  # ),
 
   # neuronal network
   "nnet" = list(
     hyparams = list(
-      "size" = c(1, 5, 10, 20, 40, 80),
+      "size" = c(1, 5, 10, 20),
       "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
       ),
     options = list (
-      maxit = 1000,
-      lineout = TRUE
+      maxit = 1000
+      # lineout = TRUE
     )
     
   )
@@ -207,7 +207,7 @@ for (i in 1:length(methods)) {
     trControl = trControl,
     method = methods[i],
     target_method = target_method,
-    metric = "F1",
+    metric = "Accuracy",
     hold_out = hold_out,
     convexity = convexity
   )
