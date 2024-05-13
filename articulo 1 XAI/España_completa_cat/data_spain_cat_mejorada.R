@@ -101,15 +101,15 @@ methods <- list (
   #   )
   # ),
   
-  # # random forest
-  # "rf" = list (
-  #   options = list (
-  #     ntree = c(500) # c(100, 500, 1000)
-  #   ),
-  #   hyparams = list(
-  #     mtry = c(4)
-  #   )
-  # ),
+  # random forest
+  "rf" = list (
+    options = list (
+      ntree = c(500) # c(100, 500, 1000)
+    ),
+    hyparams = list(
+      mtry = c(4)
+    )
+  ),
 
   # neuronal network
   "nnet" = list(
@@ -365,7 +365,39 @@ for (i in 1:length(methods)) {
     
   } else if (names(methods[i]) == "nnet") {
     
-    print("FALTA NNET")
+    # necesary data to calculate importance
+    train_data <- final_model$final_model[["trainingData"]]
+    names(train_data)[1] <- "ClassEfficiency"
+    
+    # con rminer
+    m_nnet <- fit(
+      ClassEfficiency ~.,
+      data = train_data,
+      model = "mlp",
+      scale = "none",
+      size = final_model$final_model$bestTune$size,
+      decay = final_model$final_model$bestTune$decay
+    )
+    
+    nnet.imp <- Importance(m_nnet, data = train_data)
+    imp_value <- nnet.imp$imp
+    
+    importance <- matrix(
+      data = NA,
+      ncol = 2,
+      nrow = length(names(train_data))
+    )
+    
+    importance <- as.data.frame(importance)
+    
+    importance$V1 <- names(train_data)
+    importance$V2 <- imp_value
+    
+    names(importance) <- c("", "Overall")
+    
+    importance <- importance[order(-importance$Overall), ]
+    
+    importance
     
     }
 

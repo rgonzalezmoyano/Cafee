@@ -161,7 +161,7 @@ efficiency_estimation <- function (
   parms_vals <- vector("list", length = length(methods))
   names(parms_vals) <- names(methods)
   
-  if (ml_model[[1]][["method"]] %in% c("rf", "nnet")) {
+  if (ml_model[[1]][["method"]] %in% c("rf")) {
     
     option_vals <- vector("list", length = length(methods$nnet$options))
     names(option_vals) <- names(methods$nnet$options)
@@ -180,7 +180,7 @@ efficiency_estimation <- function (
     # parameter values
     parms_vals[[i]] <- as.data.frame(ml_model[[i]])[, parms_posn]
     
-    if (ml_model[[1]]["method"] %in% c("rf", "nnet")) {
+    if (ml_model[[1]]["method"] %in% c("rf")) {
       
       # option position
       option_posn <- which(names(ml_model[[i]]) %in% names(methods[[i]]$options)) 
@@ -219,7 +219,6 @@ efficiency_estimation <- function (
         tuneGrid = parms_vals[[i]],
         trControl = trainControl(method = "none", classProbs = TRUE),
         maxit = methods$nnet$options$maxit
-        #linout = methods$nnet$options$lineout
       )
      
     }
@@ -275,7 +274,7 @@ efficiency_estimation <- function (
 
   # select the best model by metric
   selected_model <- precision_models %>%
-    arrange(desc(F1), desc(Sensitivity), desc("Balanced Accuracy"))
+    arrange(desc("Balanced Accuracy"), desc(F1), desc(Sensitivity))
   selected_model <- selected_model[1, ]
   
   # index of the best model in ml_model
@@ -318,8 +317,7 @@ efficiency_estimation <- function (
         data = data,
         method = row.names(selected_model),
         tuneGrid = parms_vals[[best_model_index]],
-        ntree = option_vals[[i]],
-        # verbose = FALSE,
+        verbose = FALSE,
         trControl = trainControl(method = "none", classProbs = TRUE),
         maxit = methods$nnet$options$maxit
       )

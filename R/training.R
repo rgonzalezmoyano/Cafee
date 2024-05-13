@@ -74,7 +74,7 @@ train_ml <- function (
         
         # select best configuration
         selected_model <- model_rf %>%
-          arrange(desc(F), desc(Spec), desc(AUC), desc(Kappa), desc(Accuracy))
+          arrange(desc(Accuracy), desc(F), desc(Spec), desc(AUC), desc(Kappa))
         
         best_model_fit[[a]] <- selected_model[1, ]
         
@@ -94,7 +94,7 @@ train_ml <- function (
       
         # select best configuration
         selected_model <- model_nnet[["results"]] %>%
-          arrange(desc(F), desc(Spec), desc(AUC), desc(Kappa), desc(Accuracy))
+          arrange(desc(Accuracy), desc(F), desc(Spec), desc(AUC), desc(Kappa))
       
         # add names
         selected_model <- cbind(
