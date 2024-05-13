@@ -101,15 +101,15 @@ methods <- list (
   #   )
   # ),
   
-  # random forest
-  "rf" = list (
-    options = list (
-      ntree = c(500) # c(100, 500, 1000)
-    ),
-    hyparams = list(
-      mtry = c(4)
-    )
-  ),
+  # # random forest
+  # "rf" = list (
+  #   options = list (
+  #     ntree = c(500) # c(100, 500, 1000)
+  #   ),
+  #   hyparams = list(
+  #     mtry = c(4)
+  #   )
+  # ),
 
   # neuronal network
   "nnet" = list(
@@ -119,7 +119,6 @@ methods <- list (
       ),
     options = list (
       maxit = 1000
-      # lineout = TRUE
     )
     
   )
@@ -406,7 +405,7 @@ for (i in 1:length(methods)) {
   list <- list()
   
   list[[1]] <- final_model$method
-  list[[2]] <- final_model$bestTune
+  list[[2]] <- final_model$final_model$bestTune
   list[[3]] <- importance
   list[[4]] <- plot
   

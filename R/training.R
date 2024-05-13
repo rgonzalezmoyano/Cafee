@@ -88,8 +88,7 @@ train_ml <- function (
           trControl = trControl,
           tuneGrid = tune_grid,
           metric = metric,
-          maxit = methods$nnet$options$maxit#,
-          #lineout = methods$nnet$options$lineout
+          maxit = methods$nnet$options$maxit
         ) 
       
         # select best configuration

@@ -1,0 +1,68 @@
+### Generate Neuronal Network picture
+
+set.seed(6)
+
+data <- matrix(
+  data = NA, ncol = 4, nrow = 20)
+
+data <- as.data.frame(data)
+
+names(data) <- c("DMU", "x", "y", "class")
+
+# complete de data
+# DMU
+data$DMU <- 1:nrow(data)
+
+# class
+data$class[1:(nrow(data)/2)] <- "red" 
+data$class[((nrow(data)/2)+ 1):nrow(data)] <- "blue"
+
+data$class <- as.factor(data$class)
+
+# x and y
+# Generar datos para clasificación en dos clases
+
+
+# Número total de observaciones
+n <- length(data$DMU)
+
+# Generar datos para clase 1
+x1 <- rnorm(n/2, mean = 2, sd = 1)
+y1 <- rnorm(n/2, mean = 2, sd = 1)
+
+# Generar datos para clase 2
+x2 <- rnorm(n/2, mean = 4, sd = 1)
+y2 <- rnorm(n/2, mean = 4, sd = 1)
+
+# Combinar los datos
+x <- c(x1, x2)
+y <- c(y1, y2)
+data$x <- x
+data$y <- y
+
+# train
+trControl <- trainControl (
+  method = "cv",
+  number = 5,
+  classProbs = TRUE,
+  savePredictions = "all"
+)
+
+modelo <- train (
+  form = class ~ .,
+  data = data[-1],
+  method = "nnet",
+  trControl = trControl,
+  tuneGrid = expand.grid(size = c(3:5), decay = c(0, 0.1, 0.01, 0.001)),
+  maxit = 1000
+) 
+
+library(NeuralNetTools)
+old.par <- par(mar = c(bottom = 1, left = 2, top = 2, right = 3), xpd = NA)
+plotnet(modelo)
+a <- plot(modelo)
+a$formula
+
+
+summary(modelo)
+gaaspect.fillgarson(modelo)

@@ -1,0 +1,75 @@
+### Generate DEA projection
+
+devtools::load_all()
+set.seed(1)
+data <- reffcy (
+  DGP = "cobb_douglas_XnY1",
+  parms = list (
+    N = 30,
+    nX = 1
+  )
+)
+
+x <- 1
+y <- 2
+
+scores <- rad_out (
+  tech_xmat = as.matrix(data[, x]),
+  tech_ymat = as.matrix(data[, y]),
+  eval_xmat = as.matrix(data[, x]),
+  eval_ymat = as.matrix(data[, y]),
+  convexity = TRUE,
+  returns = "variable"
+) 
+
+data <- cbind(data, scores)
+
+eff_dmu <- which(data$scores < 1.00001)
+
+grph_data <- data[eff_dmu, ]
+grph_data <- grph_data[order(grph_data$x1, grph_data$y), ]
+
+extremos <- as.data.frame(
+  matrix(
+    data = NA, ncol = 4, nrow = 2
+    )
+  )
+
+extremos[1, ] <- data.frame(x1 = grph_data$x1[1], y = 0, yD = 0, scores = 0)
+extremos[2, ] <- data.frame(x1 = 10, y = grph_data$y[7], yD = 0, scores = 0)
+
+names(extremos) <- names(data)
+grph_data <- rbind(grph_data, extremos)
+
+
+grph_data <- grph_data[order(grph_data$x1, grph_data$y), ]
+
+# projection 
+projection <- as.data.frame(
+  matrix(
+    data = NA, ncol = 2, nrow = 2
+  )
+)
+
+projection[1, ] <- data.frame(x1 = data[3,1], y = data[3,2])
+projection[2, ] <- data.frame(x1 = data[3,1], y = (data[3,2] * scores[3]))
+
+names(projection) <- c("x1", "y")
+
+# plot
+ggplot() +
+  geom_point(data = data, aes(x = x1, y = y)) +
+
+  geom_line(data = grph_data, aes(x = x1, y = y)) +
+  
+  geom_line(data = projection, aes(x = x1, y = y), linetype = "dashed") +
+  
+  geom_point(data = projection[2, ], aes(x = x1, y = y), color = "yellow4", size = 3) +
+  
+  # title
+  labs(title = "DEA-radial output projection") +
+  
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  
+  theme_minimal()
