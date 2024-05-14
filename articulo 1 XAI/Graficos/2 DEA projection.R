@@ -57,7 +57,7 @@ projection[2, ] <- data.frame(x1 = data[3,1], y = (data[3,2] * scores[3]))
 names(projection) <- c("x1", "y")
 
 # plot
-ggplot() +
+plot <- ggplot() +
   geom_point(data = data, aes(x = x1, y = y)) +
 
   geom_line(data = grph_data, aes(x = x1, y = y)) +
@@ -66,10 +66,17 @@ ggplot() +
   
   geom_point(data = projection[2, ], aes(x = x1, y = y), color = "yellow4", size = 3) +
   
-  # title
-  labs(title = "DEA-radial output projection") +
+  # names exes
+  xlab("Input") +
+  ylab("Output") +
   
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0) +
   
-  theme_minimal()
+  theme_bw() +
+  
+  theme(legend.position = "bottom")
+
+plot
+
+ggsave(plot = plot, dpi = 600, filename = "DEA projection.png")

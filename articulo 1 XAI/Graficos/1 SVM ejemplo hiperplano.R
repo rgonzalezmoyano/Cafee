@@ -104,7 +104,7 @@ svm$y <- c(0, 0 + inc, 0 - inc)
 svm$xend <- c(1.173500, 1.173500 + inc, 1.173500 - inc)
 svm$yend <- c(7.61695970, 7.61695970 + inc, 7.61695970 - inc)
 
-ggplot() +
+plot <- ggplot() +
   
   # # predictions
   # geom_point(data = grid, aes(x = x, y = y, colour = decision), size = 0.5, alpha = 0.5) +
@@ -127,12 +127,18 @@ ggplot() +
   # color class
   scale_color_manual(values = c("deepskyblue1", "red")) +
   
-  # title
-  labs(title = "Hyperplane and margins of SVM", color = "Class") +
+  # names exes
+  xlab("Input") +
+  ylab("Output") +
   
   # exes
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0) +
   
-  theme_minimal()
+  theme_bw() +
+  
+  theme(legend.position = "bottom")
 
+plot
+
+ggsave(plot = plot, dpi = 600, filename = "svm clasification example.png")

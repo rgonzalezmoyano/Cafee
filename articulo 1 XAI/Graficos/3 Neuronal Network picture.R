@@ -7,7 +7,7 @@ data <- matrix(
 
 data <- as.data.frame(data)
 
-names(data) <- c("DMU", "x", "y", "class")
+names(data) <- c("DMU", "input", "output", "class")
 
 # complete de data
 # DMU
@@ -37,8 +37,8 @@ y2 <- rnorm(n/2, mean = 4, sd = 1)
 # Combinar los datos
 x <- c(x1, x2)
 y <- c(y1, y2)
-data$x <- x
-data$y <- y
+data$input <- x
+data$output <- y
 
 # train
 trControl <- trainControl (
@@ -58,11 +58,14 @@ modelo <- train (
 ) 
 
 library(NeuralNetTools)
-old.par <- par(mar = c(bottom = 1, left = 2, top = 2, right = 3), xpd = NA)
-plotnet(modelo)
+old.par <- par(mar = c(bottom = 0, left = 2, top = 2, right = 3), xpd = NA)
+plotnet(modelo, bias = TRUE)
 a <- plot(modelo)
 a$formula
 
 
 summary(modelo)
 gaaspect.fillgarson(modelo)
+
+
+ggsave(dpi = 600)
