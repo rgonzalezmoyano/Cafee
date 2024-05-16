@@ -168,7 +168,7 @@ ggplot() +
 # ============= #
 
 # make a grid of the predictors
-copy_data
+copy_data <- data
 rng.x <- range(copy_data[1])
 
 if (max(copy_data[3] > max(copy_data[2]))) {

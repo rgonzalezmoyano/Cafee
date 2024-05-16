@@ -130,7 +130,7 @@ efficiency_estimation <- function (
       convexity = convexity
     )
     
-    data <- na.omit(data)
+    #data <- na.omit(data)
   }
   
   # Create train and validation data
@@ -152,7 +152,7 @@ efficiency_estimation <- function (
     trControl = trControl,
     methods = methods,
     metric = metric
-  )
+  );ml_model
 
   # Best training 
   confusion_matrix <- vector("list", length = length(methods))

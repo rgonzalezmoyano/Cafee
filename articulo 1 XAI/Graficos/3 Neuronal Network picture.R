@@ -60,10 +60,11 @@ modelo <- train (
 library(NeuralNetTools)
 old.par <- par(mar = c(bottom = 0, left = 2, top = 2, right = 3), xpd = NA)
 plotnet(modelo, bias = TRUE)
+plot
 a <- plot(modelo)
 a$formula
 
-
+ggsave(plot = plot, dpi = 600, filename = "DEA projection.png")
 summary(modelo)
 gaaspect.fillgarson(modelo)
 

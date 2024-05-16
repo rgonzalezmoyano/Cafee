@@ -390,5 +390,16 @@ create_dmu <- function (
     }
   }
   
+  # # # grafico
+  # new_dmu_values <- as.data.frame(matrix(data = NA, nrow = 9, ncol = 3))
+  # # projection borrar
+  # for (i in 1:9) {
+  #   dmu <- idx_inp[i]
+  # 
+  # 
+  #     new_dmu_values[i, ] <- proj_data_inp[dmu, ]
+  # 
+  # }
+  
   return(new_dmu_values)
 }
