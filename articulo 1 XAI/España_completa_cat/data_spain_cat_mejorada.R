@@ -78,22 +78,22 @@ target_method <- "additive"
 
 set.seed(314)
 methods <- list (
-  # "svmPoly" = list(
-  #   hyparams = list(
-  #     "degree" = c(1, 2),
-  #     "scale" = c( 0.1, 1, 10),
-  #     "C" = c(0.1, 1, 10)
-  #   )
-  # ),
-  
-  # svm
   "svmPoly" = list(
-      hyparams = list(
-        "degree" = c(1, 2, 3, 4, 5),
-        "scale" = c(0.001, 0.1, 1, 10, 100),
-        "C" = c(0.001, 0.1, 1, 10, 100)
-      )
+    hyparams = list(
+      "degree" = c(1, 2),
+      "scale" = c( 0.1, 1, 10),
+      "C" = c(0.1, 1, 10)
+    )
   ),
+  
+  # # svm
+  # "svmPoly" = list(
+  #     hyparams = list(
+  #       "degree" = c(1, 2, 3, 4, 5),
+  #       "scale" = c(0.001, 0.1, 1, 10, 100),
+  #       "C" = c(0.001, 0.1, 1, 10, 100)
+  #     )
+  # ),
   # "svmRadial" = list(
   #   hyparams = list(
   #     "sigma" = c(0.01, 0.1, 1, 10, 100),
@@ -190,7 +190,7 @@ names(scores) <- score_names
 list_method <- list()  
 
 # data$SCHOOLID <- as.factor(data$SCHOOLID)
-# borrar <- summary(data)
+borrar <- summary(data)
 # 
 # write.csv(borrar, "descriptivos.csv", row.names = FALSE)
 # 
