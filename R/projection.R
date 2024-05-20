@@ -37,118 +37,118 @@ compute_scores <- function (
       
       if (orientation == "input") {
         
-        if (prob_eff > 0.5) {
-          
-          # ======================== #
-          # case dmu super-efficient #
-          # ======================== #
-            
-            # calculate increments to make the efficient class the minority
-            while (prob_eff > 0.5) {
-              
-              # Check if it exceed the minimum observed values
-              if (any(data[i, x] + (data[i, x] * incr) > max_value_x)) {
-                
-                # probability of being efficient
-                prob_eff <- predict(final_model, data[i, ], type = "prob")[1]
-                incr <- 0
-                
-                while (prob_eff > 0.5) {
-                  
-                  incr <- incr + 0.01
-                  
-                  # the dmu with the increments
-                  new_point <- cbind(data[i, x] * (1 + incr), data[i, y])
-                  colnames(new_point) <- names(data[c(x, y)])
-                  
-                  prob_eff <- predict(final_model, new_point, type = "prob")[1]
-                  
-                  if (any(data[i, x] + (data[i, x] * incr) > max_value_x * 2)) {
-                    
-                    scores[i] <- NA
-                    break
-                    
-                  }
-                  
-                  scores[i] <- 1 + incr - 0.005
-                  
-                }
-                
-                break
-                
-              }
-              
-            } # end first while
-              
-              # Once the threshold is crossed, make the majority class efficient again
-              if (!(any(data[i, x] + (data[i, x] * incr) > max_value_x * 2))) {
-                  
-                while (prob_eff < 0.5) {
-                  
-                  # Increase by 0.1
-                  incr <- incr - 0.01
-                  
-                  # the dmu with the increments
-                  new_point <- cbind(data[i, x] * (1 + incr), data[i, y])
-                  colnames(new_point) <- names(data[c(x, y)])
-                  
-                  prob_eff <- predict(final_model, new_point, type = "prob")[1]
-                  
-                }
-                
-                scores[i] <- 1 + (incr - 0.005) 
-            
-            } # end dmu super efficient
-            
-          } else {
-            
-            # ====================== #
-            # case dmu not efficient #
-            # ====================== #
-            
-            # calculate increments to make not efficient class the minority
-            while (prob_eff < 0.5) {
-              
-              # increase by 0.1
-              incr <- incr + 0.1
-              
-              # case inputs reduction not available
-              if (incr > 1) {
-                
-                scores[i] <- NA
-                break
-                
-              }
-              
-              # the dmu with the increments of 
-              new_point <- cbind(data[i, x] * (1 - incr), data[i, y])
-              colnames(new_point) <- names(data[c(x, y)])
-              
-              prob_eff <- predict(final_model, new_point, type = "prob")[1]
-              
-            }
-            
-            if (!(incr > 1)) {
-              
-              # Once the threshold is crossed, make the majority class non-efficient again
-              while (prob_eff > 0.5) {
-                
-                # Increase by 0.1
-                incr <- incr - 0.01
-                
-                # the dmu with the increments
-                new_point <- cbind(data[i, x] * (1 - incr), data[i, y])
-                colnames(new_point) <- names(data[c(x, y)])
-                
-                prob_eff <- predict(final_model, new_point, type = "prob")[1]
-                
-              }
-              
-              scores[i] <- 1 - (incr + 0.005)
-              
-            }
-            
-          }
+        # if (prob_eff > 0.5) {
+        #   
+        #   # ======================== #
+        #   # case dmu super-efficient #
+        #   # ======================== #
+        #     
+        #     # calculate increments to make the efficient class the minority
+        #     while (prob_eff > 0.5) {
+        #       
+        #       # Check if it exceed the minimum observed values
+        #       if (any(data[i, x] + (data[i, x] * incr) > max_value_x)) {
+        #         
+        #         # probability of being efficient
+        #         prob_eff <- predict(final_model, data[i, ], type = "prob")[1]
+        #         incr <- 0
+        #         
+        #         while (prob_eff > 0.5) {
+        #           
+        #           incr <- incr + 0.01
+        #           
+        #           # the dmu with the increments
+        #           new_point <- cbind(data[i, x] * (1 + incr), data[i, y])
+        #           colnames(new_point) <- names(data[c(x, y)])
+        #           
+        #           prob_eff <- predict(final_model, new_point, type = "prob")[1]
+        #           
+        #           if (any(data[i, x] + (data[i, x] * incr) > max_value_x * 2)) {
+        #             
+        #             scores[i] <- NA
+        #             break
+        #             
+        #           }
+        #           
+        #           scores[i] <- 1 + incr - 0.005
+        #           
+        #         }
+        #         
+        #         break
+        #         
+        #       }
+        #       
+        #     } # end first while
+        #       
+        #       # Once the threshold is crossed, make the majority class efficient again
+        #       if (!(any(data[i, x] + (data[i, x] * incr) > max_value_x * 2))) {
+        #           
+        #         while (prob_eff < 0.5) {
+        #           
+        #           # Increase by 0.1
+        #           incr <- incr - 0.01
+        #           
+        #           # the dmu with the increments
+        #           new_point <- cbind(data[i, x] * (1 + incr), data[i, y])
+        #           colnames(new_point) <- names(data[c(x, y)])
+        #           
+        #           prob_eff <- predict(final_model, new_point, type = "prob")[1]
+        #           
+        #         }
+        #         
+        #         scores[i] <- 1 + (incr - 0.005) 
+        #     
+        #     } # end dmu super efficient
+        #     
+        #   } else {
+        #     
+        #     # ====================== #
+        #     # case dmu not efficient #
+        #     # ====================== #
+        #     
+        #     # calculate increments to make not efficient class the minority
+        #     while (prob_eff < 0.5) {
+        #       
+        #       # increase by 0.1
+        #       incr <- incr + 0.1
+        #       
+        #       # case inputs reduction not available
+        #       if (incr > 1) {
+        #         
+        #         scores[i] <- NA
+        #         break
+        #         
+        #       }
+        #       
+        #       # the dmu with the increments of 
+        #       new_point <- cbind(data[i, x] * (1 - incr), data[i, y])
+        #       colnames(new_point) <- names(data[c(x, y)])
+        #       
+        #       prob_eff <- predict(final_model, new_point, type = "prob")[1]
+        #       
+        #     }
+        #     
+        #     if (!(incr > 1)) {
+        #       
+        #       # Once the threshold is crossed, make the majority class non-efficient again
+        #       while (prob_eff > 0.5) {
+        #         
+        #         # Increase by 0.1
+        #         incr <- incr - 0.01
+        #         
+        #         # the dmu with the increments
+        #         new_point <- cbind(data[i, x] * (1 - incr), data[i, y])
+        #         colnames(new_point) <- names(data[c(x, y)])
+        #         
+        #         prob_eff <- predict(final_model, new_point, type = "prob")[1]
+        #         
+        #       }
+        #       
+        #       scores[i] <- 1 - (incr + 0.005)
+        #       
+        #     }
+        #     
+        #   }
           
         } else { # OUTPUT ORIENTATION
           
@@ -159,6 +159,35 @@ compute_scores <- function (
             # ======================== #
             
             scores[i] <- 1
+            
+            while (prob_eff < final_model[["cut_off"]]) {
+              
+              if (any(data[i, y] + (data[i, y] * incr) < 0)) {
+                
+                scores[i] <- NA
+                break
+                
+              } else {
+                
+                # Increase by 0.1
+                incr <- incr + 0.01
+                
+                # the dmu with the increments of 
+                new_point <- cbind(data[i, x], data[i, y] * (1 - incr), data[i, z])
+                colnames(new_point) <- names(data[c(x, y, z)])
+                
+                prob_eff <- predict(final_model, new_point, type = "prob")[1]
+                
+              }
+              
+            } # end while
+              
+
+            
+            
+          # } else if (prob_eff == cut_off) {
+          #   
+          #   scores[i] <- 1
             
           } else {
             

@@ -91,9 +91,27 @@ balance_data <- function (
       type = "efficient"
     )
 
-    data <- rbind(data, eff_dmu)
-
+    # ===================================================== #
+    # make innefficient to determinate innefficient region  #
+    # ===================================================== #
+    
+    # create new inefficient observations
+    ineff_dmu <- create_dmu (
+      data = data,
+      data_factor = data_factor,
+      x = x,
+      y = y,
+      z = z,
+      N = n_ineff,
+      type = "inefficient"
+    )
+    
+    # rbind data
+    data <- rbind(data, eff_dmu, ineff_dmu)
+    
   }
+  
+  
   
   # # ================== #
   # # enough sample size #
@@ -149,67 +167,6 @@ balance_data <- function (
   # 
   # # add to data
   # data <- rbind(data, sfd_data)
-  
-  # # =================== #
-  # # balance proportions #
-  # # =================== #
-  # 
-  # # proportions
-  # props <- prop.table(table(data$class_efficiency))
-  # 
-  # # proportion of dmus efficient
-  # prop_eff <- props["efficient"]
-  # 
-  # # proportion of dmus not efficient
-  # prop_ineff <- props["not_efficient"]
-  # 
-  # # number of dmus efficient
-  # n_eff <- prop_eff * nrow(data)
-  # 
-  # # number of dmus not efficient
-  # n_ineff <- prop_ineff * nrow(data)
-  # 
-  # if (prop_eff > prop_ineff) {
-  #   
-  #   # ======================= #
-  #   # create inefficient DMUs #
-  #   # ======================= #
-  #   
-  #   # number of dmus to create
-  #   new_dmus <- ceiling(((- 0.50 * n_ineff) + (0.50 * n_eff)) / 0.50)
-  #   
-  #   # create new inefficient observations
-  #   ineff_dmu <- create_dmu (
-  #     data = data,
-  #     x = x,
-  #     y = y,
-  #     N = new_dmus,
-  #     type = "inefficient"
-  #   )
-  #   
-  #   data <- rbind(data, ineff_dmu)
-  #   
-  # } else {
-  #   
-  #   # ===================== #
-  #   # create efficient DMUs #
-  #   # ===================== #
-  #   
-  #   # number of dmus to create
-  #   new_dmus <- ceiling(((- 0.50 * n_eff) + (0.50 * n_ineff)) / 0.50)
-  #   
-  #   # create new efficient observations
-  #   eff_dmu <- create_dmu (
-  #     data = data,
-  #     x = x,
-  #     y = y,
-  #     N = new_dmus,
-  #     type = "efficient"
-  #   )
-  #   
-  #   data <- rbind(data, eff_dmu)
-  #   
-  # }
   
   return(data)
 }
@@ -308,6 +265,8 @@ create_dmu <- function (
     
     # classification of the new dmus as "inefficient"
     new_dmu_values$class_efficiency <- "not_efficient"
+    
+    new_dmu_values <- cbind(new_dmu_values, data_factor[idx_dmu_change, ])
     
   } else {
     

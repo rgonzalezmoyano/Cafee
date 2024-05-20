@@ -152,9 +152,9 @@ efficiency_estimation <- function (
     trControl = trControl,
     methods = methods,
     metric = metric
-  );ml_model
+  )
 
-  # Best training 
+    # Best training 
   confusion_matrix <- vector("list", length = length(methods))
   names(confusion_matrix) <- names(methods)
   

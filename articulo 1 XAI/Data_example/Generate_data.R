@@ -4,7 +4,7 @@
 library("ggplot2")
 
 # generate data
-set.seed(314)
+set.seed(1997)
 
 # Simulated data
 data <- reffcy (
@@ -18,7 +18,7 @@ data <- reffcy (
 # plot
 ggplot() +
   geom_point(data = data, aes(x = x1, y = y))
-
+# 
 # library(openxlsx)
 # write.xlsx(data, "data_example.xlsx")
 
@@ -36,7 +36,7 @@ methods <- list (
   "svmPoly" = list(
     hyparams = list(
       "degree" = c(1, 2, 3),
-      "scale" = c(0.1, 1, 10),
+      "scale" = c(0.001, 0.1, 1, 10, 100),
       "C" = c(0.1, 1, 10)
     )
    )
@@ -148,16 +148,20 @@ list_method <- list()
 
 ### determinate efficient class
 efficient_data_0 <- data[, class_efficiency == "efficient"]
+
 plot <- ggplot() +
   geom_point(data = data, aes(x = x1, y = y, color = class_efficiency)) +
   scale_color_manual(values = c("green4", "red"), name = "Class") +
   labs(x = "input", y = "output") +
+  # exes
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
   theme_bw() +
   theme(legend.position = "bottom")
 
 plot
 
-ggsave(plot = plot, dpi = 600, filename = "DEA_label.png")
+ggsave(plot = plot, dpi = 1200, filename = "DEA_label.png")
 
 ### determinate efficient class BALANCED INPUT
 efficient_data_0 <- data[data$class_efficiency == "efficient", ]
@@ -166,6 +170,9 @@ plot1 <- ggplot() +
   geom_point(data = efficient_data_0, aes(x = x1, y = y, color = class_efficiency)) +
   scale_color_manual(values = "green4", name = "Class") +
   labs(x = "input", y = "output") +
+  # exes
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
   theme_bw() +
   theme(legend.position = "bottom")
 
@@ -226,8 +233,8 @@ ggsave(plot = plot4, dpi = 600, filename = "DEA_label4.png")
 
 # make a grid of the predictors
 grid <- expand.grid (
-  x1 = seq(0, 8, length = 300),
-  y = seq(0, 8, length = 300)
+  x1 = seq(0, 10, length = 300),
+  y = seq(0, 10, length = 300)
 )
 
 # grid <- expand.grid (
@@ -235,7 +242,7 @@ grid <- expand.grid (
 #   y = seq(1, 8, length = 150)
 # )
 
-grid$decision <- predict(final_model, grid, type = "raw")
+grid$label <- predict(final_model, grid, type = "raw")
 
 # i <- 2
 # i <- c(12, 13, 15, 16, 17, 18, 23, 24)
@@ -245,8 +252,9 @@ grid$decision <- predict(final_model, grid, type = "raw")
 # filter_ggplot_data <- data[r,]
 all_dmu <- data
 data <- eval_data
+
 plot5 <- ggplot(data = data) +
-  geom_point(data = grid, aes(x = x1, y = y, color = decision), size = 0.6, alpha = 0.8) +
+  geom_point(data = grid, aes(x = x1, y = y, color = label), size = 0.6, alpha = 0.8) +
   geom_point(aes(x = x1, y = y)) +
   scale_color_manual(values = c("not_efficient" = "pink", "efficient" = "lightgreen")) +
 

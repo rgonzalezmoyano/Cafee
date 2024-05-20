@@ -78,28 +78,28 @@ target_method <- "additive"
 
 set.seed(314)
 methods <- list (
+  # "svmPoly" = list(
+  #   hyparams = list(
+  #     "degree" = c( 2),
+  #     "scale" = c(1),
+  #     "C" = c(1, 10)
+  #   )
+  # )
+  
+  # svm
   "svmPoly" = list(
+      hyparams = list(
+        "degree" = c(1, 2, 3, 4, 5),
+        "scale" = c(0.001, 0.1, 1, 10, 100),
+        "C" = c(0.001, 0.1, 1, 10, 100)
+      )
+  ),
+  "svmRadial" = list(
     hyparams = list(
-      "degree" = c(1, 2),
-      "scale" = c( 0.1, 1, 10),
-      "C" = c(0.1, 1, 10)
+      "sigma" = c(0.01, 0.1, 1, 10, 100),
+      "C" = c(0.001, 0.1, 1, 10, 100)
     )
   ),
-  
-  # # svm
-  # "svmPoly" = list(
-  #     hyparams = list(
-  #       "degree" = c(1, 2, 3, 4, 5),
-  #       "scale" = c(0.001, 0.1, 1, 10, 100),
-  #       "C" = c(0.001, 0.1, 1, 10, 100)
-  #     )
-  # ),
-  # "svmRadial" = list(
-  #   hyparams = list(
-  #     "sigma" = c(0.01, 0.1, 1, 10, 100),
-  #     "C" = c(0.001, 0.1, 1, 10, 100)
-  #   )
-  # ),
   
   # # random forest
   # "rf" = list (
@@ -120,7 +120,7 @@ methods <- list (
     options = list (
       maxit = 1000
     )
-    
+
   )
   
 )
@@ -166,7 +166,7 @@ convexity <- TRUE
 
 # preProcess
 data <- data_2018
-# data <- data[1:30, ]
+#data <- data[1:30, ]
 idx_NA <- which(is.na(data$SCHLTYPE))
 data <- data[-idx_NA,]
 
@@ -189,13 +189,6 @@ names(scores) <- score_names
 # save model information
 list_method <- list()  
 
-# data$SCHOOLID <- as.factor(data$SCHOOLID)
-borrar <- summary(data)
-# 
-# write.csv(borrar, "descriptivos.csv", row.names = FALSE)
-# 
-# library(openxlsx)
-# write.xlsx(borrar, "tabla_des.xlsx")
 # bucle region
 for (i in 1:length(methods)) {
   
@@ -299,7 +292,7 @@ for (i in 1:length(methods)) {
   if (names(methods[i]) == "svmPoly") {
     
     # necesary data to calculate importance
-    train_data <- final_model[["trainingData"]]
+    train_data <- final_model$final_model[["trainingData"]]
     names(train_data)[1] <- "ClassEfficiency"
     
     # con rminer pero no escala
@@ -310,10 +303,10 @@ for (i in 1:length(methods)) {
       kernel = "polydot",
       scale = "none",
       kpar = list(
-        degree = final_model$bestTune$degree,
-        scale = final_model$bestTune$scale
+        degree = final_model$final_model$bestTune$degree,
+        scale = final_model$final_model$bestTune$scale
       ),
-      C = final_model$bestTune$C
+      C = final_model$final_model$bestTune$C
     )
 
     svm.imp <- Importance(m_poly, data = train_data, method = "GSA", measure = "AAD")
