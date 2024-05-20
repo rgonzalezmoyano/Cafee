@@ -153,6 +153,10 @@ plot <- ggplot() +
   geom_point(data = data, aes(x = x1, y = y, color = class_efficiency)) +
   scale_color_manual(values = c("green4", "red"), name = "Class") +
   labs(x = "input", y = "output") +
+  
+  # name DMUs
+  geom_text(data = data, aes(x = x1, y = y, label = name), vjust = -1, hjust = 1) + 
+  
   # exes
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0) +

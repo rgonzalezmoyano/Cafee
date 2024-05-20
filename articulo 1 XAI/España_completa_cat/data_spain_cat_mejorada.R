@@ -94,12 +94,12 @@ methods <- list (
         "C" = c(0.001, 0.1, 1, 10, 100)
       )
   ),
-  "svmRadial" = list(
-    hyparams = list(
-      "sigma" = c(0.01, 0.1, 1, 10, 100),
-      "C" = c(0.001, 0.1, 1, 10, 100)
-    )
-  ),
+  # "svmRadial" = list(
+  #   hyparams = list(
+  #     "sigma" = c(0.01, 0.1, 1, 10, 100),
+  #     "C" = c(0.001, 0.1, 1, 10, 100)
+  #   )
+  # ),
   
   # # random forest
   # "rf" = list (
@@ -419,11 +419,33 @@ information_region[[2]] <- list_method
   
 save(information_region, file = "resultados_art_XAI.RData")
 
+# XAI paper
+result_final <- as.data.frame(
+  matrix(
+    data = NA,
+    ncol = 5,
+    nrow = nrow(data)
+  )
+)
+
+cor(x = information_region[[1]][["svmPoly"]], y = information_region[[1]][["nnet"]], method = "pearson") * 100
+cor(x = DEA_score, y = information_region[[1]][["nnet"]], method = "pearson") * 100
+cor(x = DEA_score, y = information_region[[1]][["svmPoly"]], method = "pearson") * 100
 
 
+DEA_score <- rad_out (
+  tech_xmat = as.matrix(data[, x]),
+  tech_ymat = as.matrix(data[, y]),
+  eval_xmat = as.matrix(data[, x]),
+  eval_ymat = as.matrix(data[, y]),
+  convexity = TRUE,
+  returns = "variable"
+) 
 
+entrenamiento_data <- final_model[["final_model"]][["trainingData"]]
+proporcion <- prop.table(table(entrenamiento_data$.outcome)) 
 
-
+save.image("Information_R_PISA.RData")
 
 # ====== #
 # server #

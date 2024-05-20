@@ -97,7 +97,7 @@ balance_data <- function (
     
     # create new inefficient observations
     ineff_dmu <- create_dmu (
-      data = data,
+      data = data[data$class_efficiency  == "not_efficient",],
       data_factor = data_factor,
       x = x,
       y = y,
