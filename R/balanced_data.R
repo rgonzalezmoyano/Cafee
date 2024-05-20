@@ -90,6 +90,7 @@ balance_data <- function (
       N = new_dmus,
       type = "efficient"
     )
+    #data_gra <- rbind(data, eff_dmu)
 
     # ===================================================== #
     # make innefficient to determinate innefficient region  #
@@ -105,6 +106,7 @@ balance_data <- function (
       N = n_ineff,
       type = "inefficient"
     )
+    #data_gra <- rbind(data, new_dmu_values)
     
     # rbind data
     data <- rbind(data, eff_dmu, ineff_dmu)
@@ -203,7 +205,7 @@ create_dmu <- function (
     # ======================= #
     
     new_dmus <- N
-  
+    new_dmus <- 26
     # indexes of DMUs for worsening
     if (new_dmus > nrow(data)) {
       replace <- TRUE
@@ -211,7 +213,7 @@ create_dmu <- function (
       replace <- FALSE
     }
     
-    idx_dmu_change <- sample(1:nrow(data), size = new_dmus, replace = replace)
+    idx_dmu_change <- sample(1:nrow(data[data$class_efficiency  == "not_efficient",]), size = new_dmus, replace = replace)
     
     # create a new matrix of data
     new_dmu_values <- matrix(data = NA, nrow = new_dmus, ncol = nX + nY)  

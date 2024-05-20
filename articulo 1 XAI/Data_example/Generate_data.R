@@ -17,7 +17,13 @@ data <- reffcy (
 
 # plot
 ggplot() +
-  geom_point(data = data, aes(x = x1, y = y))
+  geom_point(data = data, aes(x = x1, y = y)) +
+  # exes
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
 # 
 # library(openxlsx)
 # write.xlsx(data, "data_example.xlsx")
@@ -35,9 +41,9 @@ set.seed(314)
 methods <- list (
   "svmPoly" = list(
     hyparams = list(
-      "degree" = c(1, 2, 3),
-      "scale" = c(0.001, 0.1, 1, 10, 100),
-      "C" = c(0.1, 1, 10)
+      "degree" = c(3),
+      "scale" = c(1),
+      "C" = c(1)
     )
    )
   
@@ -155,51 +161,89 @@ plot <- ggplot() +
   labs(x = "input", y = "output") +
   
   # name DMUs
-  geom_text(data = data, aes(x = x1, y = y, label = name), vjust = -1, hjust = 1) + 
+  geom_text(data = data[data$class_efficiency == "efficient", ],
+            aes(x = x1, y = y, label = row.names(data[data$class_efficiency == "efficient", ])),
+            vjust = -1, hjust = 1) + 
   
   # exes
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0) +
+  
+  xlim(0, 10) +
+  ylim(0, 10) +
+  
   theme_bw() +
   theme(legend.position = "bottom")
 
 plot
 
-ggsave(plot = plot, dpi = 1200, filename = "DEA_label.png")
+ggsave(plot = plot, dpi = 600, filename = "DEA_label.png")
 
 ### determinate efficient class BALANCED INPUT
-efficient_data_0 <- data[data$class_efficiency == "efficient", ]
+efficient_data_0 <- data_gra[data_gra$class_efficiency == "efficient", ]
 
 plot1 <- ggplot() +
+  
+  # original points
+  geom_point(data = data, aes(x = x1, y = y), size = 1) +
+  
+  # name DMUs
+  # geom_text(data = data[data$class_efficiency == "efficient", ],
+  #           aes(x = x1, y = y, label = row.names(data[data$class_efficiency == "efficient", ])),
+  #           vjust = -1, hjust = 1) + 
+  
   geom_point(data = efficient_data_0, aes(x = x1, y = y, color = class_efficiency)) +
+  
   scale_color_manual(values = "green4", name = "Class") +
   labs(x = "input", y = "output") +
+  
   # exes
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0) +
+  
+  xlim(0, 10) +
+  ylim(0, 10) +
+  
   theme_bw() +
   theme(legend.position = "bottom")
 
 plot1
 
-ggsave(plot = plot1, dpi = 600, filename = "DEA_label1.png")
+ggsave(plot = plot1, dpi = 600, filename = "DEA_label_efficient.png")
 
-### plot2
-names(new_dmu_values) <- names(data)
-efficient_data <- rbind(efficient_data_0, new_dmu_values)
-
+### plot2 no efficient
+inefficient_data_0 <- data_gra[data_gra$class_efficiency == "not_efficient", ]
 
 plot2 <- ggplot() +
-  geom_point(data = efficient_data, aes(x = x1, y = y, color = class_efficiency)) +
-  scale_color_manual(values = "green4", name = "Class") +
+  
+  # original points
+  geom_point(data = data, aes(x = x1, y = y)) +
+  
+  # name DMUs
+  # geom_text(data = data[data$class_efficiency == "efficient", ],
+  #           aes(x = x1, y = y, label = row.names(data[data$class_efficiency == "efficient", ])),
+  #           vjust = -1, hjust = 1) +
+  
+  # geom_point(data = efficient_data_0, aes(x = x1, y = y, color = class_efficiency)) +
+  # 
+  geom_point(data = new_dmu_values, aes(x = x1, y = y, color = class_efficiency)) +
+  
+  scale_color_manual(values = "red", name = "Class") + #  c("green4", "red")
   labs(x = "input", y = "output") +
+  
+  # exes
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  
+  xlim(0, 10) +
+  ylim(0, 10) +
+  
   theme_bw() +
   theme(legend.position = "bottom")
 
 plot2
 
-
-ggsave(plot = plot2, dpi = 600, filename = "DEA_label2.png")
+ggsave(plot = plot2, dpi = 600, filename = "DEA_label_inefficient.png")
 
 
 ### plot3
@@ -263,8 +307,13 @@ plot5 <- ggplot(data = data) +
   scale_color_manual(values = c("not_efficient" = "pink", "efficient" = "lightgreen")) +
 
   labs(x = "input", y = "output") +
-  
+  # name DMUs
+  geom_text(data = data,
+            aes(x = x1, y = y, label = row.names(data)),
+            vjust = -1, hjust = 1) +
   # exes
+  xlim(0, 10) +
+  ylim(0, 10) +
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0) +
   theme_bw() +
@@ -294,3 +343,6 @@ cor(x= result_scores$`DEA score`, y = result_scores$`SVM score`, method = "pears
 
 library(openxlsx)
 write.xlsx(result_scores, "result_example.xlsx")
+devtools::load_all(
+  
+)

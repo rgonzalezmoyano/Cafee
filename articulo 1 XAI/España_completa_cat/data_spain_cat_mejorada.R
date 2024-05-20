@@ -293,6 +293,7 @@ for (i in 1:length(methods)) {
     
     # necesary data to calculate importance
     train_data <- final_model$final_model[["trainingData"]]
+    # train_data <- all_dmu
     names(train_data)[1] <- "ClassEfficiency"
     
     # con rminer pero no escala
