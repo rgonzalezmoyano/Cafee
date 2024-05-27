@@ -142,6 +142,7 @@ efficiency_estimation <- function (
   
   valid_data <- data[valid_index, ]
   train_data <- data[- valid_index, ]
+  train_data <- data
   
   # ====================== #
   # SELECT HYPERPARAMETERS #

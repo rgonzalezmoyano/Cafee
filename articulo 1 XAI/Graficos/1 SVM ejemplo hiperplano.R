@@ -128,8 +128,8 @@ plot <- ggplot() +
   scale_color_manual(values = c("deepskyblue1", "red")) +
   
   # names exes
-  xlab("Input") +
-  ylab("Output") +
+  xlab("Feature 1") +
+  ylab("Feature 2") +
   
   # exes
   geom_hline(yintercept = 0) +
