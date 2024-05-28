@@ -87,7 +87,7 @@ balance_data <- function (
       x = x,
       y = y,
       z = z,
-      N = new_dmus,
+      N = n_ineff,
       type = "efficient"
     )
     #data_gra <- rbind(data, eff_dmu)
@@ -205,7 +205,7 @@ create_dmu <- function (
     # ======================= #
     
     new_dmus <- N
-    new_dmus <- 26
+    #new_dmus <- 26
     # indexes of DMUs for worsening
     if (new_dmus > nrow(data)) {
       replace <- TRUE

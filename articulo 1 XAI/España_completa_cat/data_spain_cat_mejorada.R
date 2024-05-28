@@ -69,8 +69,8 @@ inf_NA
 # ===
 
 # x and y indexes
-x <- c(3:5)
-y <- c(10, 7, 6)
+x <- c(10, 7, 6)
+y <- c(3:5)
 z <- c(2, 8) # environment variables
 
 # different types to label
@@ -120,7 +120,6 @@ methods <- list (
     options = list (
       maxit = 1000
     )
-
   )
   
 )
@@ -219,7 +218,7 @@ for (i in 1:length(methods)) {
     z = z,
     final_model = final_model$final_model,
     orientation = orientation,
-    cut_off = final_model[["final_model"]][["cut_off"]]
+    cut_off = final_model$final_model[["cut_off"]]
   )  
   
   scores[i] <- scores_cafee
@@ -405,10 +404,9 @@ for (i in 1:length(methods)) {
   # information model
   list <- list()
   
-  list[[1]] <- final_model$method
-  list[[2]] <- final_model$final_model$bestTune
-  list[[3]] <- importance
-  list[[4]] <- plot
+  list[[1]] <- final_model$final_model
+  list[[2]] <- importance
+
   
   list_method[[i]] <- list
   
@@ -417,6 +415,19 @@ for (i in 1:length(methods)) {
 information_region <- list()
 information_region[[1]] <- scores
 information_region[[2]] <- list_method
+
+library(Benchmarking)
+
+scores_dea <- sdea (
+  X = as.matrix(data[, y]),
+  Y = as.matrix(data[, x]),
+  RTS = "vrs",
+  ORIENTATION = "out"
+)$eff; scores_dea
+min(scores_dea)
+scores_dea <- round(scores_dea, 3)
+
+scores_final <- cbind(scores_dea, scores)
   
 save(information_region, file = "resultados_art_XAI.RData")
 

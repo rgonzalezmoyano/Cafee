@@ -160,7 +160,7 @@ compute_scores <- function (
             
             scores[i] <- 1
             
-            while (prob_eff < final_model[["cut_off"]]) {
+            while (prob_eff > final_model[["cut_off"]]) {
               
               if (any(data[i, y] + (data[i, y] * incr) < 0)) {
                 
@@ -182,8 +182,8 @@ compute_scores <- function (
               
             } # end while
               
+            scores[i] <- 1 - (incr - 0.005)
 
-            
             
           # } else if (prob_eff == cut_off) {
           #   
