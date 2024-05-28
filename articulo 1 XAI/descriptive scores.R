@@ -1,0 +1,3 @@
+### Table descriptive
+
+summary(scores)
