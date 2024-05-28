@@ -162,7 +162,7 @@ compute_scores <- function (
             
             while (prob_eff > final_model[["cut_off"]]) {
               
-              if (any(data[i, y] + (data[i, y] * incr) < 0)) {
+              if (any(data[i, y] - (data[i, y] * incr) < 0)) {
                 
                 scores[i] <- NA
                 break

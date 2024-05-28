@@ -98,12 +98,12 @@ balance_data <- function (
     
     # create new inefficient observations
     ineff_dmu <- create_dmu (
-      data = data[data$class_efficiency  == "not_efficient",],
+      data = data,
       data_factor = data_factor,
       x = x,
       y = y,
       z = z,
-      N = n_ineff,
+      N = N,
       type = "inefficient"
     )
     #data_gra <- rbind(data, new_dmu_values)
@@ -213,7 +213,7 @@ create_dmu <- function (
       replace <- FALSE
     }
     
-    idx_dmu_change <- sample(1:nrow(data[data$class_efficiency  == "not_efficient",]), size = new_dmus, replace = replace)
+    idx_dmu_change <- sample(1:nrow(data), size = new_dmus, replace = replace)
     
     # create a new matrix of data
     new_dmu_values <- matrix(data = NA, nrow = new_dmus, ncol = nX + nY)  

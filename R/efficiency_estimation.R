@@ -130,7 +130,7 @@ efficiency_estimation <- function (
       convexity = convexity
     )
     
-    #data <- na.omit(data)
+    data <- na.omit(data)
   }
   
   # Create train and validation data
