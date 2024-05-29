@@ -1,5 +1,12 @@
 ### Table descriptive
 
+# data from script
+
+# x and y indexes
+x <- c(10, 7, 6)
+y <- c(3:5)
+z <- c(2, 8) # environment variables
+
 scores <- information_region[[1]]
 summary(scores)
 
@@ -10,17 +17,148 @@ DMU <- as.data.frame(
     nrow = nrow(scores)
   )
 )
+
 DMU[1] <- 1:999
 
 names(DMU) <- "DMU"
 
-data <- cbind(DMU, scores)
+bcc_scores_out <- rad_out (
+  tech_xmat = as.matrix(data[, x]),
+  tech_ymat = as.matrix(data[, y]),
+  eval_xmat = as.matrix(data[, x]),
+  eval_ymat = as.matrix(data[, y]),
+  convexity = TRUE,
+  returns = "variable"
+) 
+
+DEA <- round(bcc_scores_out, 3)
+data_scores <- cbind(DMU, DEA, scores)
+summary(data_scores)
+names(data_scores)
+
+library(tidyr)
+
+data_scores_long <- data_scores %>%
+  pivot_longer(cols = c(svmPoly, nnet, DEA), names_to = "method", values_to = "score")
 
 library(ggplot2)
-ggplot() +
-  geom_density(data = data, aes(x = svmPoly, color = "orange") ) +
-  geom_density(data = data, aes(x = nnet, color = "cyan")) +
-  theme_bw()
+
+plot <- ggplot(data_scores_long, aes(x = score, color = method)) +
+  geom_density() +
+  xlab("Kernel") +
+  
+  geom_hline(yintercept = 0)+
+  geom_vline(xintercept = 0) +
+  
+  theme_bw() +
+  labs(color = NULL) +
+  theme(legend.position = "bottom")
   
 
+plot
 
+ggsave(plot = plot, dpi = 600, filename = "kernel.png")
+
+# comparation efficiency DMUs
+library(Benchmarking)
+
+sDEA <- sdea (
+  X = as.matrix(data[, x]),
+  Y = as.matrix(data[, y]),
+  RTS = "vrs",
+  ORIENTATION = "out"
+)$eff
+min(sDEA)
+sDEA <- round(sDEA, 3)
+
+data_scores <- cbind(data_scores, sDEA)
+
+data_scores$sDEA <- ifelse(data_scores$sDEA == "-Inf", NA, data_scores$sDEA)
+
+ggplot() +
+  geom_point(data = data_scores[DEA == 1,], aes(x = DMU, y = svmPoly)) +
+  geom_abline(intercept = 0, slope = 1) +
+  
+  # exes
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  geom_hline(yintercept = 0) +
+  
+  scale_y_continuous(limits = c(0, 1.25), breaks = seq(0, 1.25, by = 0.25)) +
+  
+  theme_bw() +
+  
+  theme(legend.position = "bottom")
+  
+ggplot() +
+  geom_point(data = data_scores[DEA == 1,], aes(x = DMU, y = nnet)) +
+  geom_abline(intercept = 0, slope = 1) +
+  
+  # exes
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  geom_hline(yintercept = 0) +
+  
+  scale_y_continuous(limits = c(0, 1.25), breaks = seq(0, 1.25, by = 0.25)) +
+  
+  theme_bw() +
+  
+  theme(legend.position = "bottom")
+
+ggplot() +
+  geom_point(data = data_scores[DEA == 1,], aes(x = DMU, y = sDEA)) +
+  geom_abline(intercept = 0, slope = 1) +
+  
+  # exes
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  geom_hline(yintercept = 0) +
+  
+  scale_y_continuous(limits = c(0, 1.25), breaks = seq(0, 1.25, by = 0.25)) +
+
+  theme_bw() +
+  
+  theme(legend.position = "bottom")
+
+
+grafico <- data_scores[DEA == 1,]
+grafico$DMU <- 1:nrow(grafico)
+
+ggplot() +
+  geom_point(data = grafico, aes(x = DMU, y = sDEA)) +
+
+  # exes
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  
+  scale_y_continuous(limits = c(0, 1.25), breaks = seq(0, 1.25, by = 0.25)) +
+  
+  theme_bw() +
+  
+  theme(legend.position = "bottom")
+
+ggplot() +
+  geom_point(data = grafico, aes(x = DMU, y = nnet)) +
+  
+  # exes
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  
+  scale_y_continuous(limits = c(0, 1.25), breaks = seq(0, 1.25, by = 0.25)) +
+  
+  theme_bw() +
+  
+  theme(legend.position = "bottom")
+
+ggplot() +
+  geom_point(data = grafico, aes(x = DMU, y = svmPoly)) +
+  
+  # exes
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  
+  scale_y_continuous(limits = c(0, 1.25), breaks = seq(0, 1.25, by = 0.25)) +
+  
+  theme_bw() +
+  
+  theme(legend.position = "bottom")
