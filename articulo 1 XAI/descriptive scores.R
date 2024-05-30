@@ -60,6 +60,7 @@ plot
 ggsave(plot = plot, dpi = 600, filename = "kernel.png")
 
 # comparation efficiency DMUs
+
 library(Benchmarking)
 
 sDEA <- sdea (
@@ -74,6 +75,11 @@ sDEA <- round(sDEA, 3)
 data_scores <- cbind(data_scores, sDEA)
 
 data_scores$sDEA <- ifelse(data_scores$sDEA == "-Inf", NA, data_scores$sDEA)
+colSums(is.na(data_scores))
+
+### correlation
+round(cor(na.omit(data_scores[3:5])), 3)
+
 
 ggplot() +
   geom_point(data = data_scores[DEA == 1,], aes(x = DMU, y = svmPoly)) +
@@ -119,9 +125,14 @@ ggplot() +
 
 
 grafico <- data_scores[DEA == 1,]
-grafico$DMU <- 1:nrow(grafico)
+grafico$id <- 1:nrow(grafico)
 
-ggplot() +
+library(writexl)
+
+# Exportar el data.frame a un archivo Excel
+write_xlsx(grafico, path = "scores_efficient.xlsx")
+
+plot <- ggplot() +
   geom_point(data = grafico, aes(x = DMU, y = sDEA)) +
 
   # exes
@@ -135,7 +146,12 @@ ggplot() +
   
   theme(legend.position = "bottom")
 
-ggplot() +
+plot
+
+ggsave(plot = plot, dpi = 600, filename = "sDEA.png")
+
+
+plot <- ggplot() +
   geom_point(data = grafico, aes(x = DMU, y = nnet)) +
   
   # exes
@@ -149,7 +165,11 @@ ggplot() +
   
   theme(legend.position = "bottom")
 
-ggplot() +
+plot
+
+ggsave(plot = plot, dpi = 600, filename = "nnet.png")
+
+plot <- ggplot() +
   geom_point(data = grafico, aes(x = DMU, y = svmPoly)) +
   
   # exes
@@ -162,3 +182,7 @@ ggplot() +
   theme_bw() +
   
   theme(legend.position = "bottom")
+
+plot
+
+ggsave(plot = plot, dpi = 600, filename = "SVM.png")
