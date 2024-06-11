@@ -29,6 +29,7 @@ DGP <- "cobb_douglas_XnY1"
 N <- 25
 noise <- c(0, 0.02, 0.05)
 nX <- 1
+convexity <- TRUE
 
 # ===
 # Table
@@ -444,15 +445,17 @@ for (std_dev in noise) {
     
     methods <- list (
       "svmPoly" = list(
-        "degree" = c(1, 2, 3, 4, 5, 6, 7),
-        "scale" = c(0.001, 0.1, 1, 10),
-        "C" = c(0.001, 0.1, 1, 10, 100, 1000)
+        hyparams = list(
+          "degree" = c( 2),
+          "scale" = c(1),
+          "C" = c(1, 10)
+        )
       )
     )
     
     # https://topepo.github.io/caret/train-models-by-tag.html
     
-    metric = "F1"
+    metric = "Accuracy"
     
     for (target_method in label_type) {
       
@@ -465,8 +468,9 @@ for (std_dev in noise) {
         trControl = trControl,
         method = methods,
         target_method = target_method,
-        metric = "F1",
-        hold_out = hold_out
+        metric = metric,
+        hold_out = hold_out,
+        convexity = convexity
       )
       
       if (target_method == "additive") {

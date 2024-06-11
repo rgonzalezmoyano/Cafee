@@ -8,7 +8,7 @@ efficiency_estimation(
   data,
   x,
   y,
-  z,
+  z = NULL,
   orientation,
   target_method,
   trControl,

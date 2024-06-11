@@ -97,12 +97,14 @@ final_model <- efficiency_estimation (
   data = data,
   x = x,
   y = y,
+  z <- 0,
   orientation = orientation,
   trControl = trControl,
   method = methods,
   target_method = target_method,
   metric = metric,
-  hold_out = hold_out
+  hold_out = hold_out,
+  convexity = TRUE
 )
 
 data$prob <- round(predict(final_model, data[, 1:2], type = "prob")$efficient, 2)

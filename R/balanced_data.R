@@ -66,7 +66,8 @@ balance_data <- function (
       x = x,
       y = y,
       N = new_dmus,
-      type = "inefficient"
+      type = "inefficient",
+      rts = rts
     )
 
     data <- rbind(data, ineff_dmu)
@@ -88,7 +89,8 @@ balance_data <- function (
       y = y,
       z = z,
       N = n_ineff,
-      type = "efficient"
+      type = "efficient",
+      rts = rts
     )
     #data_gra <- rbind(data, eff_dmu)
 
@@ -181,12 +183,13 @@ balance_data <- function (
 #' @param x number of inputs in the \code{data}.
 #' @param y number of outputs in the \code{data}.
 #' @param N number of dmus to create \code{data}.
-#' @param type Class of dmu to create \code{data}.
+#' @param type class of dmu to create \code{data}.
+#' @param rts selection of technology for DEA projection \code{data}.
 #'
 #' @return It returns a \code{data.frame} with the newly created set of DMUs incorporated.
 
 create_dmu <- function (
-    data, data_factor, x, y, z, N, type
+    data, data_factor, x, y, z, N, type, rts
     ) {
   
   # number of inputs
@@ -286,7 +289,7 @@ create_dmu <- function (
       eval_xmat = as.matrix(data[, x]),
       eval_ymat = as.matrix(data[, y]),
       convexity = TRUE,
-      returns = "variable"
+      returns = rts
     ) 
     
     bcc_scores_inp <- rad_inp (
@@ -295,12 +298,11 @@ create_dmu <- function (
       eval_xmat = as.matrix(data[, x]),
       eval_ymat = as.matrix(data[, y]),
       convexity = TRUE,
-      returns = "variable"
+      returns = rts
     )
     
     # efficient DMUs
-    
-    idx_eff <- c(1:nrow(data))[bcc_scores_out < 1.001]
+    #idx_eff <- c(1:nrow(data))[bcc_scores_out < 1.001]
     idx_eff <- c(1:nrow(data))[bcc_scores_inp > 0.999] # 
   
     # compute 1st decile

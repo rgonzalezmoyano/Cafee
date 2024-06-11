@@ -23,7 +23,7 @@
 #' @export
 
 efficiency_estimation <- function (
-    data, x, y, z, orientation, target_method,
+    data, x, y, z = NULL, orientation, target_method,
     trControl, methods, metric, hold_out, convexity
     ) {
 
@@ -40,7 +40,12 @@ efficiency_estimation <- function (
   # reorder index 'x' and 'y' in data
   x <- 1:(ncol(data) - length(y))
   y <- (length(x) + 1):ncol(data)
-  z <- (ncol(data) + 1):(ncol(data) + ncol(data_factor))
+  
+  if (is.null(z)) {
+    z <- NULL
+  } else {
+    z <- (ncol(data) + 1):(ncol(data) + ncol(data_factor))
+  }
   
   # number of inputs / outputs as inputs and number of outputs
   nX <- length(x)
