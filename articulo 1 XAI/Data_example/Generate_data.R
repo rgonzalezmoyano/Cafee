@@ -157,7 +157,7 @@ efficient_data_0 <- data[, class_efficiency == "efficient"]
 
 plot <- ggplot() +
   geom_point(data = data, aes(x = x1, y = y, color = class_efficiency)) +
-  scale_color_manual(values = c("green4", "red"), name = "Class") +
+  scale_color_manual(values = c("green4", "red"), name = "Class", labels = c("efficient", "inefficient")) +
   labs(x = "input", y = "output") +
   
   # name DMUs
@@ -171,7 +171,7 @@ plot <- ggplot() +
   
   xlim(0, 10) +
   ylim(0, 10) +
-  
+
   theme_bw() +
   theme(legend.position = "bottom")
 
@@ -180,6 +180,7 @@ plot
 ggsave(plot = plot, dpi = 600, filename = "DEA_label.png")
 
 ### determinate efficient class BALANCED INPUT
+data_gra <- data
 efficient_data_0 <- data_gra[data_gra$class_efficiency == "efficient", ]
 
 plot1 <- ggplot() +
@@ -220,15 +221,15 @@ plot2 <- ggplot() +
   geom_point(data = data, aes(x = x1, y = y)) +
   
   # name DMUs
-  # geom_text(data = data[data$class_efficiency == "efficient", ],
-  #           aes(x = x1, y = y, label = row.names(data[data$class_efficiency == "efficient", ])),
-  #           vjust = -1, hjust = 1) +
+  geom_text(data = data[data$class_efficiency == "efficient", ],
+            aes(x = x1, y = y, label = row.names(data[data$class_efficiency == "efficient", ])),
+            vjust = -1, hjust = 1) +
   
   # geom_point(data = efficient_data_0, aes(x = x1, y = y, color = class_efficiency)) +
   # 
-  geom_point(data = new_dmu_values, aes(x = x1, y = y, color = class_efficiency)) +
+  # geom_point(data = new_dmu_values, aes(x = x1, y = y, color = class_efficiency)) +
   
-  scale_color_manual(values = "red", name = "Class") + #  c("green4", "red")
+  scale_color_manual(values = "red", name = "Class", labels = "inefficient") + #  c("green4", "red")
   labs(x = "input", y = "output") +
   
   # exes
