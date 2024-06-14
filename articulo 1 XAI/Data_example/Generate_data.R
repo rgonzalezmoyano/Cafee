@@ -181,6 +181,7 @@ ggsave(plot = plot, dpi = 600, filename = "DEA_label.png")
 
 ### determinate efficient class BALANCED INPUT
 data_gra <- data
+data <- eval_data
 efficient_data_0 <- data_gra[data_gra$class_efficiency == "efficient", ]
 
 plot1 <- ggplot() +
@@ -189,9 +190,9 @@ plot1 <- ggplot() +
   geom_point(data = data, aes(x = x1, y = y), size = 1) +
   
   # name DMUs
-  # geom_text(data = data[data$class_efficiency == "efficient", ],
-  #           aes(x = x1, y = y, label = row.names(data[data$class_efficiency == "efficient", ])),
-  #           vjust = -1, hjust = 1) + 
+  geom_text(data = data[data$class_efficiency == "efficient", ],
+            aes(x = x1, y = y, label = row.names(data[data$class_efficiency == "efficient", ])),
+            vjust = -1, hjust = 1) +
   
   geom_point(data = efficient_data_0, aes(x = x1, y = y, color = class_efficiency)) +
   
