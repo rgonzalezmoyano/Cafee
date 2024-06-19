@@ -88,7 +88,7 @@ balance_data <- function (
       x = x,
       y = y,
       z = z,
-      N = n_ineff,
+      N = new_dmus,
       type = "efficient",
       rts = rts
     )

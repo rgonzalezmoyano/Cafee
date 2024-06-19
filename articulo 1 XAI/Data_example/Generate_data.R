@@ -31,6 +31,7 @@ ggplot() +
 # x and y indexes
 x <- 1
 y <- 2
+z <- NULL
 
 # import
 
@@ -218,20 +219,18 @@ inefficient_data_0 <- data_gra[data_gra$class_efficiency == "not_efficient", ]
 
 plot2 <- ggplot() +
   
-  # original points
-  geom_point(data = data, aes(x = x1, y = y)) +
-  
   # name DMUs
   geom_text(data = data[data$class_efficiency == "efficient", ],
             aes(x = x1, y = y, label = row.names(data[data$class_efficiency == "efficient", ])),
             vjust = -1, hjust = 1) +
   
-  # geom_point(data = efficient_data_0, aes(x = x1, y = y, color = class_efficiency)) +
-  # 
-  # geom_point(data = new_dmu_values, aes(x = x1, y = y, color = class_efficiency)) +
+  geom_point(data = inefficient_data_0, aes(x = x1, y = y, color = class_efficiency)) +
   
-  scale_color_manual(values = "red", name = "Class", labels = "inefficient") + #  c("green4", "red")
+  scale_color_manual(values = "red", name = "Class", labels = "inefficient") +
   labs(x = "input", y = "output") +
+  
+  # original points
+  geom_point(data = data, aes(x = x1, y = y), size = 1.3) +
   
   # exes
   geom_hline(yintercept = 0) +
@@ -253,7 +252,7 @@ efficient_data <- rbind(efficient_data_0, new_dmu_values)
 
 
 plot3 <- ggplot() +
-  geom_point(data = efficient_data, aes(x = x1, y = y, color = class_efficiency)) +
+  geom_point(data = data, aes(x = x1, y = y, color = class_efficiency)) +
   scale_color_manual(values = "green4", name = "Class") +
   labs(x = "input", y = "output") +
   theme_bw() +
@@ -266,16 +265,25 @@ ggsave(plot = plot3, dpi = 600, filename = "DEA_label3.png")
 
 ### plot4
 plot4 <- ggplot() +
-  geom_point(data = data, aes(x = x1, y = y, color = class_efficiency)) +
-  scale_color_manual(values = c("green4", "red"), name = "Class") +
+  geom_point(data = data_gra, aes(x = x1, y = y, color = class_efficiency)) +
+  scale_color_manual(values = c("green4", "red"), name = "Class", labels = c("efficient", "inefficient")) +
   labs(x = "input", y = "output") +
+  
+  # exes
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  
+  xlim(0, 10) +
+  ylim(0, 10) +
+  
   theme_bw() +
   theme(legend.position = "bottom")
+
 
 plot4
 
 
-ggsave(plot = plot4, dpi = 600, filename = "DEA_label4.png")
+ggsave(plot = plot4, dpi = 600, filename = "DEA_label_all.png")
 
 # ============= #
 # Generate plot #
