@@ -314,13 +314,14 @@ data <- eval_data
 plot5 <- ggplot(data = data) +
   geom_point(data = grid, aes(x = x1, y = y, color = label), size = 0.6, alpha = 0.8) +
   geom_point(aes(x = x1, y = y)) +
-  scale_color_manual(values = c("not_efficient" = "pink", "efficient" = "lightgreen")) +
+  # scale_color_manual(values = c("not_efficient" = "pink", "efficient" = "lightgreen")) +
+  scale_color_manual(values = c("chartreuse2", "pink"), name = "Class", labels = c("efficient", "inefficient")) +
 
   labs(x = "input", y = "output") +
-  # name DMUs
-  geom_text(data = data,
-            aes(x = x1, y = y, label = row.names(data)),
-            vjust = -1, hjust = 1) +
+  # # name DMUs
+  # geom_text(data = data,
+  #           aes(x = x1, y = y, label = row.names(data)),
+  #           vjust = -1, hjust = 1) +
   # exes
   xlim(0, 10) +
   ylim(0, 10) +

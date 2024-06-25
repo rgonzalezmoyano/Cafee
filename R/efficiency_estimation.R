@@ -121,7 +121,7 @@ efficiency_estimation <- function (
   # save a copy of the original data
   eval_data <- data
   
-  # observed proportion of efficient and inefficient DMUs.
+  # observed proportion of efficient and inefficient DMUs
   obs_prop <- prop.table(table(data$class_efficiency))
 
   # check presence of imbalanced data
