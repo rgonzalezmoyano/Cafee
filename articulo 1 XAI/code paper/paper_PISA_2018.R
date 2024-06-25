@@ -86,14 +86,14 @@ methods <- list (
   #   )
   # )
   
-  # # svm
-  # "svmPoly" = list(
-  #     hyparams = list(
-  #       "degree" = c(1, 2, 3, 4, 5),
-  #       "scale" = c(0.001, 0.1, 1, 10, 100),
-  #       "C" = c(0.001, 0.1, 1, 10, 100)
-  #     )
-  # ),
+  # svm
+  "svmPoly" = list(
+      hyparams = list(
+        "degree" = c(1, 2, 3, 4, 5),
+        "scale" = c(0.001, 0.1, 1, 10, 100),
+        "C" = c(0.001, 0.1, 1, 10, 100)
+      )
+  ),
   # "svmRadial" = list(
   #   hyparams = list(
   #     "sigma" = c(0.01, 0.1, 1, 10, 100),
@@ -205,7 +205,7 @@ for (i in 1:length(methods)) {
     trControl = trControl,
     method = methods[i],
     target_method = target_method,
-    metric = "Accuracy",
+    metric = metric,
     hold_out = hold_out,
     convexity = convexity
   )

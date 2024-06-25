@@ -182,7 +182,7 @@ compute_scores <- function (
               
             } # end while
               
-            scores[i] <- 1 - (incr - 0.005)
+            #scores[i] <- 1 - (incr - 0.005)
 
             
           # } else if (prob_eff == cut_off) {
