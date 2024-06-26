@@ -180,6 +180,8 @@ compute_scores <- function (
                 
               }
               
+              scores[i] <- 1 - (incr - 0.005)
+              
             } # end while
               
             #scores[i] <- 1 - (incr - 0.005)

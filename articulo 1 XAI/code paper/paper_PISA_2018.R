@@ -165,7 +165,7 @@ convexity <- TRUE
 
 # preProcess
 data <- data_2018
-#data <- data[1:30, ]
+#data <- data[1:500, ]
 idx_NA <- which(is.na(data$SCHLTYPE))
 data <- data[-idx_NA,]
 
@@ -209,6 +209,8 @@ for (i in 1:length(methods)) {
     hold_out = hold_out,
     convexity = convexity
   )
+  
+  #final_model <- information_region[[2]][[2]][[1]]
   
   # bset cut off is selected 
   scores_cafee <- compute_scores (
@@ -309,7 +311,7 @@ for (i in 1:length(methods)) {
       C = final_model$final_model$bestTune$C
     )
 
-    svm.imp <- Importance(m_poly, data = train_data, method = "GSA", measure = "AAD")
+    svm.imp <- Importance(m_poly, data = train_data, method = "DSA", measure = "AAD")
     imp_value <- svm.imp$imp
     
     importance <- matrix(
@@ -378,7 +380,7 @@ for (i in 1:length(methods)) {
       decay = final_model$final_model$bestTune$decay
     )
     
-    nnet.imp <- Importance(m_nnet, data = train_data)
+    nnet.imp <- Importance(m_nnet, data = train_data, method = "DSA", measure = "AAD")
     imp_value <- nnet.imp$imp
     
     importance <- matrix(
@@ -440,9 +442,9 @@ result_final <- as.data.frame(
   )
 )
 
-cor(x = information_region[[1]][["svmPoly"]], y = information_region[[1]][["nnet"]], method = "pearson") * 100
+cor(x = information_region[[1]][["svmPoly"]][-omit], y = information_region[[1]][["nnet"]][-omit], method = "pearson") * 100
 cor(x = DEA_score, y = information_region[[1]][["nnet"]], method = "pearson") * 100
-cor(x = DEA_score, y = information_region[[1]][["svmPoly"]], method = "pearson") * 100
+cor(x = DEA_score[-omit], y = information_region[[1]][["svmPoly"]][-omit], method = "pearson") * 100
 
 
 DEA_score <- rad_out (
