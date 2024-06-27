@@ -294,9 +294,8 @@ for (i in 1:length(methods)) {
     
     # necesary data to calculate importance
     train_data <- final_model$final_model[["trainingData"]]
-    # train_data <- all_dmu
     names(train_data)[1] <- "ClassEfficiency"
-    
+
     # con rminer pero no escala
     m_poly <- fit(
       ClassEfficiency~.,
@@ -311,7 +310,7 @@ for (i in 1:length(methods)) {
       C = final_model$final_model$bestTune$C
     )
 
-    svm.imp <- Importance(m_poly, data = train_data, method = "DSA", measure = "AAD")
+    svm.imp <- Importance(m_poly, data = train_data, method = "MSA", measure = "AAD")
     imp_value <- svm.imp$imp
     
     importance <- matrix(
@@ -328,6 +327,8 @@ for (i in 1:length(methods)) {
     names(importance) <- c("", "Overall")
     
     importance <- importance[order(-importance$Overall), ]
+    
+    importance
   
   } else if (names(methods[i]) == "svmRadial") {
       
@@ -380,7 +381,7 @@ for (i in 1:length(methods)) {
       decay = final_model$final_model$bestTune$decay
     )
     
-    nnet.imp <- Importance(m_nnet, data = train_data, method = "DSA", measure = "AAD")
+    nnet.imp <- Importance(m_nnet, data = train_data, method = "MSA", measure = "AAD")
     imp_value <- nnet.imp$imp
     
     importance <- matrix(
@@ -418,6 +419,8 @@ information_region <- list()
 information_region[[1]] <- scores
 information_region[[2]] <- list_method
 
+save(information_region, file = "resultados_art_XAI.RData")
+
 library(Benchmarking)
 
 scores_dea <- sdea (
@@ -431,8 +434,6 @@ scores_dea <- round(scores_dea, 3)
 
 scores_final <- cbind(scores_dea, scores)
   
-save(information_region, file = "resultados_art_XAI.RData")
-
 # XAI paper
 result_final <- as.data.frame(
   matrix(

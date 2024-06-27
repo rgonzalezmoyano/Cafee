@@ -48,7 +48,7 @@ plot <- ggplot(data_scores_long, aes(x = score, color = method)) +
   xlab("Kernel") +
   
   geom_hline(yintercept = 0)+
-  geom_vline(xintercept = 0) +
+  geom_vline(xintercept = 1, linetype = "dashed") +
   
   theme_bw() +
   labs(color = NULL) +
