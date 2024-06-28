@@ -41,14 +41,16 @@ library(tidyr)
 data_scores_long <- data_scores %>%
   pivot_longer(cols = c(svmPoly, nnet, DEA), names_to = "method", values_to = "score")
 
+
+
 library(ggplot2)
 
 plot <- ggplot(data_scores_long, aes(x = score, color = method)) +
-  geom_density() +
+  geom_density(trim = TRUE) +
   xlab("Kernel") +
   
   geom_hline(yintercept = 0)+
-  geom_vline(xintercept = 1, linetype = "dashed") +
+  # geom_vline(xintercept = 1, linetype = "dashed") +
   
   theme_bw() +
   labs(color = NULL) +
@@ -57,7 +59,7 @@ plot <- ggplot(data_scores_long, aes(x = score, color = method)) +
 
 plot
 
-ggsave(plot = plot, dpi = 600, filename = "kernel.png")
+ggsave(plot = plot, dpi = 600, filename = "kernel_DEA.png")
 
 # comparation efficiency DMUs
 
@@ -76,6 +78,30 @@ data_scores <- cbind(data_scores, sDEA)
 
 data_scores$sDEA <- ifelse(data_scores$sDEA == "-Inf", NA, data_scores$sDEA)
 colSums(is.na(data_scores))
+
+
+
+data_scores_long_super <- data_scores %>%
+  pivot_longer(cols = c(sDEA, svmPoly, nnet), names_to = "method", values_to = "score")
+
+data_scores_long_super$method <- factor(data_scores_long_super$method, levels = c("sDEA", "svmPoly", "nnet"))
+
+# Crear el gráfico
+plot <- ggplot(data_scores_long_super, aes(x = score, color = method)) +
+  geom_density(trim = TRUE) +
+  xlab("Kernel") +
+  
+  geom_hline(yintercept = 0)+
+  # geom_vline(xintercept = 1, linetype = "dashed") +
+  
+  theme_bw() +
+  labs(color = NULL) +
+  theme(legend.position = "bottom")
+
+plot
+
+ggsave(plot = plot, dpi = 600, filename = "kernel_sDEA.png")
+
 
 ### correlation
 round(cor(na.omit(data_scores[3:5])), 3)

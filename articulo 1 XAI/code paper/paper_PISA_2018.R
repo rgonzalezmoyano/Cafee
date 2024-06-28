@@ -443,10 +443,13 @@ result_final <- as.data.frame(
   )
 )
 
+scores_dea <- ifelse(scores_dea == "-Inf", NA, scores_dea)
+
+omit <- which(is.na(scores_final$svmPoly))
+
 cor(x = information_region[[1]][["svmPoly"]][-omit], y = information_region[[1]][["nnet"]][-omit], method = "pearson") * 100
 cor(x = DEA_score, y = information_region[[1]][["nnet"]], method = "pearson") * 100
 cor(x = DEA_score[-omit], y = information_region[[1]][["svmPoly"]][-omit], method = "pearson") * 100
-
 
 DEA_score <- rad_out (
   tech_xmat = as.matrix(data[, x]),
