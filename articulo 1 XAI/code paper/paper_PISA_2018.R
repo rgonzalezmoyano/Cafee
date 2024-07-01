@@ -293,7 +293,7 @@ for (i in 1:length(methods)) {
   if (names(methods[i]) == "svmPoly") {
     
     # necesary data to calculate importance
-    train_data <- final_model$final_model[["trainingData"]]
+    train_data <- final_model[["trainingData"]]
     names(train_data)[1] <- "ClassEfficiency"
 
     # con rminer pero no escala
@@ -304,10 +304,10 @@ for (i in 1:length(methods)) {
       kernel = "polydot",
       scale = "none",
       kpar = list(
-        degree = final_model$final_model$bestTune$degree,
-        scale = final_model$final_model$bestTune$scale
+        degree = final_model$bestTune$degree,
+        scale = final_model$bestTune$scale
       ),
-      C = final_model$final_model$bestTune$C
+      C = final_model$bestTune$C
     )
 
     svm.imp <- Importance(m_poly, data = train_data, method = "MSA", measure = "AAD")
