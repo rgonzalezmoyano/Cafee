@@ -93,7 +93,7 @@ methods <- list (
         "scale" = c(0.001, 0.1, 1, 10, 100),
         "C" = c(0.001, 0.1, 1, 10, 100)
       )
-  ),
+  )
   # "svmRadial" = list(
   #   hyparams = list(
   #     "sigma" = c(0.01, 0.1, 1, 10, 100),
@@ -111,16 +111,16 @@ methods <- list (
   #   )
   # ),
 
-  # neuronal network
-  "nnet" = list(
-    hyparams = list(
-      "size" = c(1, 5, 10, 20),
-      "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
-      ),
-    options = list (
-      maxit = 1000
-    )
-  )
+  # # neuronal network
+  # "nnet" = list(
+  #   hyparams = list(
+  #     "size" = c(1, 5, 10, 20),
+  #     "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
+  #     ),
+  #   options = list (
+  #     maxit = 1000
+  #   )
+  # )
   
 )
 
@@ -419,7 +419,8 @@ information_region <- list()
 information_region[[1]] <- scores
 information_region[[2]] <- list_method
 
-save(information_region, file = "resultados_art_XAI.RData")
+save(information_region, file = "resultados_art_XAI_cut_off_data.RData")
+
 
 library(Benchmarking)
 

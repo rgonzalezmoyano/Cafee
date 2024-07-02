@@ -344,7 +344,7 @@ efficiency_estimation <- function (
       try_cut_off <- tryCatch (
         {
           cut_off <- select_cut_off (
-            data = data, #valid_data
+            data = valid_data, 
             final_model = final_model
             )
           },
