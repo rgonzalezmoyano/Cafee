@@ -93,7 +93,7 @@ methods <- list (
         "scale" = c(0.001, 0.1, 1, 10, 100),
         "C" = c(0.001, 0.1, 1, 10, 100)
       )
-  )
+  ),
   # "svmRadial" = list(
   #   hyparams = list(
   #     "sigma" = c(0.01, 0.1, 1, 10, 100),
@@ -111,16 +111,16 @@ methods <- list (
   #   )
   # ),
 
-  # # neuronal network
-  # "nnet" = list(
-  #   hyparams = list(
-  #     "size" = c(1, 5, 10, 20),
-  #     "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
-  #     ),
-  #   options = list (
-  #     maxit = 1000
-  #   )
-  # )
+  # neuronal network
+  "nnet" = list(
+    hyparams = list(
+      "size" = c(1, 5, 10, 20),
+      "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
+      ),
+    options = list (
+      maxit = 1000
+    )
+  )
   
 )
 
@@ -293,7 +293,7 @@ for (i in 1:length(methods)) {
   if (names(methods[i]) == "svmPoly") {
     
     # necesary data to calculate importance
-    train_data <- final_model[["trainingData"]]
+    train_data <- final_model$final_model[["trainingData"]]
     names(train_data)[1] <- "ClassEfficiency"
 
     # con rminer pero no escala
@@ -304,10 +304,10 @@ for (i in 1:length(methods)) {
       kernel = "polydot",
       scale = "none",
       kpar = list(
-        degree = final_model$bestTune$degree,
-        scale = final_model$bestTune$scale
+        degree = final_model$final_model$bestTune$degree,
+        scale = final_model$final_model$bestTune$scale
       ),
-      C = final_model$bestTune$C
+      C = final_model$final_model$bestTune$C
     )
 
     svm.imp <- Importance(m_poly, data = train_data, method = "MSA", measure = "AAD")
