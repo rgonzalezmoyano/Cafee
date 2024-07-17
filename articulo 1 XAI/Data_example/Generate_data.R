@@ -118,7 +118,7 @@ trControl <- trainControl (
   savePredictions = "all"
 )
 
-hold_out <- 0.10
+hold_out <- 0
 
 # https://topepo.github.io/caret/train-models-by-tag.html
 

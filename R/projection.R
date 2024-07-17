@@ -15,9 +15,14 @@
 #' @export
 
 compute_scores <- function (
-    data, x, y, z, final_model, orientation, cut_off
+    data, x, y, z = NULL, final_model, orientation, cut_off
 ) {
     
+    # environment variable 
+    if (is.null(z)) {
+      z <- 0
+    }
+  
     # vector of optimal scores
     scores <- matrix(NA, nrow = nrow(data), ncol = 1)
     
@@ -30,6 +35,9 @@ compute_scores <- function (
     
     for (i in 1:nrow(data)) {
 
+      print(paste("DMU: ", i))
+      print(paste("En curso:", (i/nrow(data)) * 100))
+            
       # probability of being efficient
       prob_eff <- predict(final_model, data[i, ], type = "prob")[1]
       
@@ -183,13 +191,6 @@ compute_scores <- function (
               scores[i] <- 1 - (incr - 0.005)
               
             } # end while
-              
-            #scores[i] <- 1 - (incr - 0.005)
-
-            
-          # } else if (prob_eff == cut_off) {
-          #   
-          #   scores[i] <- 1
             
           } else {
             
@@ -199,7 +200,7 @@ compute_scores <- function (
             
             # calculate increments to make not efficient class the minority
             while (prob_eff < final_model[["cut_off"]]) {
-              
+
               if (any(data[i, y] + (data[i, y] * incr) > max_value_y * 2)) {
                 
                 scores[i] <- NA
@@ -218,9 +219,9 @@ compute_scores <- function (
                 
               }
               
+              scores[i] <- 1 + (incr - 0.005)
+              
             } # end while
-            
-            scores[i] <- 1 + (incr - 0.005)
             
           } # end case inefficient
           

@@ -27,6 +27,10 @@ library(rminer)
 # ===
 # load data
 # ===
+
+#############
+# PISA 2018 #
+#############
 data_2018 <- read_dta("C:/Users/Ricardo/Downloads/Data Spain PISA 2018.dta")
 data_2018$Region <- as.factor(data_2018$Region)
 data_2018$SCHLTYPE <- as.factor(data_2018$SCHLTYPE)
@@ -72,6 +76,7 @@ inf_NA
 x <- c(10, 7, 6)
 y <- c(3:5)
 z <- c(2, 8) # environment variables
+
 
 # different types to label
 target_method <- "additive"

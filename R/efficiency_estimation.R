@@ -138,16 +138,26 @@ efficiency_estimation <- function (
     data <- na.omit(data)
   }
   
-  # Create train and validation data
-  valid_index <- createDataPartition (
-    data$class_efficiency,
-    p = hold_out,
-    list = FALSE
-  )
   
-  valid_data <- data[valid_index, ]
-  train_data <- data[- valid_index, ]
-  train_data <- data
+  if (hold_out != 0) {
+    
+    # Create train and validation data
+    valid_index <- createDataPartition (
+      data$class_efficiency,
+      p = hold_out,
+      list = FALSE
+    )
+    
+    # divide dataset
+    valid_data <- data[valid_index, ]
+    train_data <- data[- valid_index, ]
+  
+  } else {
+    
+      valid_data <- data
+      train_data <- data
+    
+    }
   
   # ====================== #
   # SELECT HYPERPARAMETERS #
@@ -344,7 +354,7 @@ efficiency_estimation <- function (
       try_cut_off <- tryCatch (
         {
           cut_off <- select_cut_off (
-            data = data,  #valid_data
+            data = valid_data,
             final_model = final_model
             )
           },

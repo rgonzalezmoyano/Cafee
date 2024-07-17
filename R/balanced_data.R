@@ -10,7 +10,7 @@
 #' @return It returns a \code{data.frame} with the newly created set of DMUs incorporated.
 
 balance_data <- function (
-      data, data_factor, x, y, z, convexity
+      data, data_factor, x, y, z = NULL, convexity
     ) {
   
   # number of inputs
@@ -189,7 +189,7 @@ balance_data <- function (
 #' @return It returns a \code{data.frame} with the newly created set of DMUs incorporated.
 
 create_dmu <- function (
-    data, data_factor, x, y, z, N, type, rts
+    data, data_factor, x, y, z = NULL, N, type, rts
     ) {
   
   # number of inputs
