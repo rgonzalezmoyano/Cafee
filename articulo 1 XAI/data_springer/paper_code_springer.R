@@ -377,7 +377,7 @@ for (i in 1:length(methods)) {
       decay = final_model$final_model$bestTune$decay
     )
     
-    nnet.imp <- Importance(m_nnet, data = train_data, method = "MSA", measure = "AAD")
+    nnet.imp <- Importance(m_nnet, data = train_data, method = "DSA", measure = "AAD")
     imp_value <- nnet.imp$imp
     
     importance <- matrix(
@@ -415,7 +415,7 @@ information <- list()
 information[[1]] <- scores
 information[[2]] <- list_method
 
-save(information_region, file = "resultados_XAI_food_industry_spain_nnet.RData")
+save(information, file = "resultados_XAI_food_industry_spain_nnet.RData")
 
 
 library(Benchmarking)
