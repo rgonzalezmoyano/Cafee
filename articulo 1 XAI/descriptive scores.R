@@ -80,11 +80,12 @@ data_scores$sDEA <- ifelse(data_scores$sDEA == "-Inf", NA, data_scores$sDEA)
 colSums(is.na(data_scores))
 
 
+names(data_scores) <- c("DMU", "DEA", "SVM", "NN",  "sDEA")
 
 data_scores_long_super <- data_scores %>%
-  pivot_longer(cols = c(sDEA, svmPoly, nnet), names_to = "method", values_to = "score")
+  pivot_longer(cols = c(sDEA, SVM, NN), names_to = "method", values_to = "score")
 
-data_scores_long_super$method <- factor(data_scores_long_super$method, levels = c("sDEA", "svmPoly", "nnet"))
+data_scores_long_super$method <- factor(data_scores_long_super$method, levels = c("sDEA", "SVM", "NN"))
 
 # Crear el gráfico
 plot <- ggplot(data_scores_long_super, aes(x = score, color = method)) +
@@ -96,7 +97,8 @@ plot <- ggplot(data_scores_long_super, aes(x = score, color = method)) +
   
   theme_bw() +
   labs(color = NULL) +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") 
+
 
 plot
 

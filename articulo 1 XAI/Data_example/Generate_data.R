@@ -300,7 +300,7 @@ grid <- expand.grid (
 #   y = seq(1, 8, length = 150)
 # )
 
-grid$label <- predict(final_model, grid, type = "raw")
+grid$label <- predict(final_model$final_model, grid, type = "raw")
 
 # i <- 2
 # i <- c(12, 13, 15, 16, 17, 18, 23, 24)
@@ -311,6 +311,17 @@ grid$label <- predict(final_model, grid, type = "raw")
 all_dmu <- data
 data <- eval_data
 
+data <- all_dmu
+n <- 3
+# draw projection
+new <- data.frame(
+  x1 = data[n,1],
+  y = data[n,2] * scores_cafee[n],
+  yD = data[n,3]
+)
+
+data <- rbind(data, new)
+
 plot5 <- ggplot(data = data) +
   geom_point(data = grid, aes(x = x1, y = y, color = label), size = 0.6, alpha = 0.3) +
   geom_point(aes(x = x1, y = y)) +
@@ -318,10 +329,23 @@ plot5 <- ggplot(data = data) +
   scale_color_manual(values = c("olivedrab2", "pink"), name = "Class", labels = c("efficient", "inefficient")) +
 
   labs(x = "input", y = "output") +
-  # # name DMUs
-  # geom_text(data = data,
-  #           aes(x = x1, y = y, label = row.names(data)),
-  #           vjust = -1, hjust = 1) +
+  
+  # name DMUs
+  geom_text(data = data[n,],
+            aes(x = x1, y = y, label = row.names(data[n,])),
+            vjust = -1, hjust = 1.5) +
+  
+  # name projection
+  geom_text(data = data[31,],
+            aes(x = x1, y = y, label = "3'"),
+            vjust = -1, hjust = 1.5) +
+  
+  # projection segment
+  geom_segment(x = data[n,1], y = data[n,2], xend = data[31,1], yend = data[31,2], linetype = "dashed") +
+  
+  # color of projection
+  geom_point(data = data[31,], aes(x = x1, y = y), color = "yellow4", size = 2) +
+  
   # exes
   xlim(0, 10) +
   ylim(0, 10) +
@@ -333,7 +357,7 @@ plot5 <- ggplot(data = data) +
 plot5
 
 
-ggsave(plot = plot5, dpi = 600, filename = "SVM_balance.png")
+ggsave(plot = plot5, dpi = 600, filename = "SVM_balance_pro.png")
 
 result_scores <- as.data.frame(
   matrix(
