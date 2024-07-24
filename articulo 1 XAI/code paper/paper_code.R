@@ -429,16 +429,17 @@ save(information_region, file = "resultados_art_XAI_cut_off_data.RData")
 
 library(Benchmarking)
 
-scores_dea <- sdea (
+scores_sdea <- sdea (
   X = as.matrix(data[, y]),
   Y = as.matrix(data[, x]),
   RTS = "vrs",
   ORIENTATION = "out"
-)$eff; scores_dea
-min(scores_dea)
-scores_dea <- round(scores_dea, 3)
+)$eff; scores_sdea
+min(scores_sdea)
+scores_sdea <- round(scores_sdea, 3)
 
-scores_final <- cbind(scores_dea, scores)
+scores <- as.data.frame(cbind(information_region[[1]][["svmPoly"]], information_region[[1]][["nnet"]]))
+names(scores) <- c("svmPoly", "nnet")
   
 # XAI paper
 result_final <- as.data.frame(
@@ -449,13 +450,14 @@ result_final <- as.data.frame(
   )
 )
 
-scores_dea <- ifelse(scores_dea == "-Inf", NA, scores_dea)
+scores_sdea <- ifelse(scores_sdea == "-Inf", NA, scores_sdea)
+scores_final <- cbind(scores_sdea, scores)
 
 omit <- which(is.na(scores_final$svmPoly))
 
-cor(x = information_region[[1]][["svmPoly"]][-omit], y = information_region[[1]][["nnet"]][-omit], method = "pearson") * 100
-cor(x = DEA_score, y = information_region[[1]][["nnet"]], method = "pearson") * 100
-cor(x = DEA_score[-omit], y = information_region[[1]][["svmPoly"]][-omit], method = "pearson") * 100
+round(cor(x = information_region[[1]][["svmPoly"]][-omit], y = information_region[[1]][["nnet"]][-omit], method = "spearman"), 3)
+round(cor(x = DEA_score, y = information_region[[1]][["nnet"]], method = "spearman"), 3)
+round(cor(x = DEA_score[-omit], y = information_region[[1]][["svmPoly"]][-omit], method = "spearman"), 3)
 
 DEA_score <- rad_out (
   tech_xmat = as.matrix(data[, x]),

@@ -69,7 +69,7 @@ any(is.na(data))
 # x and y indexes
 x <- c(9:12)
 y <- c(8)
-z <- c(4, 5, 6) # environment variables
+z <- c(4, 5) # environment variables
 
 # different types to label
 target_method <- "additive"
@@ -182,232 +182,249 @@ score_names <- names(methods)
 names(scores) <- score_names
 
 # save model information
-list_method <- list()  
 
+list_method <- vector("list", length = length(methods)) 
+names(list_method) <- names(methods)
+
+
+# data <- data[1:1000,]
 # bucle region
 for (i in 1:length(methods)) {
   
-  # console information
-  print(paste("METODO:", i))
-  print("")
-  
-  # model result
-  final_model <- efficiency_estimation (
-    data = data,
-    x = x,
-    y = y,
-    z = z,
-    orientation = orientation,
-    trControl = trControl,
-    method = methods[i],
-    target_method = target_method,
-    metric = metric,
-    hold_out = hold_out,
-    convexity = convexity
-  )
-  
-  #final_model <- information_region[[2]][[2]][[1]]
-  
-  # bset cut off is selected 
-  scores_cafee <- compute_scores (
-    data = data,
-    x = x,
-    y = y,
-    z = z,
-    final_model = final_model$final_model,
-    orientation = orientation,
-    cut_off = final_model$final_model[["cut_off"]]
-  )  
-  
-  scores[i] <- scores_cafee
-  
-  # # Importance of variables
-  # # varImp Caret
-  # importance <- varImp(object = final_model$final_model)
-  # print(importance)
-  # 
-  # plot <- plot(importance)
-  
-  if (names(methods[i]) == "rf") {
-  
-    data_oob <- as.data.frame(final_model[["final_model"]][["finalModel"]][["err.rate"]])
-    ntrees <- c(1:final_model$final_model$dots$ntree)
-
-    data_oob_plot <- cbind(ntrees, data_oob)
-
-    ggplot(data = data_oob_plot) +
-      geom_line(aes(x = ntrees, y = OOB))
-  
-    # importance by r miner
-    # necesary data to calculate importance
-    train_data <- final_model$final_model[["trainingData"]]
-    names(train_data)[1] <- "ClassEfficiency"
+  for (j in unique(data$CNAE)) {
     
-    # con rminer pero no escala
-    m_rf <- fit(
-      ClassEfficiency ~.,
-      data = train_data,
-      model = "randomForest",
-      scale = "none",
-      mtry = methods$rf$hyparams$mtry,
-      ntree = methods$rf$options$ntree
-    )
+    # console information 
+    print(paste("CNAE:", j))
+    
+    # filter dataset
+    data_j <- data %>% 
+      filter(CNAE == j)
+    
+    # console information
+    print(paste("METODO:", i, names(methods[i])))
+    print("")
   
-    rf.imp <- Importance(m_rf, data = train_data)
-    imp_value <- rf.imp$imp
-  
-    importance <- matrix(
-      data = NA,
-      ncol = 2,
-      nrow = length(names(train_data))
-    )
-  
-    importance <- as.data.frame(importance)
-  
-    importance$V1 <- names(train_data)
-    importance$V2 <- imp_value
-  
-    names(importance) <- c("", "Overall")
-  
-    importance <- importance[order(-importance$Overall), ]
-  
-    importance
-  
-    # comprobar m_rf
-    scores_cafee_m_rf <- compute_scores (
-      data = data,
+    # model result
+    final_model <- efficiency_estimation (
+      data = data_j,
       x = x,
       y = y,
       z = z,
-      final_model = m_rf,
       orientation = orientation,
-      cut_off = final_model[["final_model"]][["cut_off"]]
-    )  
-  
-  }
-  
-  if (names(methods[i]) == "svmPoly") {
-    
-    # necesary data to calculate importance
-    train_data <- final_model$final_model[["trainingData"]]
-    names(train_data)[1] <- "ClassEfficiency"
-
-    # con rminer pero no escala
-    m_poly <- fit(
-      ClassEfficiency~.,
-      data = train_data,
-      model = "ksvm",
-      kernel = "polydot",
-      scale = "none",
-      kpar = list(
-        degree = final_model$final_model$bestTune$degree,
-        scale = final_model$final_model$bestTune$scale
-      ),
-      C = final_model$final_model$bestTune$C
+      trControl = trControl,
+      method = methods[i],
+      target_method = target_method,
+      metric = metric,
+      hold_out = hold_out,
+      convexity = convexity
     )
-
-    svm.imp <- Importance(m_poly, data = train_data, method = "MSA", measure = "AAD")
-    imp_value <- svm.imp$imp
     
-    importance <- matrix(
-      data = NA,
-      ncol = 2,
-      nrow = length(names(train_data))
+    #final_model <- information_region[[2]][[2]][[1]]
+    
+    # bset cut off is selected 
+    scores_cafee <- compute_scores (
+      data = data_j,
+      x = x,
+      y = y,
+      z = z,
+      final_model = final_model$final_model,
+      orientation = orientation,
+      cut_off = final_model$final_model[["cut_off"]]
+    )  
+    
+    scores[i] <- scores_cafee
+    
+    # # Importance of variables
+    # # varImp Caret
+    # importance <- varImp(object = final_model$final_model)
+    # print(importance)
+    # 
+    # plot <- plot(importance)
+    
+    if (names(methods[i]) == "rf") {
+    
+      data_oob <- as.data.frame(final_model[["final_model"]][["finalModel"]][["err.rate"]])
+      ntrees <- c(1:final_model$final_model$dots$ntree)
+  
+      data_oob_plot <- cbind(ntrees, data_oob)
+  
+      ggplot(data = data_oob_plot) +
+        geom_line(aes(x = ntrees, y = OOB))
+    
+      # importance by r miner
+      # necesary data to calculate importance
+      train_data <- final_model$final_model[["trainingData"]]
+      names(train_data)[1] <- "ClassEfficiency"
+      
+      # con rminer pero no escala
+      m_rf <- fit(
+        ClassEfficiency ~.,
+        data = train_data,
+        model = "randomForest",
+        scale = "none",
+        mtry = methods$rf$hyparams$mtry,
+        ntree = methods$rf$options$ntree
       )
     
-    importance <- as.data.frame(importance)
+      rf.imp <- Importance(m_rf, data = train_data)
+      imp_value <- rf.imp$imp
     
-    importance$V1 <- names(train_data)
-    importance$V2 <- imp_value
+      importance <- matrix(
+        data = NA,
+        ncol = 2,
+        nrow = length(names(train_data))
+      )
     
-    names(importance) <- c("", "Overall")
+      importance <- as.data.frame(importance)
     
-    importance <- importance[order(-importance$Overall), ]
+      importance$V1 <- names(train_data)
+      importance$V2 <- imp_value
     
-    importance
-  
-  } else if (names(methods[i]) == "svmRadial") {
-      
-    # necesary data to calculate importance
-    train_data <- final_model$final_model[["trainingData"]]
-    names(train_data)[1] <- "ClassEfficiency"
+      names(importance) <- c("", "Overall")
     
-    # con rminer pero no escala
-    m_rad <- fit(
-      ClassEfficiency~.,
-      data = train_data,
-      model = "ksvm",
-      kernel = "rbfdot",
-      scale = "none",
-      C = final_model$bestTune$C,
-      kpar = list(sigma = final_model$bestTune$sigma)
-    )
+      importance <- importance[order(-importance$Overall), ]
     
-    svm.imp <- Importance(m_rad, data = train_data)
-    imp_value <- svm.imp$imp
+      importance
     
-    importance <- matrix(
-      data = NA,
-      ncol = 2,
-      nrow = length(names(train_data))
-    )
-    
-    importance <- as.data.frame(importance)
-    
-    importance$V1 <- names(train_data)
-    importance$V2 <- imp_value
-    
-    names(importance) <- c("", "Overall")
-    
-    importance <- importance[order(-importance$Overall), ]
-    
-  } else if (names(methods[i]) == "nnet") {
-    
-    # necesary data to calculate importance
-    train_data <- final_model$final_model[["trainingData"]]
-    names(train_data)[1] <- "ClassEfficiency"
-    
-    # con rminer
-    m_nnet <- fit(
-      ClassEfficiency ~.,
-      data = train_data,
-      model = "mlp",
-      scale = "none",
-      size = final_model$final_model$bestTune$size,
-      decay = final_model$final_model$bestTune$decay
-    )
-    
-    nnet.imp <- Importance(m_nnet, data = train_data, method = "DSA", measure = "AAD")
-    imp_value <- nnet.imp$imp
-    
-    importance <- matrix(
-      data = NA,
-      ncol = 2,
-      nrow = length(names(train_data))
-    )
-    
-    importance <- as.data.frame(importance)
-    
-    importance$V1 <- names(train_data)
-    importance$V2 <- imp_value
-    
-    names(importance) <- c("", "Overall")
-    
-    importance <- importance[order(-importance$Overall), ]
-    
-    importance
+      # comprobar m_rf
+      scores_cafee_m_rf <- compute_scores (
+        data = data,
+        x = x,
+        y = y,
+        z = z,
+        final_model = m_rf,
+        orientation = orientation,
+        cut_off = final_model[["final_model"]][["cut_off"]]
+      )  
     
     }
-
+    
+    if (names(methods[i]) == "svmPoly") {
+      
+      # necesary data to calculate importance
+      train_data <- final_model$final_model[["trainingData"]]
+      names(train_data)[1] <- "ClassEfficiency"
   
-  # information model
-  list <- list()
+      # con rminer pero no escala
+      m_poly <- fit(
+        ClassEfficiency~.,
+        data = train_data,
+        model = "ksvm",
+        kernel = "polydot",
+        scale = "none",
+        kpar = list(
+          degree = final_model$final_model$bestTune$degree,
+          scale = final_model$final_model$bestTune$scale
+        ),
+        C = final_model$final_model$bestTune$C
+      )
   
-  list[[1]] <- final_model$final_model
-  list[[2]] <- importance
-
+      svm.imp <- Importance(m_poly, data = train_data, method = "MSA", measure = "AAD")
+      imp_value <- svm.imp$imp
+      
+      importance <- matrix(
+        data = NA,
+        ncol = 2,
+        nrow = length(names(train_data))
+        )
+      
+      importance <- as.data.frame(importance)
+      
+      importance$V1 <- names(train_data)
+      importance$V2 <- imp_value
+      
+      names(importance) <- c("", "Overall")
+      
+      importance <- importance[order(-importance$Overall), ]
+      
+      importance
+    
+    } else if (names(methods[i]) == "svmRadial") {
+        
+      # necesary data to calculate importance
+      train_data <- final_model$final_model[["trainingData"]]
+      names(train_data)[1] <- "ClassEfficiency"
+      
+      # con rminer pero no escala
+      m_rad <- fit(
+        ClassEfficiency~.,
+        data = train_data,
+        model = "ksvm",
+        kernel = "rbfdot",
+        scale = "none",
+        C = final_model$bestTune$C,
+        kpar = list(sigma = final_model$bestTune$sigma)
+      )
+      
+      svm.imp <- Importance(m_rad, data = train_data)
+      imp_value <- svm.imp$imp
+      
+      importance <- matrix(
+        data = NA,
+        ncol = 2,
+        nrow = length(names(train_data))
+      )
+      
+      importance <- as.data.frame(importance)
+      
+      importance$V1 <- names(train_data)
+      importance$V2 <- imp_value
+      
+      names(importance) <- c("", "Overall")
+      
+      importance <- importance[order(-importance$Overall), ]
+      
+    } else if (names(methods[i]) == "nnet") {
+      
+      # necesary data to calculate importance
+      train_data <- final_model$final_model[["trainingData"]]
+      names(train_data)[1] <- "ClassEfficiency"
+      
+      # con rminer
+      m_nnet <- fit(
+        ClassEfficiency ~.,
+        data = train_data,
+        model = "mlp",
+        scale = "none",
+        size = final_model$final_model$bestTune$size,
+        decay = final_model$final_model$bestTune$decay
+      )
+      
+      nnet.imp <- Importance(m_nnet, data = train_data, method = "DSA", measure = "AAD")
+      imp_value <- nnet.imp$imp
+      
+      importance <- matrix(
+        data = NA,
+        ncol = 2,
+        nrow = length(names(train_data))
+      )
+      
+      importance <- as.data.frame(importance)
+      
+      importance$V1 <- names(train_data)
+      importance$V2 <- imp_value
+      
+      names(importance) <- c("", "Overall")
+      
+      importance <- importance[order(-importance$Overall), ]
+      
+      importance
+      
+      }
   
-  list_method[[i]] <- list
+    
+    # information model
+    list <- vector("list", length = 3)
+    names(list) <- c("MLmodel", "metrics", "importance")
+    
+    list[[1]] <- final_model$final_model
+    list[[2]] <- final_model$selected_model_metrics
+    list[[3]] <- importance
+  
+    
+    list_method[[i]] <- list
+  
+  } # end data_j
   
 } # end bucle for (methods)  
   
