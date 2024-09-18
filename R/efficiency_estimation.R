@@ -12,7 +12,9 @@
 #' @param methods A \code{list} of selected machine learning models and their hyperparameters.
 #' @param metric A \code{string} specifying the summary metric for classification to select the optimal model. Default includes \code{"Balanced_accuracy"} due to (normally) unbalanced data.
 #' @param hold_out A \code{number} value (5-20) for validation data percentage during training (default: 0.2).
-#' @param convexity Assumption of returns to scale in \code{data}.
+#' @param convexity A \code{logical} value indicating if a convex technology is assumed.
+#' @param returns Type of returns to scale.
+
 #'
 #' @importFrom caret trainControl train createDataPartition defaultSummary prSummary
 #' @importFrom dplyr select_if %>% arrange top_n sample_n
@@ -24,7 +26,7 @@
 
 efficiency_estimation <- function (
     data, x, y, z = NULL, orientation, target_method,
-    trControl, methods, metric, hold_out, convexity
+    trControl, methods, metric, hold_out, convexity = TRUE, returns = "variable"
     ) {
 
   # save factor variables
@@ -84,21 +86,24 @@ efficiency_estimation <- function (
     # class_efficiency as factor
     levels(data$class_efficiency) <- c("efficient", "not_efficient")
 
-  } else if (target_method == "additive") {
+  } else if (target_method == "BCC") {
     
     # ============================ #
     # Label by additive model DEA  #
     # ============================ #
-    
-    # compute DEA scores through an additive model
-     add_scores <- compute_scores_additive (
-       data = data,
-       x = x,
-       y = y
-     )
      
+    # compute DEA scores through a BCC model
+     add_scores <-  rad_out (
+       tech_xmat = as.matrix(data[, x]),
+       tech_ymat = as.matrix(data[, y]),
+       eval_xmat = as.matrix(data[, x]),
+       eval_ymat = as.matrix(data[, y]),
+       convexity = convexity,
+       returns = returns
+     ) 
+    
     # determine efficient and inefficient DMUs
-    class_efficiency <- ifelse(add_scores[, 1] <= 0.00001, 1, 0)
+    class_efficiency <- ifelse(add_scores[, 1] <= 1.0001, 1, 0)
 
     data <- as.data.frame (
       cbind(data, class_efficiency)
@@ -132,7 +137,8 @@ efficiency_estimation <- function (
       x = x,
       y = y,
       z = z,
-      convexity = convexity
+      convexity = convexity,
+      returns = returns
     )
     
     data <- na.omit(data)

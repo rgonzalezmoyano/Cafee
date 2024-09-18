@@ -14,7 +14,7 @@ source("/home/PI/ricardo.gonzalezm/cafee/R/training.R")
 # ===
 # libraries
 # ===
-
+devtools::load_all()
 library(caret)
 library(Benchmarking)
 library(magrittr)
@@ -79,7 +79,7 @@ z <- c(2, 8) # environment variables
 
 
 # different types to label
-target_method <- "additive"
+target_method <- "BCC"
 
 set.seed(314)
 methods <- list (
@@ -149,6 +149,8 @@ MySummary <- function (data, lev = NULL, model = NULL) {
   pre_rec <- prSummary(data, lev, model)
   
   c(acc_kpp, auc_sen_spe, pre_rec)
+  
+  
 } 
 
 # Parameters for controlling the training process
@@ -161,12 +163,12 @@ trControl <- trainControl (
 )
 
 hold_out <- 0.10
-
 # https://topepo.github.io/caret/train-models-by-tag.html
 
 metric = "Accuracy"
 
 convexity <- TRUE
+returns <- "variable"
 
 # preProcess
 data <- data_2018
@@ -212,7 +214,8 @@ for (i in 1:length(methods)) {
     target_method = target_method,
     metric = metric,
     hold_out = hold_out,
-    convexity = convexity
+    convexity = convexity,
+    returns = returns
   )
   
   #final_model <- information_region[[2]][[2]][[1]]
@@ -301,6 +304,9 @@ for (i in 1:length(methods)) {
     train_data <- final_model$final_model[["trainingData"]]
     names(train_data)[1] <- "ClassEfficiency"
 
+    dataset_dummy <- model.matrix(ClassEfficiency~ . - 1, data = train_data)
+    train_data <- cbind(train_data[1], dataset_dummy)
+    
     # con rminer pero no escala
     m_poly <- fit(
       ClassEfficiency~.,
@@ -315,25 +321,36 @@ for (i in 1:length(methods)) {
       C = final_model$final_model$bestTune$C
     )
 
-    svm.imp <- Importance(m_poly, data = train_data, method = "MSA", measure = "AAD")
-    imp_value <- svm.imp$imp
+    # Define methods and measures
+    methods_SA <- c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
+    measures_SA <- c("AAD", "gradient", "variance", "range")
     
-    importance <- matrix(
-      data = NA,
-      ncol = 2,
-      nrow = length(names(train_data))
-      )
+    # make grid SA
+    grid_SA <- expand.grid(method = methods_SA, measure = measures_SA)
     
-    importance <- as.data.frame(importance)
+    # save results
+    results_SA <- data.frame(method = character(), measure = character())
     
-    importance$V1 <- names(train_data)
-    importance$V2 <- imp_value
+    # Loop through each combination of method and measure
+    for (a in 1:nrow(grid_SA)) {
+      
+      method <- as.character(grid_SA$method[a])
+      measure <- as.character(grid_SA$measure[a])
+      
+      # Calculate the importance for the current method and measure
+      importance <- Importance(m_poly, data = train_data, method = method, measure = measure)
+      
+      # Extract the importance values (assuming 26 values)
+      imp_values <- importance$imp
+      
+      # Create a row with method, measure, and the 26 importance values
+      result_row <- data.frame(method = method, measure = measure, t(imp_values))
+      
+      # Append the row to results_SA
+      results_SA <- rbind(results_SA, result_row)
+    }
     
-    names(importance) <- c("", "Overall")
-    
-    importance <- importance[order(-importance$Overall), ]
-    
-    importance
+    names(results_SA)[3:ncol(results_SA)] <- names(train_data)
   
   } else if (names(methods[i]) == "svmRadial") {
       
@@ -376,6 +393,9 @@ for (i in 1:length(methods)) {
     train_data <- final_model$final_model[["trainingData"]]
     names(train_data)[1] <- "ClassEfficiency"
     
+    dataset_dummy <- model.matrix(ClassEfficiency~ . - 1, data = train_data)
+    train_data <- cbind(train_data[1], dataset_dummy)
+    
     # con rminer
     m_nnet <- fit(
       ClassEfficiency ~.,
@@ -386,25 +406,36 @@ for (i in 1:length(methods)) {
       decay = final_model$final_model$bestTune$decay
     )
     
-    nnet.imp <- Importance(m_nnet, data = train_data, method = "MSA", measure = "AAD")
-    imp_value <- nnet.imp$imp
+    # Define methods and measures
+    methods_SA <- c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
+    measures_SA <- c("AAD", "gradient", "variance", "range")
     
-    importance <- matrix(
-      data = NA,
-      ncol = 2,
-      nrow = length(names(train_data))
-    )
+    # make grid SA
+    grid_SA <- expand.grid(method = methods_SA, measure = measures_SA)
     
-    importance <- as.data.frame(importance)
+    # save results
+    results_SA <- data.frame(method = character(), measure = character())
     
-    importance$V1 <- names(train_data)
-    importance$V2 <- imp_value
+    # Loop through each combination of method and measure
+    for (a in 1:nrow(grid_SA)) {
+      
+      method <- as.character(grid_SA$method[a])
+      measure <- as.character(grid_SA$measure[a])
+      
+      # Calculate the importance for the current method and measure
+      importance <- Importance(m_nnet, data = train_data, method = method, measure = measure)
+      
+      # Extract the importance values (assuming 26 values)
+      imp_values <- importance$imp
+      
+      # Create a row with method, measure, and the 26 importance values
+      result_row <- data.frame(method = method, measure = measure, t(imp_values))
+      
+      # Append the row to results_SA
+      results_SA <- rbind(results_SA, result_row)
+    }
     
-    names(importance) <- c("", "Overall")
-    
-    importance <- importance[order(-importance$Overall), ]
-    
-    importance
+    names(results_SA)[3:ncol(results_SA)] <- names(train_data)
     
     }
 
@@ -412,8 +443,8 @@ for (i in 1:length(methods)) {
   # information model
   list <- list()
   
-  list[[1]] <- final_model$final_model
-  list[[2]] <- importance
+  list[[1]] <- final_model
+  list[[2]] <- results_SA
 
   
   list_method[[i]] <- list
@@ -423,6 +454,8 @@ for (i in 1:length(methods)) {
 information_region <- list()
 information_region[[1]] <- scores
 information_region[[2]] <- list_method
+
+save(information_region, file = "resultados_art_XAI_def.RData")
 
 save(information_region, file = "resultados_art_XAI_cut_off_data.RData")
 

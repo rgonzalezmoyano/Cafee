@@ -3,14 +3,17 @@
 #' @description This function creates new DMUs to address data imbalances. If the majority class is efficient, it generates new inefficient DMUs by worsering the observed units. Conversely, if the majority class is inefficient, it projects inefficient DMUs to the frontier. Finally, a random selection if performed to keep a proportion of 0.65 for the majority class and 0.35 for the minority class.
 #' 
 #' @param data A \code{data.frame} containing the variables used in the model.
+#' @param data_factor A \code{data.frame} containing the factor variables used in the model.
 #' @param x Column indexes of the input variables in the \code{data}.
 #' @param y Column indexes of the output variables in the \code{data}.
+#' @param z Column indexes of environment variables in \code{data}.
 #' @param convexity Assumption of returns to scale in \code{data}.
+#' @param returns Type of returns to scale.
 #'
 #' @return It returns a \code{data.frame} with the newly created set of DMUs incorporated.
 
 balance_data <- function (
-      data, data_factor, x, y, z = NULL, convexity
+      data, data_factor, x, y, z = NULL, convexity, returns
     ) {
   
   # number of inputs
@@ -23,14 +26,6 @@ balance_data <- function (
   
   # number of samples
   N <- nrow(data)
-  
-  # returns of scale
-  # by default
-  rts <- "variable"
-  
-  if (convexity == FALSE) {
-    rts == "constant"
-  }
   
   # =================== #
   # balance proportions #
@@ -67,7 +62,8 @@ balance_data <- function (
       y = y,
       N = new_dmus,
       type = "inefficient",
-      rts = rts
+      convexity = convexity,
+      returns = returns
     )
 
     data <- rbind(data, ineff_dmu)
@@ -90,7 +86,8 @@ balance_data <- function (
       z = z,
       N = new_dmus,
       type = "efficient",
-      rts = rts
+      convexity = convexity,
+      returns = returns
     )
     #data_gra <- rbind(data, eff_dmu)
 
@@ -106,7 +103,9 @@ balance_data <- function (
       y = y,
       z = z,
       N = N,
-      type = "inefficient"
+      type = "inefficient",
+      convexity = convexity,
+      returns = returns
     )
     #data_gra <- rbind(data, new_dmu_values)
     
@@ -184,12 +183,13 @@ balance_data <- function (
 #' @param y number of outputs in the \code{data}.
 #' @param N number of dmus to create \code{data}.
 #' @param type class of dmu to create \code{data}.
-#' @param rts selection of technology for DEA projection \code{data}.
+#' @param convexity Assumption of returns to scale in \code{data}.
+#' @param returns Type of returns to scale.
 #'
 #' @return It returns a \code{data.frame} with the newly created set of DMUs incorporated.
 
 create_dmu <- function (
-    data, data_factor, x, y, z = NULL, N, type, rts
+    data, data_factor, x, y, z = NULL, N, type, convexity, returns
     ) {
   
   # number of inputs
@@ -208,7 +208,7 @@ create_dmu <- function (
     # ======================= #
     
     new_dmus <- N
-    #new_dmus <- 26
+    
     # indexes of DMUs for worsening
     if (new_dmus > nrow(data)) {
       replace <- TRUE
@@ -288,8 +288,8 @@ create_dmu <- function (
       tech_ymat = as.matrix(data[, y]),
       eval_xmat = as.matrix(data[, x]),
       eval_ymat = as.matrix(data[, y]),
-      convexity = TRUE,
-      returns = rts
+      convexity = convexity,
+      returns = returns
     ) 
     
     bcc_scores_inp <- rad_inp (
@@ -297,8 +297,8 @@ create_dmu <- function (
       tech_ymat = as.matrix(data[, y]),
       eval_xmat = as.matrix(data[, x]),
       eval_ymat = as.matrix(data[, y]),
-      convexity = TRUE,
-      returns = rts
+      convexity = convexity,
+      returns = returns
     )
     
     # efficient DMUs
