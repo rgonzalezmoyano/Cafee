@@ -14,7 +14,7 @@ source("/home/PI/ricardo.gonzalezm/cafee/R/training.R")
 # ===
 # libraries
 # ===
-devtools::load_all()
+
 library(caret)
 library(Benchmarking)
 library(magrittr)
@@ -455,9 +455,22 @@ information_region <- list()
 information_region[[1]] <- scores
 information_region[[2]] <- list_method
 
-save(information_region, file = "resultados_art_XAI_def.RData")
 
-save(information_region, file = "resultados_art_XAI_cut_off_data.RData")
+names(information_region) <- c("scores","ML_models")
+
+# names final object
+names(information_region) <- c("scores","ML_models")
+  
+names(information_region[["ML_models"]]) <- names(methods)
+  
+names(information_region[["ML_models"]][1]) <- "model_fit"
+names(information_region[["ML_models"]][2]) <- "metrics_model"
+
+for(i in 1:length(methods)) {
+  names(information_region[["ML_models"]][[names(methods[i])]]) <- c("model", "importance")
+}
+
+save(information_region, file = "resultados_art_XAI_def.RData")
 
 
 library(Benchmarking)
