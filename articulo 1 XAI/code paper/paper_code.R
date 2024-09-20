@@ -75,7 +75,7 @@ inf_NA
 # x and y indexes
 x <- c(10, 7, 6)
 y <- c(3:5)
-z <- c(2, 8) # environment variables
+#z <- c(2, 8) # environment variables
 
 
 # different types to label
@@ -172,7 +172,7 @@ returns <- "variable"
 
 # preProcess
 data <- data_2018
-#data <- data[1:500, ]
+data <- data[1:200, ]
 idx_NA <- which(is.na(data$SCHLTYPE))
 data <- data[-idx_NA,]
 
@@ -207,7 +207,7 @@ for (i in 1:length(methods)) {
     data = data,
     x = x,
     y = y,
-    z = z,
+    #z = z,
     orientation = orientation,
     trControl = trControl,
     method = methods[i],
@@ -225,7 +225,7 @@ for (i in 1:length(methods)) {
     data = data,
     x = x,
     y = y,
-    z = z,
+    #z = z,
     final_model = final_model$final_model,
     orientation = orientation,
     cut_off = final_model$final_model[["cut_off"]]
@@ -308,7 +308,7 @@ for (i in 1:length(methods)) {
     train_data <- cbind(train_data[1], dataset_dummy)
     
     # con rminer pero no escala
-    m_poly <- fit(
+    m <- fit(
       ClassEfficiency~.,
       data = train_data,
       model = "ksvm",
@@ -338,7 +338,7 @@ for (i in 1:length(methods)) {
       measure <- as.character(grid_SA$measure[a])
       
       # Calculate the importance for the current method and measure
-      importance <- Importance(m_poly, data = train_data, method = method, measure = measure)
+      importance <- Importance(m, data = train_data, method = method, measure = measure)
       
       # Extract the importance values (assuming 26 values)
       imp_values <- importance$imp
@@ -397,7 +397,7 @@ for (i in 1:length(methods)) {
     train_data <- cbind(train_data[1], dataset_dummy)
     
     # con rminer
-    m_nnet <- fit(
+    m <- fit(
       ClassEfficiency ~.,
       data = train_data,
       model = "mlp",
@@ -423,7 +423,7 @@ for (i in 1:length(methods)) {
       measure <- as.character(grid_SA$measure[a])
       
       # Calculate the importance for the current method and measure
-      importance <- Importance(m_nnet, data = train_data, method = method, measure = measure)
+      importance <- Importance(m, data = train_data, method = method, measure = measure)
       
       # Extract the importance values (assuming 26 values)
       imp_values <- importance$imp
@@ -445,6 +445,8 @@ for (i in 1:length(methods)) {
   
   list[[1]] <- final_model
   list[[2]] <- results_SA
+  list[[3]] <- m
+  list[[4]] <- importance
 
   
   list_method[[i]] <- list
