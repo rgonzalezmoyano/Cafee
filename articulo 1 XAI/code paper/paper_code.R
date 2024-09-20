@@ -14,7 +14,7 @@ source("/home/PI/ricardo.gonzalezm/cafee/R/training.R")
 # ===
 # libraries
 # ===
-
+devtools::load_all()
 library(caret)
 library(Benchmarking)
 library(magrittr)
