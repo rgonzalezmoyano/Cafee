@@ -3,6 +3,7 @@ devtools::load_all()
 
 # libraries
 library("ggplot2")
+library("rminer")
 
 # generate data
 set.seed(1997)
@@ -275,35 +276,20 @@ for (i in 1:length(methods)) {
     )
     
     # Define methods and measures
-    methods_SA <- c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
-    measures_SA <- c("AAD", "gradient", "variance", "range")
-    
-    # make grid SA
-    grid_SA <- expand.grid(method = methods_SA, measure = measures_SA)
-    
-    # save results
-    results_SA <- data.frame(method = character(), measure = character())
-    
-    # Loop through each combination of method and measure
-    for (a in 1:nrow(grid_SA)) {
+    methods_SA <- c("1D-SA") # c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
+    measures_SA <- c("AAD") #  c("AAD", "gradient", "variance", "range")
       
-      method <- as.character(grid_SA$method[a])
-      measure <- as.character(grid_SA$measure[a])
-      
-      # Calculate the importance for the current method and measure
-      importance <- Importance(m, data = train_data, method = method, measure = measure)
-      
-      # Extract the importance values (assuming 26 values)
-      imp_values <- importance$imp
-      
-      # Create a row with method, measure, and the 26 importance values
-      result_row <- data.frame(method = method, measure = measure, t(imp_values))
-      
-      # Append the row to results_SA
-      results_SA <- rbind(results_SA, result_row)
-    }
-    
-    names(results_SA)[3:ncol(results_SA)] <- names(train_data)
+    # Calculate the importance for the current method and measure
+    importance <- Importance(
+      M = m,
+      RealL = 5, # Levels
+      data = train_data, # data
+      method = methods_SA,
+      measure = measures_SA,
+      #sampling = regular,
+      baseline = "mean", # mean, median, with the baseline example (should have the same attribute names as data).
+      responses = TRUE
+    )
     
   } else if (names(methods[i]) == "svmRadial") {
     
@@ -397,11 +383,10 @@ for (i in 1:length(methods)) {
   list <- list()
   
   list[[1]] <- final_model
-  list[[2]] <- results_SA
-  list[[3]] <- m
-  list[[4]] <- importance
+  list[[2]] <- m
+  list[[3]] <- importance
   
-  names(list) <- c("final_model", "results_SA", "m", "importance")
+  names(list) <- c("final_model", "m", "importance")
   
   
   list_method[[i]] <- list
@@ -422,3 +407,5 @@ names(information_region[["ML_models"]]) <- names(methods)
 
 # prove
 importance_example <- information_region[["ML_models"]][["svmPoly"]][["importance"]]
+summary(train_data)
+round(importance_example$sresponses[[2]]$y, 2) # 2 es el input 1
