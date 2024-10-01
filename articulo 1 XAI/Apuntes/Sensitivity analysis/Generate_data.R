@@ -408,4 +408,136 @@ names(information_region[["ML_models"]]) <- names(methods)
 # prove
 importance_example <- information_region[["ML_models"]][["svmPoly"]][["importance"]]
 summary(train_data)
-round(importance_example$sresponses[[2]]$y, 2) # 2 es el input 1
+
+
+p.x1 <- round(importance_example$sresponses[[2]]$y, 2)[,1] # 2 es el input 1
+p.y <- round(importance_example$sresponses[[3]]$y, 2)[,1] # 3 es el output 1
+
+data_prob <- as.data.frame(t(rbind(p.x1,p.y)))
+data_prob <- cbind(c(1:5), data_prob)
+names(data_prob)[1] <- "level"
+
+data_long <- tidyr::pivot_longer(data_prob, cols = c(p.x1, p.y), names_to = "variable", values_to = "value")
+
+
+plot_1D <- ggplot(data_long, aes(x = level, y = value, color = variable)) +
+  geom_line(size = 1.2) +
+  
+  # Exes
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 1) +
+  
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  geom_vline(xintercept = 5, linetype = "dashed") +
+  
+  geom_hline(yintercept = 0.5, linetype = "dashed") +
+  
+  
+  scale_x_continuous(name = "Level", limits = c(1, 5), breaks = seq(1, 5, 1)) +  
+  scale_y_continuous(name = "Probability", limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
+  
+  theme_bw() +
+  
+  theme(legend.title = element_blank()) 
+  
+ggsave(plot = plot_1D, dpi = 600, filename = "plot_1D.png")
+
+# variable importance
+plot_imp_1D <- mgraph(importance_example$imp, graph = "IMP", leg = c("x1", "y"), col = "gray")
+ggsave(plot = plot_imp_1D, dpi = 600, filename = "plot_imp_1D.png")
+
+# prove baseline vector.
+DMU <- 13
+
+importance_bl <- Importance(
+  M = m,
+  RealL = 5, # Levels
+  data = train_data, # data
+  method = methods_SA,
+  measure = measures_SA,
+  #sampling = regular,
+  baseline = train_data[DMU,], # mean, median, with the baseline example (should have the same attribute names as data).
+  responses = TRUE
+)
+
+# input
+data_1 <- round(importance_bl$sresponses[[2]]$y, 2)[,1]
+data_4 <- round(importance_bl$sresponses[[2]]$y, 2)[,1]
+data_13 <- round(importance_bl$sresponses[[2]]$y, 2)[,1]
+data_prob_x1 <- rbind(data_1, data_4, data_13)
+data_prob_x1 <- rbind(c(1,2,3,4,5), data_prob_x1)
+data_prob_x1 <- as.data.frame(t(data_prob_x1))
+names(data_prob_x1) <- c("level", "DMU 1", "DMU 4", "DMU 13")
+
+data_long <- tidyr::pivot_longer(data_prob_x1, cols = c("DMU 1", "DMU 4", "DMU 13"), names_to = "variable", values_to = "value")
+
+plot_1D_x1 <- ggplot(data_long, aes(x = level, y = value, color = variable)) +
+  geom_line(size = 1.2) +
+  
+  # Exes
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 1) +
+  
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  geom_vline(xintercept = 5, linetype = "dashed") +
+  
+  geom_hline(yintercept = 0.5, linetype = "dashed") +
+  
+  
+  scale_x_continuous(name = "Level", limits = c(1, 5), breaks = seq(1, 5, 1)) +  
+  scale_y_continuous(name = "Probability", limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
+  
+  theme_bw() +
+  
+  theme(legend.title = element_blank()) 
+ggsave(plot = plot_1D_x1, dpi = 600, filename = "plot_1D_x1.png")
+
+# output
+# prove baseline vector.
+DMU <- 4
+
+importance_bl <- Importance(
+  M = m,
+  RealL = 5, # Levels
+  data = train_data, # data
+  method = methods_SA,
+  measure = measures_SA,
+  #sampling = regular,
+  baseline = train_data[DMU,], # mean, median, with the baseline example (should have the same attribute names as data).
+  responses = TRUE
+)
+
+
+data_1 <- round(importance_bl$sresponses[[3]]$y, 2)[,1]
+data_4 <- round(importance_bl$sresponses[[3]]$y, 2)[,1]
+data_13 <- round(importance_bl$sresponses[[3]]$y, 2)[,1]
+data_prob_x1 <- rbind(data_1, data_4, data_13)
+data_prob_x1 <- rbind(c(1,2,3,4,5), data_prob_x1)
+data_prob_x1 <- as.data.frame(t(data_prob_x1))
+names(data_prob_x1) <- c("level", "DMU 1", "DMU 4", "DMU 13")
+
+data_long <- tidyr::pivot_longer(data_prob_x1, cols = c("DMU 1", "DMU 4", "DMU 13"), names_to = "variable", values_to = "value")
+
+plot_1D_y <- ggplot(data_long, aes(x = level, y = value, color = variable)) +
+  geom_line(size = 1.2) +
+  
+  # Exes
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 1) +
+  
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  geom_vline(xintercept = 5, linetype = "dashed") +
+  
+  geom_hline(yintercept = 0.5, linetype = "dashed") +
+  
+  
+  scale_x_continuous(name = "Level", limits = c(1, 5), breaks = seq(1, 5, 1)) +  
+  scale_y_continuous(name = "Probability", limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
+  
+  theme_bw() +
+  
+  theme(legend.title = element_blank()) 
+ggsave(plot = plot_1D_y, dpi = 600, filename = "plot_1D_y.png")
+
+plot_imp_1D <- mgraph(importance_example$imp, graph = "IMP", leg = c("x1", "y"), col = "gray")
+ggsave(plot = plot_imp_1D, dpi = 600, filename = "plot_imp_1D.png")
