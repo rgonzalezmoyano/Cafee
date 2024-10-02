@@ -12,27 +12,27 @@ set.seed(1997)
 data <- reffcy (
   DGP = "cobb_douglas_XnY1",
   parms = list (
-    N = 30,
-    nX = 1
+    N = 100,
+    nX = 3
   )
 )
 
-# plot
-ggplot() +
-  geom_point(data = data, aes(x = x1, y = y)) +
-  # exes
-  geom_hline(yintercept = 0) +
-  geom_vline(xintercept = 0) +
-  theme_bw() +
-  theme(legend.position = "bottom")
+# # plot
+# ggplot() +
+#   geom_point(data = data, aes(x = x1, y = y)) +
+#   # exes
+#   geom_hline(yintercept = 0) +
+#   geom_vline(xintercept = 0) +
+#   theme_bw() +
+#   theme(legend.position = "bottom")
 
 # 
 # library(openxlsx)
 # write.xlsx(data, "data_example.xlsx")
 
 # x and y indexes
-x <- 1
-y <- 2
+x <- 1:3
+y <- 4
 z <- NULL
 
 # import
@@ -54,9 +54,9 @@ methods <- list (
   # svm
   "svmPoly" = list(
     hyparams = list(
-      "degree" = c(3),
-      "scale" = c(0.1),
-      "C" = c(1)
+      "degree" = c(1, 2, 3, 4, 5),
+      "scale" = c(0.001, 0.1, 1, 10, 100),
+      "C" = c(0.001, 0.1, 1, 10, 100)
     )
   )
   # "svmRadial" = list(
@@ -153,7 +153,7 @@ list_method <- list()
 for (i in 1:length(methods)) {
   
   # console information
-  print(paste("METODO:", i))
+  print(paste("METODO:", i,  names(methods)[i]))
   print("")
   
   # model result
@@ -194,64 +194,6 @@ for (i in 1:length(methods)) {
   # 
   # plot <- plot(importance)
   
-  if (names(methods[i]) == "rf") {
-    
-    data_oob <- as.data.frame(final_model[["final_model"]][["finalModel"]][["err.rate"]])
-    ntrees <- c(1:final_model$final_model$dots$ntree)
-    
-    data_oob_plot <- cbind(ntrees, data_oob)
-    
-    ggplot(data = data_oob_plot) +
-      geom_line(aes(x = ntrees, y = OOB))
-    
-    # importance by r miner
-    # necesary data to calculate importance
-    train_data <- final_model$final_model[["trainingData"]]
-    names(train_data)[1] <- "ClassEfficiency"
-    
-    # con rminer pero no escala
-    m_rf <- fit(
-      ClassEfficiency ~.,
-      data = train_data,
-      model = "randomForest",
-      scale = "none",
-      mtry = methods$rf$hyparams$mtry,
-      ntree = methods$rf$options$ntree
-    )
-    
-    rf.imp <- Importance(m_rf, data = train_data)
-    imp_value <- rf.imp$imp
-    
-    importance <- matrix(
-      data = NA,
-      ncol = 2,
-      nrow = length(names(train_data))
-    )
-    
-    importance <- as.data.frame(importance)
-    
-    importance$V1 <- names(train_data)
-    importance$V2 <- imp_value
-    
-    names(importance) <- c("", "Overall")
-    
-    importance <- importance[order(-importance$Overall), ]
-    
-    importance
-    
-    # comprobar m_rf
-    scores_cafee_m_rf <- compute_scores (
-      data = data,
-      x = x,
-      y = y,
-      z = z,
-      final_model = m_rf,
-      orientation = orientation,
-      cut_off = final_model[["final_model"]][["cut_off"]]
-    )  
-    
-  }
-  
   if (names(methods[i]) == "svmPoly") {
     
     # necesary data to calculate importance
@@ -276,55 +218,29 @@ for (i in 1:length(methods)) {
     )
     
     # Define methods and measures
-    methods_SA <- c("1D-SA") # c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
+    methods_SA <- c("GSA") # c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
     measures_SA <- c("AAD") #  c("AAD", "gradient", "variance", "range")
+    
+    dimension <- 5
+    sa_results <- matrix()
+    for(vble in 1:dimension) {
       
-    # Calculate the importance for the current method and measure
-    importance <- Importance(
-      M = m,
-      RealL = 5, # Levels
-      data = train_data, # data
-      method = methods_SA,
-      measure = measures_SA,
-      #sampling = regular,
-      baseline = "mean", # mean, median, with the baseline example (should have the same attribute names as data).
-      responses = TRUE
-    )
+      # Calculate the importance for the current method and measure
+      importance <- Importance(
+        M = m,
+        RealL = 7, # Levels
+        data = train_data, # data
+        method = methods_SA,
+        measure = measures_SA,
+        interactions = 2,
+        Aggregation = 1
+        #baseline = "mean", # mean, median, with the baseline example (should have the same attribute names as data).
+      )
+      
+     
+        
+    }
     
-  } else if (names(methods[i]) == "svmRadial") {
-    
-    # necesary data to calculate importance
-    train_data <- final_model$final_model[["trainingData"]]
-    names(train_data)[1] <- "ClassEfficiency"
-    
-    # con rminer pero no escala
-    m_rad <- fit(
-      ClassEfficiency~.,
-      data = train_data,
-      model = "ksvm",
-      kernel = "rbfdot",
-      scale = "none",
-      C = final_model$bestTune$C,
-      kpar = list(sigma = final_model$bestTune$sigma)
-    )
-    
-    svm.imp <- Importance(m_rad, data = train_data)
-    imp_value <- svm.imp$imp
-    
-    importance <- matrix(
-      data = NA,
-      ncol = 2,
-      nrow = length(names(train_data))
-    )
-    
-    importance <- as.data.frame(importance)
-    
-    importance$V1 <- names(train_data)
-    importance$V2 <- imp_value
-    
-    names(importance) <- c("", "Overall")
-    
-    importance <- importance[order(-importance$Overall), ]
     
   } else if (names(methods[i]) == "nnet") {
     
@@ -409,6 +325,7 @@ names(information_region[["ML_models"]]) <- names(methods)
 importance_example <- information_region[["ML_models"]][["svmPoly"]][["importance"]]
 summary(train_data)
 
+rminer::agg_matrix_imp(importance_example)
 
 p.x1 <- round(importance_example$sresponses[[2]]$y, 2)[,1] # 2 es el input 1
 p.y <- round(importance_example$sresponses[[3]]$y, 2)[,1] # 3 es el output 1
