@@ -225,10 +225,10 @@ for (i in 1:length(methods)) {
     importance <- Importance(
       M = m,
       RealL = 7, # Levels
-      data = train_data[-1], # data
+      data = train_data, # data
       method = "GSA",
       measure = "AAD",
-      interactions = 1:4,
+      interactions = 2:5,
       responses = TRUE
     )
       
@@ -315,6 +315,7 @@ names(information_region[["ML_models"]]) <- names(methods)
 importance_example <- information_region[["ML_models"]][["svmPoly"]][["importance"]]
 summary(train_data)
 
-rminer::agg_matrix_imp(importance$)
 
 load("~/Cafee/articulo 1 XAI/Apuntes/Sensitivity analysis/sa_ssin_n2p.rda")
+
+# save(train_data, file = "train_data.RData")
