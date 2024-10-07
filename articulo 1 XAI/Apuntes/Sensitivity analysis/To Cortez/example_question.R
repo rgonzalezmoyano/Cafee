@@ -31,7 +31,7 @@ m2 = fit(
     scale = 0.1),
   C = 10
   )
-
+g
 I2 = Importance(m2, tr, method = "GSA", interactions = 1:4)
 cm2 = agg_matrix_imp(I2)
 
