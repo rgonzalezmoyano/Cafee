@@ -203,6 +203,8 @@ for (i in 1:length(methods)) {
     dataset_dummy <- model.matrix(ClassEfficiency~ . - 1, data = train_data)
     train_data <- cbind(train_data[1], dataset_dummy)
     
+    train_data <- train_data[,c(2:length(train_data),1)]
+    
     # con rminer pero no escala
     m <- fit(
       ClassEfficiency~.,
@@ -221,17 +223,114 @@ for (i in 1:length(methods)) {
     methods_SA <- c("GSA") # c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
     measures_SA <- c("AAD") #  c("AAD", "gradient", "variance", "range")
     
+    # importance with our model
+    mypred <- function(M, data) {
+      
+      return (predict(M, data[-length(data)], type = "prob"))
+      
+    }
+    
     # Calculate the importance for the current method and measure
     importance <- Importance(
-      M = m,
+      M = final_model$final_model$finalModel,
       RealL = 7, # Levels
       data = train_data, # data
       method = "GSA",
       measure = "AAD",
-      interactions = 2:5,
-      responses = TRUE
+      interactions = 1:(length(train_data)-1),
+      responses = TRUE,
+      PRED = mypred,
+      outindex = length(train_data)
     )
+    
+    Inps = length(importance$inputs)
+    val = vector(length = Inps)
+    
+    # importance Cortez
+    for (a in 1:Inps) {
       
+      AT <- a
+      x = importance$sresponses[[1]]$x
+      y = importance$sresponses[[1]]$y
+      X1 = unique(x[,AT[1]])
+      
+      if(length(AT) > 1) { # not our case I SUPOSE
+        
+        # X2=unique(x[,AT[2]])
+        # LX=length(X2)*length(X1)
+        # 
+        # if(is.matrix(y)) my = matrix(ncol=NCOL(y),nrow=LX)
+        # 
+        # Im=vector(length=LX)
+        # k=1;
+        # for(i in X1)
+        #   for(j in X2)
+        #   {
+        #     W=which(x[,AT[1]]==i & x[,AT[2]]==j)
+        #     Im[k]=W[1]
+        #     if(is.matrix(y)) my[k,]=colMeans(y[W,])
+        #     else my[k]=mean_resp(y[W])
+        #     k=k+1
+        #   }
+        
+      } else if (length(AT)==1) {
+        
+        LX = length(X1)
+        
+        if(is.matrix(y)) {
+          
+          my = matrix(
+            
+            ncol = NCOL(y),
+            nrow = LX
+          
+          )
+          
+        } else if(is.factor(y)) {
+          
+          my = factor(rep(levels(y)[1],LX),levels=levels(y))
+          
+        } else {
+          
+          my = vector(length=LX)
+          
+        }
+        
+        Im = vector(length = LX); k=1;
+        
+        for(e in X1) {
+          
+          W = which(x[,AT[1]] == e)
+          
+          Im[k] = W[1]
+          
+          if(is.matrix(y)){
+            
+            my[k,] = colMeans(y[W,])
+          
+          } else {
+            
+            my[k]=mean_resp(y[W])
+            
+          } 
+          
+          k=k+1
+          
+        }
+        
+      }
+      
+      val[a] <- s_measure(my, "AAD")
+      
+    }
+    
+    ximportance = val/sum(val) # vector with the % overall importance values for each inputs, from att. 2 to 5.
+    
+    importance$value <- val
+    names(importance$value) <- names(train_data)[-length(train_data)]
+    importance$imp <- as.data.frame(t(as.matrix(ximportance)))
+    names(importance$imp) <- names(train_data)[-length(train_data)]
+    
   } else if (names(methods[i]) == "nnet") {
     
     # necesary data to calculate importance
