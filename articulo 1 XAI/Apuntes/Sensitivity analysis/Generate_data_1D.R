@@ -172,8 +172,6 @@ for (i in 1:length(methods)) {
     returns = returns
   )
   
-  #final_model <- information_region[[2]][[2]][[1]]
-  
   # bset cut off is selected 
   scores_cafee <- compute_scores (
     data = data,

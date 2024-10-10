@@ -12,7 +12,7 @@ set.seed(1997)
 data <- reffcy (
   DGP = "cobb_douglas_XnY1",
   parms = list (
-    N = 100,
+    N = 30,
     nX = 3
   )
 )
@@ -31,8 +31,8 @@ data <- reffcy (
 # write.xlsx(data, "data_example.xlsx")
 
 # x and y indexes
-x <- 1:3
-y <- 4
+x <- 1
+y <- 2
 z <- NULL
 
 # import
@@ -205,19 +205,19 @@ for (i in 1:length(methods)) {
     
     train_data <- train_data[,c(2:length(train_data),1)]
     
-    # con rminer pero no escala
-    m <- fit(
-      ClassEfficiency~.,
-      data = train_data,
-      model = "ksvm",
-      kernel = "polydot",
-      scale = "none",
-      kpar = list(
-        degree = final_model$final_model$bestTune$degree,
-        scale = final_model$final_model$bestTune$scale
-      ),
-      C = final_model$final_model$bestTune$C
-    )
+    # # con rminer pero no escala
+    # m <- fit(
+    #   ClassEfficiency~.,
+    #   data = train_data,
+    #   model = "ksvm",
+    #   kernel = "polydot",
+    #   scale = "none",
+    #   kpar = list(
+    #     degree = final_model$final_model$bestTune$degree,
+    #     scale = final_model$final_model$bestTune$scale
+    #   ),
+    #   C = final_model$final_model$bestTune$C
+    # )
     
     # Define methods and measures
     methods_SA <- c("GSA") # c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
@@ -231,17 +231,19 @@ for (i in 1:length(methods)) {
     }
     
     # Calculate the importance for the current method and measure
+    
     importance <- Importance(
       M = final_model$final_model$finalModel,
-      RealL = 7, # Levels
+      RealL = 5, # Levels
       data = train_data, # data
-      method = "GSA",
+      method = methods_SA,
       measure = "AAD",
-      interactions = 1:(length(train_data)-1),
+      interactions = 1:(length(train_data) - 1),
       responses = TRUE,
       PRED = mypred,
-      outindex = length(train_data)
-    )
+      outindex = length(train_data),
+      baseline = "mean" # "mean", # mean, median, with the baseline example (should have the same attribute names as data).
+    )  
     
     Inps = length(importance$inputs)
     val = vector(length = Inps)
@@ -314,7 +316,7 @@ for (i in 1:length(methods)) {
             
           } 
           
-          k=k+1
+          k = k+1
           
         }
         
@@ -388,10 +390,9 @@ for (i in 1:length(methods)) {
   list <- list()
   
   list[[1]] <- final_model
-  list[[2]] <- m
-  list[[3]] <- importance
+  list[[2]] <- importance
   
-  names(list) <- c("final_model", "m", "importance")
+  names(list) <- c("final_model", "importance")
   
   
   list_method[[i]] <- list
