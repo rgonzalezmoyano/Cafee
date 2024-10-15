@@ -35,9 +35,6 @@ x <- 1
 y <- 2
 z <- NULL
 
-# import
-
-
 # different types to label
 target_method <- "BCC"
 
@@ -221,7 +218,7 @@ for (i in 1:length(methods)) {
     # )
     
     # Define methods and measures
-    methods_SA <- c("GSA") # c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
+    methods_SA <- c("DSA") # c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
     measures_SA <- c("AAD") #  c("AAD", "gradient", "variance", "range")
     
     # importance with our model
@@ -239,13 +236,13 @@ for (i in 1:length(methods)) {
       data = train_data, # data
       method = methods_SA,
       measure = measures_SA,
-      interactions = 1:(length(train_data) - 1), # 1:(length(train_data) - 1)
+      LRandom = 
       responses = TRUE,
       PRED = mypred,
       outindex = length(train_data),
       #baseline = "mean" # "mean", # mean, median, with the baseline example (should have the same attribute names as data).
     )  
-
+    
     # importance Cortez
     # I is importance object
     # method is a sensitivity method, works only for "GSA"
@@ -321,7 +318,7 @@ for (i in 1:length(methods)) {
       return(I)
       
     }
-
+    
     importance <- imp_gsa(importance, method = "GSA", measure = measures_SA, Aggregation = 1, L = levels)
     print(importance$imp)
     names(importance$value) <- names(train_data)[-length(train_data)]
