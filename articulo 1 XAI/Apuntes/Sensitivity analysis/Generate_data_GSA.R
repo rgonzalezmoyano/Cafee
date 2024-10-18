@@ -45,9 +45,9 @@ set.seed(314)
 methods <- list (
   "svmPoly" = list(
     hyparams = list(
-      "degree" = c( 2),
-      "scale" = c(1),
-      "C" = c(1, 10)
+      "degree" = c(3),
+      "scale" = c(0.1),
+      "C" = c(1)
     )
   )
   

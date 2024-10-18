@@ -42,9 +42,9 @@ set.seed(314)
 methods <- list (
   "svmPoly" = list(
     hyparams = list(
-      "degree" = c( 2),
-      "scale" = c(1),
-      "C" = c(1, 10)
+      "degree" = c(3),
+      "scale" = c(0.1),
+      "C" = c(1)
     )
   )
   
@@ -236,93 +236,18 @@ for (i in 1:length(methods)) {
       data = train_data, # data
       method = methods_SA,
       measure = measures_SA,
-      LRandom = 
+      LRandom = 10,
       responses = TRUE,
       PRED = mypred,
       outindex = length(train_data),
       #baseline = "mean" # "mean", # mean, median, with the baseline example (should have the same attribute names as data).
     )  
     
-    # importance Cortez
-    # I is importance object
-    # method is a sensitivity method, works only for "GSA"
-    # measure is a sensitivity measure, say "AAD", works with all measures
-    # Aggregation = 1 for classification, 3 for regression
-    # L the number of sensitivity levels
     
-    # Ricardo: I need ti define yaggregate to use it
-    # yaggregate
-    yaggregate = function(y, N = 1) {
-      
-      if (N == 1){
-        
-        return(mean(y))
-        
-      } else if (N == 3){
-        
-        r = range(y)
-        
-        return(c(r[1],mean(y),r[2]))
-        
-      } else {
-        
-        y = quantile(y,seq(0,1,length.out = N))
-        attr(y,"names") = NULL
-        
-        return(y)
-        
-      }
-      
-    }
-    
-    imp_gsa = function(I, method = "GSA", measure, Aggregation = 1, L = levels) {
-      
-      # only 1 object for all inputs.
-      xsa = I$sresponses[[1]]$x
-      ysa = I$sresponses[[1]]$y # 2401 elems. due to GSA with D=4.
-      #AI=aggregate_imp(I3,AT=1:4,measure="AAD",Aggregation=3,method="GSA",L=7)
-      
-      KA = ncol(xsa) # number of inputs
-      N = Aggregation
-      
-      sm = matrix(ncol = L, nrow = N)
-      val = vector(length = N)
-      value = vector(length = KA)
-      
-      for(k in 1:KA) {
-        
-        Lx = unique(xsa[,k]) # x_k levels
-        
-        for(l in 1:L) {
-          
-          Is = which(xsa[,k] == Lx[l])
-          
-          sm[1:N,l] = yaggregate(ysa[Is], N = N)
-          
-        }
-        
-        for(n in 1:N) {
-          
-          val[n] = s_measure(sm[n,], measure = measure)
-          
-        }
-        
-        value[k] = mean(val)
-        
-      }
-      
-      imp = value/sum(value)
-      I$value = value
-      I$imp = imp
-      
-      return(I)
-      
-    }
-    
-    importance <- imp_gsa(importance, method = "GSA", measure = measures_SA, Aggregation = 1, L = levels)
-    print(importance$imp)
-    names(importance$value) <- names(train_data)[-length(train_data)]
-    names(importance$imp) <- names(train_data)[-length(train_data)]
+    prueba1 <- importance$data
+    bor <- prueba1[2,] 
+    bor[2] <- 2.822103 
+    predict(final_model$final_model$finalModel, bor[-3], type = "prob")
     
   } else if (names(methods[i]) == "nnet") {
     

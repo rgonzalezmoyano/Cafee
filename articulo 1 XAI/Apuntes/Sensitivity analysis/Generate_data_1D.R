@@ -201,34 +201,46 @@ for (i in 1:length(methods)) {
     dataset_dummy <- model.matrix(ClassEfficiency~ . - 1, data = train_data)
     train_data <- cbind(train_data[1], dataset_dummy)
     
-    # con rminer pero no escala
-    m <- fit(
-      ClassEfficiency~.,
-      data = train_data,
-      model = "ksvm",
-      kernel = "polydot",
-      scale = "none",
-      kpar = list(
-        degree = final_model$final_model$bestTune$degree,
-        scale = final_model$final_model$bestTune$scale
-      ),
-      C = final_model$final_model$bestTune$C
-    )
+    train_data <- train_data[,c(2:length(train_data),1)]
+    
+    # # con rminer pero no escala
+    # m <- fit(
+    #   ClassEfficiency~.,
+    #   data = train_data,
+    #   model = "ksvm",
+    #   kernel = "polydot",
+    #   scale = "none",
+    #   kpar = list(
+    #     degree = final_model$final_model$bestTune$degree,
+    #     scale = final_model$final_model$bestTune$scale
+    #   ),
+    #   C = final_model$final_model$bestTune$C
+    # )
+    
+    # importance with our model
+    mypred <- function(M, data) {
+      
+      return (predict(M, data[-length(data)], type = "prob"))
+      
+    }
     
     # Define methods and measures
     methods_SA <- c("1D-SA") # c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
     measures_SA <- c("AAD") #  c("AAD", "gradient", "variance", "range")
       
     # Calculate the importance for the current method and measure
+    levels <- 5
     importance <- Importance(
-      M = m,
-      RealL = 5, # Levels
+      M = final_model$final_model$finalModel,
+      RealL = levels, # Levels
       data = train_data, # data
       method = methods_SA,
       measure = measures_SA,
       #sampling = regular,
       baseline = "mean", # mean, median, with the baseline example (should have the same attribute names as data).
-      responses = TRUE
+      responses = TRUE,
+      PRED = mypred,
+      outindex = length(train_data)
     )
     
   } else if (names(methods[i]) == "nnet") {
@@ -239,6 +251,8 @@ for (i in 1:length(methods)) {
     
     dataset_dummy <- model.matrix(ClassEfficiency~ . - 1, data = train_data)
     train_data <- cbind(train_data[1], dataset_dummy)
+    
+    train_data <- train_data[,c(2:length(train_data),1)]
     
     # con rminer
     m <- fit(
@@ -288,10 +302,9 @@ for (i in 1:length(methods)) {
   list <- list()
   
   list[[1]] <- final_model
-  list[[2]] <- m
-  list[[3]] <- importance
+  list[[2]] <- importance
   
-  names(list) <- c("final_model", "m", "importance")
+  names(list) <- c("final_model", "importance")
   
   
   list_method[[i]] <- list
