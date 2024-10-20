@@ -18,13 +18,17 @@ data <- reffcy (
 )
 
 # # plot
-# ggplot() +
+# plot <- ggplot() +
+#   geom_point(data = unique(prueba1), aes(x = x1, y = y), color = "red", size = 2) +
 #   geom_point(data = data, aes(x = x1, y = y)) +
+#   
 #   # exes
 #   geom_hline(yintercept = 0) +
 #   geom_vline(xintercept = 0) +
 #   theme_bw() +
-#   theme(legend.position = "bottom")
+#   theme(legend.position = "bottom"); plot
+# 
+# ggsave(plot = plot, dpi = 600, filename = "plot2.png")
 
 # 
 # library(openxlsx)
@@ -218,7 +222,7 @@ for (i in 1:length(methods)) {
     # )
     
     # Define methods and measures
-    methods_SA <- c("DSA") # c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
+    methods_SA <- c("MSA") # c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
     measures_SA <- c("AAD") #  c("AAD", "gradient", "variance", "range")
     
     # importance with our model
@@ -236,7 +240,8 @@ for (i in 1:length(methods)) {
       data = train_data, # data
       method = methods_SA,
       measure = measures_SA,
-      LRandom = levels^2,
+      LRandom = levels ^ 2,
+      MRandom = "continuous", # discrete continuous
       responses = TRUE,
       PRED = mypred,
       outindex = length(train_data),
@@ -244,13 +249,13 @@ for (i in 1:length(methods)) {
     )  
     
     
-    # prueba1 <- importance$data
-    # bor <- prueba1[2,] 
-    # bor[2] <- 2.822103 
-    # predict(final_model$final_model$finalModel, t(as.matrix(c(1.009995, 4.606 ))), type = "prob") #bor[-3]
-    # 
-    # summary(train_data)
-
+    prueba1 <- importance$data
+    bor <- prueba1[2,] 
+    bor[2] <- 2.822103 
+    predict(final_model$final_model$finalModel, t(as.matrix(c(1.009995, 4.606 ))), type = "prob") #bor[-3]
+    
+    summary(train_data)
+    
     
   } else if (names(methods[i]) == "nnet") {
     

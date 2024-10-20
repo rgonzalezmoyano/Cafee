@@ -218,7 +218,7 @@ for (i in 1:length(methods)) {
     # )
     
     # Define methods and measures
-    methods_SA <- c("DSA") # c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
+    methods_SA <- c("CSA") # c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
     measures_SA <- c("AAD") #  c("AAD", "gradient", "variance", "range")
     
     # importance with our model
@@ -236,21 +236,21 @@ for (i in 1:length(methods)) {
       data = train_data, # data
       method = methods_SA,
       measure = measures_SA,
-      LRandom = levels^2,
       responses = TRUE,
       PRED = mypred,
-      outindex = length(train_data),
+      outindex = length(train_data)
+      #Lfactor = FALSE
       #baseline = "mean" # "mean", # mean, median, with the baseline example (should have the same attribute names as data).
     )  
     
     
-    # prueba1 <- importance$data
-    # bor <- prueba1[2,] 
-    # bor[2] <- 2.822103 
-    # predict(final_model$final_model$finalModel, t(as.matrix(c(1.009995, 4.606 ))), type = "prob") #bor[-3]
-    # 
-    # summary(train_data)
-
+    prueba1 <- importance$data
+    bor <- prueba1[2,] 
+    bor[2] <- 2.822103 
+    predict(final_model$final_model$finalModel, t(as.matrix(c(1.009995, 4.606 ))), type = "prob") #bor[-3]
+    
+    summary(train_data)
+    
     
   } else if (names(methods[i]) == "nnet") {
     
