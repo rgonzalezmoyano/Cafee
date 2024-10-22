@@ -172,18 +172,50 @@ for (i in 1:length(methods)) {
     returns = returns
   )
   
-  # bset cut off is selected 
-  scores_cafee <- compute_scores (
-    data = data,
-    x = x,
-    y = y,
-    #z = z,
-    final_model = final_model$final_model,
-    orientation = orientation,
-    cut_off = final_model$final_model[["cut_off"]]
-  )  
+  # to get probabilities senarios
+  data_contr <- as.data.frame(matrix(
+    data = NA,
+    ncol = ncol(final_model$final_model$trainingData) + length(seq(0.5, 1, 0.1)),
+    nrow = nrow(final_model$final_model$trainingData)
+  ))
   
-  scores[i] <- scores_cafee
+  # Copiar las columnas x e y de los datos originales
+  data_contr[, c(x, y)] <- as.matrix(final_model$final_model$trainingData[, 1 + c(x, y)])
+  
+  # Usar apply para hacer las predicciones en cada fila
+  data_contr[, y + 1] <- apply(final_model$final_model$trainingData[, 1 + c(x, y)], 1, function(fila) {
+    # Convierte la fila en un data frame con nombres de columna apropiados
+    nueva_fila <- as.data.frame(t(fila))
+    colnames(nueva_fila) <- colnames(final_model$final_model$trainingData)[1 + c(x, y)]
+    
+    # Predicción con el modelo
+    predict(final_model$final_model$finalModel, newdata = nueva_fila)[1]
+  })
+  
+  names(data_contr) <- c(names(data[-length(data)]), "class", c(seq(0.5, 1, 0.1)))
+  
+  train_data_loop <- final_model$final_model$trainingData[,c(2:length(final_model$final_model$trainingData),1)]
+  
+  loop <- 1
+  for (prob in seq(0.5, 1, 0.1)) {
+    print(prob)
+    #bset cut off is selected
+    scores_cafee <- compute_scores (
+      data = train_data_loop[-3],  #data,
+      x = x,
+      y = y,
+      #z = z,
+      final_model = final_model$final_model,
+      orientation = orientation,
+      cut_off = prob #final_model$final_model[["cut_off"]]
+    )
+
+    data_contr[, length(final_model$final_model$trainingData) + loop] <- (scores_cafee * min(train_data_loop$y)) / train_data_loop$y
+
+    loop <- loop + 1
+  }
+
+  #scores[i] <- scores_cafee
   
   # # Importance of variables
   # # varImp Caret

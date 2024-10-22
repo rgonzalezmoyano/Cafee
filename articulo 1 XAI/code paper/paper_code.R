@@ -83,22 +83,22 @@ target_method <- "BCC"
 
 set.seed(314)
 methods <- list (
-  # "svmPoly" = list(
-  #   hyparams = list(
-  #     "degree" = c( 2),
-  #     "scale" = c(1),
-  #     "C" = c(1, 10)
-  #   )
-  # )
-  
-  # svm
   "svmPoly" = list(
-      hyparams = list(
-        "degree" = c(1, 2, 3, 4, 5),
-        "scale" = c(0.001, 0.1, 1, 10, 100),
-        "C" = c(0.001, 0.1, 1, 10, 100)
-      )
-  ),
+    hyparams = list(
+      "degree" = c(3),
+      "scale" = c(0.1),
+      "C" = c(1)
+    )
+  )
+  
+  # # svm
+  # "svmPoly" = list(
+  #     hyparams = list(
+  #       "degree" = c(1, 2, 3, 4, 5),
+  #       "scale" = c(0.001, 0.1, 1, 10, 100),
+  #       "C" = c(0.001, 0.1, 1, 10, 100)
+  #     )
+  # ),
   # "svmRadial" = list(
   #   hyparams = list(
   #     "sigma" = c(0.01, 0.1, 1, 10, 100),
@@ -115,17 +115,17 @@ methods <- list (
   #     mtry = c(4)
   #   )
   # ),
-
-  # neuronal network
-  "nnet" = list(
-    hyparams = list(
-      "size" = c(1, 5, 10, 20),
-      "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
-      ),
-    options = list (
-      maxit = 1000
-    )
-  )
+# 
+#   # neuronal network
+#   "nnet" = list(
+#     hyparams = list(
+#       "size" = c(1, 5, 10, 20),
+#       "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
+#       ),
+#     options = list (
+#       maxit = 1000
+#     )
+#   )
   
 )
 
