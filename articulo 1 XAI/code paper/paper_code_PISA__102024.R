@@ -105,7 +105,7 @@ methods <- list (
   #     "C" = c(0.001, 0.1, 1, 10, 100)
   #   )
   # ),
-  
+
   # # random forest
   # "rf" = list (
   #   options = list (
@@ -115,7 +115,7 @@ methods <- list (
   #     mtry = c(4)
   #   )
   # ),
-# 
+#
 #   # neuronal network
 #   "nnet" = list(
 #     hyparams = list(
