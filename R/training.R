@@ -89,7 +89,21 @@ train_ml <- function (
           tuneGrid = tune_grid,
           metric = metric,
           maxit = methods$nnet$options$maxit
-        ) 
+          # lineout = FALSE,
+          # entropy = TRUE
+          # censored = FALSE,
+          # softmax = FALSE
+        )
+        
+        # # Tune model nnet with nnet
+        # model_nnet <- nnet(
+        #   x = as.matrix(iris_scaled[, 1:4]),  # Variables predictoras
+        #   y = as.matrix(iris_scaled$Species),  # Etiquetas en formato binario
+        #   size = 3,         # Número de neuronas en la capa oculta
+        #   softmax = TRUE,   # Activar softmax
+        #   maxit = 200,      # Máximo de iteraciones
+        #   trace = FALSE     # No mostrar el progreso
+        # )
       
         # select best configuration
         selected_model <- model_nnet[["results"]] %>%

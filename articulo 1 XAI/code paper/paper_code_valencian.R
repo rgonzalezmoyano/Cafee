@@ -72,7 +72,8 @@ methods <- list (
       "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
       ),
     options = list (
-      maxit = 1000
+      maxit = 1000,
+      softmax = TRUE
     )
   )
   
@@ -154,7 +155,6 @@ for (i in 1:length(methods)) {
   train_data <- cbind(train_data[1], dataset_dummy)
   
   train_data <- train_data[,c(2:length(train_data),1)]
-  class(final_model$final_model$finalModel) <- c("model")
   
   # importance with our model of Caret
   mypred <- function(M, data) {
@@ -176,6 +176,8 @@ for (i in 1:length(methods)) {
       scale = "none",
       size = final_model$final_model$bestTune$size,
       decay = final_model$final_model$bestTune$decay
+      #entropy = FALSE
+      #softmax = TRUE
     )
     
     # Calculate the importance for the current method and measure
@@ -186,7 +188,7 @@ for (i in 1:length(methods)) {
       method = methods_SA,
       measure = measures_SA,
       baseline = "mean", # mean, median, with the baseline example (should have the same attribute names as data).
-      responses = TRUE,
+      responses = TRUE
     )
     
   } else {
@@ -224,73 +226,54 @@ for (i in 1:length(methods)) {
   
 names(list_method) <- names(methods)
 
-# information_region <- list()
-# information_region[[1]] <- scores
-# information_region[[2]] <- list_method
-# 
-# 
-# names(information_region) <- c("scores","ML_models")
-# 
-# # names final object
-# names(information_region) <- c("scores","ML_models")
-#   
-# names(information_region[["ML_models"]]) <- names(methods)
-#   
-# names(information_region[["ML_models"]][1]) <- "model_fit"
-# names(information_region[["ML_models"]][2]) <- "metrics_model"
-# 
-# for(i in 1:length(methods)) {
-#   names(information_region[["ML_models"]][[names(methods[i])]]) <- c("model", "importance")
-# }
-# 
-# save(information_region, file = "resultados_art_XAI_def.RData")
-# 
-# 
-# library(Benchmarking)
-# 
-# scores_sdea <- sdea (
-#   X = as.matrix(data[, y]),
-#   Y = as.matrix(data[, x]),
-#   RTS = "vrs",
-#   ORIENTATION = "out"
-# )$eff; scores_sdea
-# min(scores_sdea)
-# scores_sdea <- round(scores_sdea, 3)
-# 
-# scores <- as.data.frame(cbind(information_region[[1]][["svmPoly"]], information_region[[1]][["nnet"]]))
-# names(scores) <- c("svmPoly", "nnet")
-#   
-# # XAI paper
-# result_final <- as.data.frame(
-#   matrix(
-#     data = NA,
-#     ncol = 5,
-#     nrow = nrow(data)
-#   )
-# )
-# 
-# scores_sdea <- ifelse(scores_sdea == "-Inf", NA, scores_sdea)
-# scores_final <- cbind(scores_sdea, scores)
-# 
-# omit <- which(is.na(scores_final$svmPoly))
-# 
-# round(cor(x = information_region[[1]][["svmPoly"]][-omit], y = information_region[[1]][["nnet"]][-omit], method = "spearman"), 3)
-# round(cor(x = DEA_score, y = information_region[[1]][["nnet"]], method = "spearman"), 3)
-# round(cor(x = DEA_score[-omit], y = information_region[[1]][["svmPoly"]][-omit], method = "spearman"), 3)
-# 
-# DEA_score <- rad_out (
-#   tech_xmat = as.matrix(data[, x]),
-#   tech_ymat = as.matrix(data[, y]),
-#   eval_xmat = as.matrix(data[, x]),
-#   eval_ymat = as.matrix(data[, y]),
-#   convexity = TRUE,
-#   returns = "variable"
-# ) 
-# 
-# entrenamiento_data <- final_model[["final_model"]][["trainingData"]]
-# proporcion <- prop.table(table(entrenamiento_data$.outcome)) 
-# 
-# save.image("Information_R_PISA.RData")
+# to get probabilities senarios
+scenarios <- seq(0.65, 0.95, 0.1) 
+n_scenarios <- length(scenarios)
+idx_vble <- 1:length(c(x,y))
+
+data_contr <- as.data.frame(matrix(
+  data = NA,
+  ncol = ncol(final_model$final_model$trainingData) + n_scenarios,
+  nrow = nrow(final_model$final_model$trainingData)
+))
+
+# Copiar las columnas x e y de los datos originales
+data_contr[, idx_vble] <- as.matrix(final_model$final_model$trainingData[, 1 + idx_vble])
+
+# Usar apply para hacer las predicciones en cada fila
+data_contr[, max(idx_vble) + 1] <- apply(final_model$final_model$trainingData[, 1 + idx_vble], 1, function(fila) {
+  
+  # Convierte la fila en un data frame con nombres de columna apropiados
+  nueva_fila <- as.data.frame(t(fila))
+  colnames(nueva_fila) <- colnames(final_model$final_model$trainingData)[1 + idx_vble]
+  
+  # Predicción con el modelo
+  predict(final_model$final_model, newdata = nueva_fila)[1]
+  
+})
+
+names(data_contr) <- c(names(train_data[-length(train_data)]), "class", scenarios)
+
+train_data_loop <- final_model$final_model$trainingData[,c(2:length(final_model$final_model$trainingData),1)]
+
+loop <- 1
+for (prob in scenarios) {
+  print(prob)
+  #bset cut off is selected
+  scores_cafee <- compute_scores (
+    data = train_data_loop[, -length(train_data)],  #data,
+    x = 1:length(x),
+    y = (length(x)+1):(length(x)+length(y)),
+    #z = z,
+    final_model = final_model$final_model,
+    orientation = orientation,
+    cut_off = prob #final_model$final_model[["cut_off"]]
+  )
+  
+  data_contr[, length(final_model$final_model$trainingData) + loop] <- (scores_cafee * min(train_data_loop$y)) 
+  
+  loop <- loop + 1
+}
 
 # # ====== #
 # # server #
