@@ -2,6 +2,7 @@
 
 # libraries
 library("ggplot2")
+library("rminer")
 
 # generate data
 set.seed(1997)
@@ -40,13 +41,14 @@ target_method <- "BCC"
 
 set.seed(314)
 methods <- list (
+  # svm
   "svmPoly" = list(
-    hyparams = list(
-      "degree" = c(3),
-      "scale" = c(1),
-      "C" = c(1)
-    )
-   )
+      hyparams = list(
+        "degree" = c(1, 2, 3, 4, 5),
+        "scale" = c(0.001, 0.1, 1, 10, 100),
+        "C" = c(0.001, 0.1, 1, 10, 100)
+      )
+  )
 )
 
 # =========== #
@@ -93,6 +95,110 @@ returns <- "variable"
 
 # save model information
 list_method <- list() 
+
+# bucle region
+for (i in 1:length(methods)) {
+  
+  # console information
+  print(paste("METODO:", i,  names(methods)[i]))
+  print("")
+  
+  # model result
+  final_model <- efficiency_estimation (
+    data = data,
+    x = x,
+    y = y,
+    #z = z,
+    orientation = orientation,
+    trControl = trControl,
+    method = methods[i],
+    target_method = target_method,
+    metric = metric,
+    hold_out = hold_out,
+    convexity = convexity,
+    returns = returns
+  )
+  
+  # detecting importance variables
+  # necesary data to calculate importance in rminer
+  train_data <- final_model$final_model[["trainingData"]]
+  names(train_data)[1] <- "ClassEfficiency"
+  
+  dataset_dummy <- model.matrix(ClassEfficiency~ . - 1, data = train_data)
+  train_data <- cbind(train_data[1], dataset_dummy)
+  
+  train_data <- train_data[,c(2:length(train_data),1)]
+  
+  # importance with our model of Caret
+  mypred <- function(M, data) {
+    return (predict(M, data[-length(data)], type = "prob"))
+  }
+  
+  # Define methods and measures
+  methods_SA <- c("1D-SA") # c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
+  measures_SA <- c("AAD") #  c("AAD", "gradient", "variance", "range")
+  
+  levels <- 7
+  
+  if (names(methods)[i] == "nnet") {
+    # with rminer
+    m <- rminer::fit(
+      ClassEfficiency ~.,
+      data = train_data,
+      model = "mlp",
+      scale = "none",
+      size = final_model$final_model$bestTune$size,
+      decay = final_model$final_model$bestTune$decay
+      #entropy = FALSE
+      #softmax = TRUE
+    )
+    
+    # Calculate the importance for the current method and measure
+    importance <- Importance(
+      M = m,
+      RealL = levels, # Levels
+      data = train_data,
+      method = methods_SA,
+      measure = measures_SA,
+      baseline = "mean", # mean, median, with the baseline example (should have the same attribute names as data).
+      responses = TRUE
+    )
+    
+  } else {
+    # Calculate the importance for the current method and measure
+    importance <- Importance(
+      M = final_model$final_model$finalModel,
+      RealL = levels, # Levels
+      data = train_data, # data
+      method = methods_SA,
+      measure = measures_SA,
+      baseline = "mean", # mean, median, with the baseline example (should have the same attribute names as data).
+      responses = TRUE,
+      PRED = mypred,
+      outindex = length(train_data) # length(train_data)
+    )
+  }
+  
+  result_SA <- as.data.frame(t((round(importance$imp, 3))))[, -length(importance$imp)]
+  rownames(result_SA) <- NULL
+  names(result_SA) <- names(train_data)[-length(train_data)]
+  
+  # information model
+  list <- list()
+  
+  list[[1]] <- final_model$final_model
+  list[[2]] <- final_model$selected_model_metrics
+  list[[3]] <- importance
+  list[[4]] <- result_SA
+  
+  names(list) <- c("finalModel", "metrics", "SA", "imporance")
+  
+  list_method[[i]] <- list
+  
+} # end bucle for (methods)  
+
+names(list_method) <- names(methods)
+
 
 ################################################################################
 ### probabilities

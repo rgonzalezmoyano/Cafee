@@ -73,7 +73,7 @@ compute_target <- function (
         } else {
                 
           # Increase by 0.1
-          incr <- incr + 0.01
+          incr <- incr + 0.1
                 
           # the dmu with the increments of 
           new_point <- cbind(data[i, x], data[i, y] * (1 + incr), data[i, z])

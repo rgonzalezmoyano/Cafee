@@ -58,14 +58,14 @@ target_method <- "BCC"
 
 set.seed(314)
 methods <- list (
-  # svm
-  "svmPoly" = list(
-      hyparams = list(
-        "degree" = c(1, 2, 3, 4, 5),
-        "scale" = c(0.001, 0.1, 1, 10, 100),
-        "C" = c(0.001, 0.1, 1, 10, 100)
-      )
-  ),
+  # # svm
+  # "svmPoly" = list(
+  #     hyparams = list(
+  #       "degree" = c(1, 2, 3, 4, 5),
+  #       "scale" = c(0.001, 0.1, 1, 10, 100),
+  #       "C" = c(0.001, 0.1, 1, 10, 100)
+  #     )
+  # ),
   # neuronal network
   "nnet" = list(
     hyparams = list(
@@ -210,6 +210,26 @@ for (i in 1:length(methods)) {
   result_SA <- as.data.frame(t((round(importance$imp, 3))))[, -length(importance$imp)]
   rownames(result_SA) <- NULL
   names(result_SA) <- names(train_data)[-length(train_data)]
+  
+  # to get probabilities senarios
+  scenarios <- seq(0.65, 0.95, 0.05)
+  
+  if (names(methods)[i] == "nnet") {
+    final_model_p <- final_model$final_model
+  } else {
+    final_model_p <- final_model$final_model$finalModel
+  }
+  
+  data_scenarios <- compute_target (
+    data = data[, c(x,y)],
+    x = 1:length(x),
+    y = (length(x)+1):(length(x)+length(y)),
+    #z = z,
+    final_model = final_model_p,
+    # orientation = orientation,
+    scenarios = scenarios 
+  )
+  
   
   # information model
   list <- list()
