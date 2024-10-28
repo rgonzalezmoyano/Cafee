@@ -219,16 +219,41 @@ for (i in 1:length(methods)) {
   } else {
     final_model_p <- final_model$final_model$finalModel
   }
+  data <- data[, c(x,y)]
+  x <- 1:4
+  y <- 5
+  final_model <- final_model$final_model
   
-  data_scenarios <- compute_target (
-    data = data[, c(x,y)],
-    x = 1:length(x),
-    y = (length(x)+1):(length(x)+length(y)),
-    #z = z,
-    final_model = final_model_p,
-    # orientation = orientation,
-    scenarios = scenarios 
+  # matrix with optimal values based on probability of being efficient
+  n_scenarios <- length(scenarios)
+  
+  data_contr <- as.data.frame(
+    matrix(
+      data = NA,
+      ncol = n_scenarios,
+      nrow = nrow(data)
+    )
   )
+  
+  names(data_contr) <- c(scenarios) 
+  
+  colum <- 1
+  for (e in 1:length(scenarios)) {
+    data_scenarios <- compute_target (
+      data = data[, c(x,y)],
+      x = 1:length(x),
+      y = (length(x)+1):(length(x)+length(y)),
+      #z = z,
+      final_model = final_model_p,
+      # orientation = orientation,
+      cut_off = scenarios[e]
+    )
+    
+    data_contr[, colum] <- data_scenarios[, y]
+    
+    colum <- colum + 1
+  }
+  
   
   
   # information model
