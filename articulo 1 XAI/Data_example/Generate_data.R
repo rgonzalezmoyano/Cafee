@@ -36,7 +36,7 @@ z <- NULL
 # import
 
 # different types to label
-target_method <- "additive"
+target_method <- "BCC"
 
 set.seed(314)
 methods <- list (
@@ -47,49 +47,12 @@ methods <- list (
       "C" = c(1)
     )
    )
-  
-  # # svm
-  # "svmPoly" = list(
-  #     hyparams = list(
-  #       "degree" = c(1, 2, 3, 4, 5),
-  #       "scale" = c(0.001, 0.1, 1, 10, 100),
-  #       "C" = c(0.001, 0.1, 1, 10, 100)
-  #     )
-  # ),
-  # "svmRadial" = list(
-  #   hyparams = list(
-  #     "sigma" = c(0.01, 0.1, 1, 10, 100),
-  #     "C" = c(0.001, 0.1, 1, 10, 100)
-  #   )
-  # ),
-  
-  # # random forest
-  # "rf" = list (
-  #   options = list (
-  #     ntree = c(500) # c(100, 500, 1000)
-  #   ),
-  #   hyparams = list(
-  #     mtry = c(4)
-  #   )
-  # ),
-  
-  # # neuronal network
-  # "nnet" = list(
-  #   hyparams = list(
-  #     "size" = c(1, 5, 10, 20),
-  #     "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
-  #   ),
-  #   options = list (
-  #     maxit = 1000
-  #   )
-  #   
-  # )
-  
 )
 
 # =========== #
 # score cafee #
 # =========== #    
+
 
 # efficiency orientation
 orientation <- "output"
@@ -107,6 +70,8 @@ MySummary <- function (data, lev = NULL, model = NULL) {
   pre_rec <- prSummary(data, lev, model)
   
   c(acc_kpp, auc_sen_spe, pre_rec)
+  
+  
 } 
 
 # Parameters for controlling the training process
@@ -118,40 +83,60 @@ trControl <- trainControl (
   savePredictions = "all"
 )
 
-hold_out <- 0
-
+hold_out <- 0.00
 # https://topepo.github.io/caret/train-models-by-tag.html
 
 metric = "Accuracy"
 
 convexity <- TRUE
-
-# preProcess
-# data <- data_2018
-# # data <- data[1:30, ]
-# idx_NA <- which(is.na(data$SCHLTYPE))
-# data <- data[-idx_NA,]
-
-# save scores region
-list_region <- list()
-
-# new  dataset of scores result
-scores <- matrix (
-  ncol = length(methods),
-  nrow = nrow(data)
-) 
-
-# change to data.frame
-scores <- as.data.frame(scores)
-
-# change names
-score_names <- names(methods)
-names(scores) <- score_names
+returns <- "variable"
 
 # save model information
-list_method <- list()  
+list_method <- list() 
 
+################################################################################
+### probabilities
+# to get probabilities senarios
+scenarios <- seq(0.65, 0.95, 0.1) 
+n_scenarios <- length(scenarios)
+idx_vble <- 1:length(c(x,y))
 
+data_contr <- as.data.frame(matrix(
+  data = NA,
+  ncol = ncol(data[, -length(data)]) + n_scenarios, # final_model$final_model$trainingData
+  nrow = nrow(data[, -length(data)]) # final_model$final_model$trainingData
+))
+
+# Copiar las columnas x e y de los datos originales
+data_contr[, idx_vble] <- as.matrix(data[, -length(data)])
+
+names(data_contr) <- c(names(data[, -length(data)]), scenarios) # "class"
+
+# train_data_loop <- final_model$final_model$trainingData[,c(2:length(final_model$final_model$trainingData),1)]
+
+loop <- 1
+for (prob in scenarios) {
+  print(prob)
+  #bset cut off is selected
+  scores_cafee <- compute_scores (
+    data = data[, -length(data)],  #data, train_data_loop
+    x = 1:length(x),
+    y = (length(x)+1):(length(x)+length(y)),
+    #z = z,
+    final_model = final_model$final_model,
+    orientation = orientation,
+    cut_off = prob #final_model$final_model[["cut_off"]]
+  )
+  
+  data_contr[, length(data[, -length(data)]) + loop] <- (scores_cafee * min(data$y)) 
+  
+  loop <- loop + 1
+}
+
+library(openxlsx) 
+write.xlsx(data_contr, file = "data_contr.xlsx")
+
+################################################################################
 
 ### determinate efficient class
 efficient_data_0 <- data[, class_efficiency == "efficient"]

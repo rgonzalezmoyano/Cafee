@@ -58,14 +58,14 @@ target_method <- "BCC"
 
 set.seed(314)
 methods <- list (
-  # # svm
-  # "svmPoly" = list(
-  #     hyparams = list(
-  #       "degree" = c(1, 2, 3, 4, 5),
-  #       "scale" = c(0.001, 0.1, 1, 10, 100),
-  #       "C" = c(0.001, 0.1, 1, 10, 100)
-  #     )
-  # ),
+  # svm
+  "svmPoly" = list(
+      hyparams = list(
+        "degree" = c(1, 2, 3, 4, 5),
+        "scale" = c(0.001, 0.1, 1, 10, 100),
+        "C" = c(0.001, 0.1, 1, 10, 100)
+      )
+  ),
   # neuronal network
   "nnet" = list(
     hyparams = list(
@@ -227,6 +227,11 @@ for (i in 1:length(methods)) {
   
 names(list_method) <- names(methods)
 
+
+
+
+
+
 ## train NN KERAS
 # load keras library and others
 library(keras)
@@ -288,35 +293,35 @@ idx_vble <- 1:length(c(x,y))
 
 data_contr <- as.data.frame(matrix(
   data = NA,
-  ncol = ncol(final_model$final_model$trainingData) + n_scenarios,
-  nrow = nrow(final_model$final_model$trainingData)
+  ncol = ncol(data[, -length(data)]) + n_scenarios, # final_model$final_model$trainingData
+  nrow = nrow(data[, -length(data)]) # final_model$final_model$trainingData
 ))
 
 # Copiar las columnas x e y de los datos originales
-data_contr[, idx_vble] <- as.matrix(final_model$final_model$trainingData[, 1 + idx_vble])
+# data_contr[, idx_vble] <- as.matrix(final_model$final_model$trainingData[, 1 + idx_vble])
 
-# Usar apply para hacer las predicciones en cada fila
-data_contr[, max(idx_vble) + 1] <- apply(final_model$final_model$trainingData[, 1 + idx_vble], 1, function(fila) {
-  
-  # Convierte la fila en un data frame con nombres de columna apropiados
-  nueva_fila <- as.data.frame(t(fila))
-  colnames(nueva_fila) <- colnames(final_model$final_model$trainingData)[1 + idx_vble]
-  
-  # Predicción con el modelo
-  predict(final_model$final_model, newdata = nueva_fila)[1]
-  
-})
+# # Usar apply para hacer las predicciones en cada fila
+# data_contr[, max(idx_vble) + 1] <- apply(final_model$final_model$trainingData[, 1 + idx_vble], 1, function(fila) {
+#   
+#   # Convierte la fila en un data frame con nombres de columna apropiados
+#   nueva_fila <- as.data.frame(t(fila))
+#   colnames(nueva_fila) <- colnames(final_model$final_model$trainingData)[1 + idx_vble]
+#   
+#   # Predicción con el modelo
+#   predict(final_model$final_model, newdata = nueva_fila)[1]
+#   
+# })
 
-names(data_contr) <- c(names(train_data[-length(train_data)]), "class", scenarios)
+names(data_contr) <- c(names(data[, -length(data)]), scenarios) # "class"
 
-train_data_loop <- final_model$final_model$trainingData[,c(2:length(final_model$final_model$trainingData),1)]
+# train_data_loop <- final_model$final_model$trainingData[,c(2:length(final_model$final_model$trainingData),1)]
 
 loop <- 1
 for (prob in scenarios) {
   print(prob)
   #bset cut off is selected
   scores_cafee <- compute_scores (
-    data = train_data_loop[, -length(train_data)],  #data,
+    data = data[, -length(data)],  #data, train_data_loop
     x = 1:length(x),
     y = (length(x)+1):(length(x)+length(y)),
     #z = z,
@@ -325,10 +330,13 @@ for (prob in scenarios) {
     cut_off = prob #final_model$final_model[["cut_off"]]
   )
   
-  data_contr[, length(final_model$final_model$trainingData) + loop] <- (scores_cafee * min(train_data_loop$y)) 
+  data_contr[, length(data[, -length(data)]) + loop] <- (scores_cafee * min(data$y)) 
   
   loop <- loop + 1
 }
+
+# library(openxlsx) 
+# write.xlsx(data_contr, file = "data_contr.xlsx")
 
 # # ====== #
 # # server #
