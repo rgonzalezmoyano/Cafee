@@ -35,8 +35,8 @@ compute_scores <- function (
     
     for (i in 1:nrow(data)) {
 
-      # print(paste("DMU: ", i))
-      # print(paste("En curso:", (i/nrow(data)) * 100))
+      print(paste("DMU: ", i))
+      print(paste("En curso:", (i/nrow(data)) * 100))
       data[i,y] <- min_value_y
       #print(data[i,])
       

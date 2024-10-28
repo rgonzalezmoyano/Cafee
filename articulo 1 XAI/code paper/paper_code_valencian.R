@@ -7,9 +7,9 @@ source("/home/PI/ricardo.gonzalezm/cafee/R/projection.R")
 source("/home/PI/ricardo.gonzalezm/cafee/R/simulations.R")
 source("/home/PI/ricardo.gonzalezm/cafee/R/training.R")
 
-# ========== #
-# Spain 2018 #
-# ========== #
+# ============================= #
+# valencian comunity  companies #
+# ============================= #
 
 # ===
 # libraries
@@ -58,14 +58,14 @@ target_method <- "BCC"
 
 set.seed(314)
 methods <- list (
-  # svm
-  "svmPoly" = list(
-      hyparams = list(
-        "degree" = c(1, 2, 3, 4, 5),
-        "scale" = c(0.001, 0.1, 1, 10, 100),
-        "C" = c(0.001, 0.1, 1, 10, 100)
-      )
-  ),
+  # # svm
+  # "svmPoly" = list(
+  #     hyparams = list(
+  #       "degree" = c(1, 2, 3, 4, 5),
+  #       "scale" = c(0.001, 0.1, 1, 10, 100),
+  #       "C" = c(0.001, 0.1, 1, 10, 100)
+  #     )
+  # ),
   # neuronal network
   "nnet" = list(
     hyparams = list(
@@ -170,7 +170,7 @@ for (i in 1:length(methods)) {
   
   if (names(methods)[i] == "nnet") {
     # with rminer
-    m <- fit(
+    m <- rminer::fit(
       ClassEfficiency ~.,
       data = train_data,
       model = "mlp",
@@ -227,6 +227,60 @@ for (i in 1:length(methods)) {
   
 names(list_method) <- names(methods)
 
+## train NN KERAS
+# load keras library and others
+library(keras)
+library(tidyverse)
+
+k_data <- final_model$final_model$trainingData
+nrow(k_data)
+
+names(k_data)[1] <- "ClassEfficiency"
+
+k_data <- k_data[,c(2:length(k_data), 1)]
+
+k_data$ClassEfficiency <- as.numeric(k_data$ClassEfficiency)
+# 1 efficient; 2 #ineficient
+
+k_data$ClassEfficiency <- k_data$ClassEfficiency - 1
+
+k_folds <- createFolds(k_data$ClassEfficiency, k = trControl$number)
+
+k_x <- 1:length(x)
+k_y <- (length(x) + 1):(length(x) + length(y))
+
+
+
+fold <- 1
+for (fold in 1:length(k_folds)) {
+  
+  # dataset of CV
+  index_fold <- k_folds[[fold]]
+
+  # # separating into train and test
+  # index <- sample(2, nrow(k_data_cv), replace = TRUE, prob = c(train_threshold, 1 - train_threshold))
+  
+  x_train <- as.matrix(k_data[-index_fold, c(k_x, k_y)])
+  y_train <- k_data[-index_fold, max(k_y) + 1]
+
+  x_test <- as.matrix(k_data[index_fold, c(k_x, k_y)])
+  y_test <- k_data[index_fold, max(k_y) + 1]
+  
+  # save predictions to create confusion matrix
+  y_test01 <- y_test 
+  
+  y_train <- to_categorical(y_train, 2) #4 categorias
+  y_test <- to_categorical(y_test, 2)
+
+  
+}
+
+
+
+
+
+
+### probabilities
 # to get probabilities senarios
 scenarios <- seq(0.65, 0.95, 0.1) 
 n_scenarios <- length(scenarios)
