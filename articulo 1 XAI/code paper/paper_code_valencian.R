@@ -227,7 +227,7 @@ for (i in 1:length(methods)) {
   
 names(list_method) <- names(methods)
 
-
+save(list_method, file = "resultados_art_XAI_CV.RData")
 
 
 
@@ -237,7 +237,7 @@ names(list_method) <- names(methods)
 library(keras)
 library(tidyverse)
 
-k_data <- final_model$final_model$trainingData
+k_data <- list_method[["svmPoly"]][["finalModel"]][["trainingData"]]
 nrow(k_data)
 
 names(k_data)[1] <- "ClassEfficiency"
@@ -286,6 +286,8 @@ for (fold in 1:length(k_folds)) {
 
 
 ### probabilities
+get_prob_model <- list_method
+
 # to get probabilities senarios
 scenarios <- seq(0.65, 0.95, 0.1) 
 n_scenarios <- length(scenarios)
@@ -293,12 +295,13 @@ idx_vble <- 1:length(c(x,y))
 
 data_contr <- as.data.frame(matrix(
   data = NA,
-  ncol = ncol(data[, -length(data)]) + n_scenarios, # final_model$final_model$trainingData
-  nrow = nrow(data[, -length(data)]) # final_model$final_model$trainingData
+  ncol = ncol(data[, c(x,y)]) + n_scenarios, # final_model$final_model$trainingData
+  nrow = nrow(data[, c(x,y)]) # final_model$final_model$trainingData
 ))
 
 # Copiar las columnas x e y de los datos originales
 # data_contr[, idx_vble] <- as.matrix(final_model$final_model$trainingData[, 1 + idx_vble])
+data_contr[, idx_vble] <- as.matrix(data[, c(x, y)])
 
 # # Usar apply para hacer las predicciones en cada fila
 # data_contr[, max(idx_vble) + 1] <- apply(final_model$final_model$trainingData[, 1 + idx_vble], 1, function(fila) {
@@ -312,7 +315,7 @@ data_contr <- as.data.frame(matrix(
 #   
 # })
 
-names(data_contr) <- c(names(data[, -length(data)]), scenarios) # "class"
+names(data_contr) <- c(names(data[, c(x,y)]), scenarios) # "class"
 
 # train_data_loop <- final_model$final_model$trainingData[,c(2:length(final_model$final_model$trainingData),1)]
 
@@ -321,22 +324,22 @@ for (prob in scenarios) {
   print(prob)
   #bset cut off is selected
   scores_cafee <- compute_scores (
-    data = data[, -length(data)],  #data, train_data_loop
+    data = data[, c(x,y)],  #data, train_data_loop
     x = 1:length(x),
     y = (length(x)+1):(length(x)+length(y)),
     #z = z,
-    final_model = final_model$final_model,
+    final_model = get_prob_model[["nnet"]][["finalModel"]],
     orientation = orientation,
     cut_off = prob #final_model$final_model[["cut_off"]]
   )
   
-  data_contr[, length(data[, -length(data)]) + loop] <- (scores_cafee * min(data$y)) 
+  data_contr[, (length(x)+1):(length(x)+length(y)) + loop] <- (scores_cafee * min(data[, y])) 
   
   loop <- loop + 1
 }
 
-# library(openxlsx) 
-# write.xlsx(data_contr, file = "data_contr.xlsx")
+library(openxlsx) 
+write.xlsx(data_contr, file = "data_contr_NN.xlsx")
 
 # # ====== #
 # # server #
