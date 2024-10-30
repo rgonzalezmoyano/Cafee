@@ -47,14 +47,15 @@ compute_target <- function (
       print(paste("DMU: ", i))
       print(paste("En curso:", (round(i/nrow(data), 4) * 100)))
       
-      # Inicializar prob_eff
-      prob_eff <- predict(final_model, data[i, ], type = "prob")[1]
-      
       # Inicializar el rango inicial de 'y'
-      range_y <- seq(from = min_value_y, to = max_value_y, length.out = 10)
+      range_y <- seq(from = 0, to = max_value_y * 2, length.out = 10)
       found_cut_off <- FALSE
+      iter_count <- 0
       
       while (!found_cut_off) {
+        
+        iter_count <- iter_count + 1
+        print(iter_count)
         
         # Crear la matriz para aplicar predict()
         matrix_eff <- as.data.frame(matrix(
@@ -69,15 +70,18 @@ compute_target <- function (
         # Asignar valores para 'x' y 'y' 
         matrix_eff[, x] <- data[i, x]
         matrix_eff[, y] <- range_y
-        
+       
         # Calcular probabilidad de eficiencia para cada fila
         eff_vector <- apply(matrix_eff, 1, function(row) {
+          
           row_df <- as.data.frame(t(row))
           colnames(row_df) <- names(data)
-          predict(final_model, row_df, type = "prob")[1]
+          
+          pred <- unlist(predict(final_model, row_df, type = "prob")[1])
+          
+          return(pred)
         })
         
-        eff_vector <- unlist(eff_vector)
         
         # Verificar si alguna predicción coincide con el cut_off
         if (any(round(eff_vector, 3) == cut_off)) {
@@ -85,20 +89,32 @@ compute_target <- function (
           found_cut_off <- TRUE
           
           # Guardar los valores de 'x' y 'y' que coinciden con el cut_off
-          matching_x <- matrix_eff[idx, x]
-          matching_y <- matrix_eff[idx, y]
+          data_scenario[i, x] <- matrix_eff[idx, x]
+          data_scenario[i, y] <- matrix_eff[idx, y]
           
-          data_scenario[i, x] <- matching_x
-          data_scenario[i, y] <- matching_y
+          print("end while")
+          break
           
         } else {
+          
           # Encontrar el intervalo donde se encuentra el cut_off
-          pos <- findInterval(cut_off, eff_vector)
+          #pos <- findInterval(cut_off, eff_vector)
+          pos <- which(eff_vector < cut_off & c(eff_vector[-1], Inf) > cut_off)[1]
+          
+          # if (length(pos) == 2) {
+          #   pos <- pos[1]
+          # } else if (length(pos) == 2) {
+          #   pos <- pos[2]
+          # } else {
+          #   pos <- pos[round(length(pos)/2, 0)]
+          # }
           
           # Si 'cut_off' está fuera del rango, romper el bucle
-          if (pos == 0 || pos == length(eff_vector)) {
-            print(paste("El valor cut_off está fuera del rango para DMU:", i))
-            break
+          if (pos == length(eff_vector)) {
+            
+            diference <- range_y[10] - range_y[9]
+            range_y <- c(range_y, max(range_y[10] + diference))
+            
           }
           
           # Refinar el rango de 'y' entre las posiciones pos y pos + 1
@@ -106,9 +122,24 @@ compute_target <- function (
           
         }
         
-      }
-      
-    }
+        if (range_y[10] - range_y[1] < 0.0001) {
+          
+          data_scenario[i, x] <- matrix_eff[5, x]
+          data_scenario[i, y] <- matrix_eff[5, y]
+          print("end while by dif")
+          found_cut_off <- TRUE
+          
+        }
+        
+        if (iter_count == 20) {
+          
+          data_scenario[i, x] <- matrix_eff[5, x]
+          data_scenario[i, y] <- matrix_eff[5, y]
+          print("end while by iter")
+          found_cut_off <- TRUE
+        }
+      } # end while
+    }# end for
     
   return(data_scenario)
       

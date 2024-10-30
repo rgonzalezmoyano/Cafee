@@ -66,11 +66,22 @@ methods <- list (
   #       "C" = c(0.001, 0.1, 1, 10, 100)
   #     )
   # ),
+  # # neuronal network
+  # "nnet" = list(
+  #   hyparams = list(
+  #     "size" = c(1, 5, 10, 20),
+  #     "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
+  #     ),
+  #   options = list (
+  #     maxit = 1000,
+  #     softmax = TRUE
+  #   )
+  # )
   # neuronal network
   "nnet" = list(
     hyparams = list(
-      "size" = c(1, 5, 10, 20),
-      "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
+      "size" = c(5),
+      "decay" = c(0.1)
       ),
     options = list (
       maxit = 1000,
@@ -211,26 +222,30 @@ for (i in 1:length(methods)) {
   rownames(result_SA) <- NULL
   names(result_SA) <- names(train_data)[-length(train_data)]
   
-  # to get probabilities senarios
-  scenarios <- seq(0.65, 0.95, 0.05)
-  
   if (names(methods)[i] == "nnet") {
     final_model_p <- final_model$final_model
   } else {
-    final_model_p <- final_model$final_model$finalModel
+    final_model_p <- final_model$final_model
   }
-  data <- data[, c(x,y)]
-  x <- 1:4
-  y <- 5
-  final_model <- final_model$final_model
+  
+  # to get probabilities senarios
+  scenarios <- seq(0.65, 0.95, 0.05)
+  
+ #  load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/resultados_art_XAI_CV.RData")
+ # data_copy <- data
+ # data <- data[, c(x,y)]
+ #  x <- 1:4
+ #  y <- 5
+ #  final_model_p <-  list_method[["nnet"]][["finalModel"]]
+ #  final_model <- list_method[["nnet"]][["finalModel"]]
+ #  cut_off <- 0.95
+ # e <- 7
   
   # matrix with optimal values based on probability of being efficient
-  n_scenarios <- length(scenarios)
-  
   data_contr <- as.data.frame(
     matrix(
       data = NA,
-      ncol = n_scenarios,
+      ncol = length(scenarios),
       nrow = nrow(data)
     )
   )
@@ -249,12 +264,10 @@ for (i in 1:length(methods)) {
       cut_off = scenarios[e]
     )
     
-    data_contr[, colum] <- data_scenarios[, y]
+    data_contr[, colum] <- data_scenarios[, (length(x)+1):(length(x)+length(y))]
     
     colum <- colum + 1
   }
-  
-  
   
   # information model
   list <- list()
@@ -273,27 +286,12 @@ for (i in 1:length(methods)) {
   
 names(list_method) <- names(methods)
 
-# save(list_method, file = "resultados_art_XAI_CV.RData")
-
-### probabilities
-get_prob_model <- list_method
-
-# to get probabilities senarios
-scenarios <- seq(0.65, 0.95, 0.1)
-
-data_scenarios <- compute_target (
-  data = data[, c(x,y)],
-  x = 1:length(x),
-  y = (length(x)+1):(length(x)+length(y)),
-  #z = z,
-  final_model = get_prob_model[["nnet"]][["finalModel"]],
-  # orientation = orientation,
-  scenarios = scenarios 
-)
+#save(list_method, file = "resultados_art_XAI_CV.RData")
 
 
-library(openxlsx) 
-write.xlsx(data_contr, file = "data_contr_NN.xlsx")
+# 
+# library(openxlsx)
+# write.xlsx(list_method$nnet$metrics, file = "metrics_NN.xlsx")
 
 
 
