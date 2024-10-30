@@ -1,11 +1,11 @@
-source("/home/PI/ricardo.gonzalezm/cafee/R/balanced_data.R")
-source("/home/PI/ricardo.gonzalezm/cafee/R/compute_scores.R")
-source("/home/PI/ricardo.gonzalezm/cafee/R/efficiency_estimation.R")
-source("/home/PI/ricardo.gonzalezm/cafee/R/efficiency_scores.R")
-source("/home/PI/ricardo.gonzalezm/cafee/R/preprocessing.R")
-source("/home/PI/ricardo.gonzalezm/cafee/R/projection.R")
-source("/home/PI/ricardo.gonzalezm/cafee/R/simulations.R")
-source("/home/PI/ricardo.gonzalezm/cafee/R/training.R")
+# source("/home/PI/ricardo.gonzalezm/cafee/R/balanced_data.R")
+# source("/home/PI/ricardo.gonzalezm/cafee/R/compute_scores.R")
+# source("/home/PI/ricardo.gonzalezm/cafee/R/efficiency_estimation.R")
+# source("/home/PI/ricardo.gonzalezm/cafee/R/efficiency_scores.R")
+# source("/home/PI/ricardo.gonzalezm/cafee/R/preprocessing.R")
+# source("/home/PI/ricardo.gonzalezm/cafee/R/projection.R")
+# source("/home/PI/ricardo.gonzalezm/cafee/R/simulations.R")
+# source("/home/PI/ricardo.gonzalezm/cafee/R/training.R")
 
 # ============================= #
 # valencian comunity  companies #
@@ -32,7 +32,7 @@ library(rminer)
 # PISA 2018 #
 #############
 load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+#load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 data <- firms
 
 # save a copy
@@ -77,6 +77,15 @@ methods <- list (
   #     softmax = TRUE
   #   )
   # )
+  
+  # svm
+  "svmPoly" = list(
+      hyparams = list(
+        "degree" = c(1),
+        "scale" = c(100),
+        "C" = c(0.1)
+      )
+  ),
   # neuronal network
   "nnet" = list(
     hyparams = list(
@@ -228,31 +237,37 @@ for (i in 1:length(methods)) {
     final_model_p <- final_model$final_model
   }
   
+  print(paste("Inputs importance: ",result_SA[1:length(x)]))
+  print(paste("Outputs importance: ",result_SA[(length(x)+1):(length(x)+length(y))]))
+
+  
   # to get probabilities senarios
   scenarios <- seq(0.65, 0.95, 0.05)
   
- #  load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/resultados_art_XAI_CV.RData")
- # data_copy <- data
- # data <- data[, c(x,y)]
- #  x <- 1:4
- #  y <- 5
- #  final_model_p <-  list_method[["nnet"]][["finalModel"]]
- #  final_model <- list_method[["nnet"]][["finalModel"]]
- #  cut_off <- 0.95
- # e <- 7
-  
+  # load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/resultados_art_XAI_CV.RData")
+  data_copy <- data
+  data <- data[, c(x,y)]
+  x <- 1:4
+  y <- 5
+  # final_model_p <-  list_method[["nnet"]][["finalModel"]]
+  final_model <- list_method[["nnet"]][["finalModel"]]
+  cut_off <- 0.65
+  imp_vector = result_SA
+  e <- 7
+  # 
   # matrix with optimal values based on probability of being efficient
   data_contr <- as.data.frame(
     matrix(
       data = NA,
-      ncol = length(scenarios),
+      ncol = length(x) + length(y) + length(scenarios),
       nrow = nrow(data)
     )
   )
   
   names(data_contr) <- c(scenarios) 
   
-  colum <- 1
+  data_list <- list()
+  
   for (e in 1:length(scenarios)) {
     data_scenarios <- compute_target (
       data = data[, c(x,y)],
@@ -261,13 +276,15 @@ for (i in 1:length(methods)) {
       #z = z,
       final_model = final_model_p,
       # orientation = orientation,
-      cut_off = scenarios[e]
+      cut_off = scenarios[e],
+      imp_vector = result_SA
     )
     
-    data_contr[, colum] <- data_scenarios[, (length(x)+1):(length(x)+length(y))]
+    data_list[[e]] <- data_scenarios
     
-    colum <- colum + 1
   }
+  
+  names(data_list) <- scenarios
   
   # information model
   list <- list()
@@ -276,29 +293,30 @@ for (i in 1:length(methods)) {
   list[[2]] <- final_model$selected_model_metrics
   list[[3]] <- importance
   list[[4]] <- result_SA
-  list[[5]] <- data_contr
+  list[[5]] <- data_list
 
   names(list) <- c("finalModel", "metrics", "SA", "imporance", "data_contrafactual")
   
   list_method[[i]] <- list
   
 } # end bucle for (methods)  
-  
+
 names(list_method) <- names(methods)
 
 #save(list_method, file = "resultados_art_XAI_CV.RData")
-
+# 
+# # library(openxlsx)
+# write.xlsx(list_method$nnet$metrics, file = "metrics_NN.xlsx")
+# write.xlsx(list_method$svmPoly$metrics, file = "metrics_SVM.xlsx")
 
 # 
+# 
+# data_complete_NN <- cbind(data[, c(x,y)], list_method[["nnet"]][["data_contrafactual"]])
+# data_complete_SVM <- cbind(data[, c(x,y)], list_method[["svmPoly"]][["data_contrafactual"]])
+
 # library(openxlsx)
-# write.xlsx(list_method$nnet$metrics, file = "metrics_NN.xlsx")
-
-
-
-
-
-
-
+# write.xlsx(data_complete_NN, file = "data_complete_NN.xlsx")
+# write.xlsx(data_complete_SVM, file = "data_complete_SVM.xlsx")
 
 
 

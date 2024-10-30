@@ -1,6 +1,17 @@
 ### Example simulation
 
 # libraries
+
+devtools::load_all()
+library(caret)
+library(Benchmarking)
+library(magrittr)
+library(dplyr)
+library(deaR)
+library(haven)
+library(e1071)
+library(rminer)
+
 library("ggplot2")
 library("rminer")
 
@@ -96,106 +107,7 @@ returns <- "variable"
 # save model information
 list_method <- list() 
 
-# bucle region
-for (i in 1:length(methods)) {
   
-  # console information
-  print(paste("METODO:", i,  names(methods)[i]))
-  print("")
-  
-  # model result
-  final_model <- efficiency_estimation (
-    data = data,
-    x = x,
-    y = y,
-    #z = z,
-    orientation = orientation,
-    trControl = trControl,
-    method = methods[i],
-    target_method = target_method,
-    metric = metric,
-    hold_out = hold_out,
-    convexity = convexity,
-    returns = returns
-  )
-  
-  # detecting importance variables
-  # necesary data to calculate importance in rminer
-  train_data <- final_model$final_model[["trainingData"]]
-  names(train_data)[1] <- "ClassEfficiency"
-  
-  dataset_dummy <- model.matrix(ClassEfficiency~ . - 1, data = train_data)
-  train_data <- cbind(train_data[1], dataset_dummy)
-  
-  train_data <- train_data[,c(2:length(train_data),1)]
-  
-  # importance with our model of Caret
-  mypred <- function(M, data) {
-    return (predict(M, data[-length(data)], type = "prob"))
-  }
-  
-  # Define methods and measures
-  methods_SA <- c("1D-SA") # c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
-  measures_SA <- c("AAD") #  c("AAD", "gradient", "variance", "range")
-  
-  levels <- 7
-  
-  if (names(methods)[i] == "nnet") {
-    # with rminer
-    m <- rminer::fit(
-      ClassEfficiency ~.,
-      data = train_data,
-      model = "mlp",
-      scale = "none",
-      size = final_model$final_model$bestTune$size,
-      decay = final_model$final_model$bestTune$decay
-      #entropy = FALSE
-      #softmax = TRUE
-    )
-    
-    # Calculate the importance for the current method and measure
-    importance <- Importance(
-      M = m,
-      RealL = levels, # Levels
-      data = train_data,
-      method = methods_SA,
-      measure = measures_SA,
-      baseline = "mean", # mean, median, with the baseline example (should have the same attribute names as data).
-      responses = TRUE
-    )
-    
-  } else {
-    # Calculate the importance for the current method and measure
-    importance <- Importance(
-      M = final_model$final_model$finalModel,
-      RealL = levels, # Levels
-      data = train_data, # data
-      method = methods_SA,
-      measure = measures_SA,
-      baseline = "mean", # mean, median, with the baseline example (should have the same attribute names as data).
-      responses = TRUE,
-      PRED = mypred,
-      outindex = length(train_data) # length(train_data)
-    )
-  }
-  
-  result_SA <- as.data.frame(t((round(importance$imp, 3))))[, -length(importance$imp)]
-  rownames(result_SA) <- NULL
-  names(result_SA) <- names(train_data)[-length(train_data)]
-  
-  # information model
-  list <- list()
-  
-  list[[1]] <- final_model$final_model
-  list[[2]] <- final_model$selected_model_metrics
-  list[[3]] <- importance
-  list[[4]] <- result_SA
-  
-  names(list) <- c("finalModel", "metrics", "SA", "imporance")
-  
-  list_method[[i]] <- list
-  
-} # end bucle for (methods)  
 
 names(list_method) <- names(methods)
 
@@ -203,44 +115,44 @@ names(list_method) <- names(methods)
 ################################################################################
 ### probabilities
 # to get probabilities senarios
-scenarios <- seq(0.65, 0.95, 0.1) 
-n_scenarios <- length(scenarios)
-idx_vble <- 1:length(c(x,y))
+scenarios <- seq(0.65, 0.95, 0.05)
 
-data_contr <- as.data.frame(matrix(
-  data = NA,
-  ncol = ncol(data[, -length(data)]) + n_scenarios, # final_model$final_model$trainingData
-  nrow = nrow(data[, -length(data)]) # final_model$final_model$trainingData
-))
+data_copy <- data
+data <- data[, c(x,y)]
 
-# Copiar las columnas x e y de los datos originales
-data_contr[, idx_vble] <- as.matrix(data[, -length(data)])
+final_model <- final_model$final_model
+cut_off <- 0.65
+imp_vector = result_SA
+# e <- 7
+# 
+# matrix with optimal values based on probability of being efficient
+data_contr <- as.data.frame(
+  matrix(
+    data = NA,
+    ncol = length(scenarios),
+    nrow = nrow(data)
+  )
+)
 
-names(data_contr) <- c(names(data[, -length(data)]), scenarios) # "class"
+names(data_contr) <- c(scenarios) 
 
-# train_data_loop <- final_model$final_model$trainingData[,c(2:length(final_model$final_model$trainingData),1)]
-
-loop <- 1
-for (prob in scenarios) {
-  print(prob)
-  #bset cut off is selected
-  scores_cafee <- compute_scores (
-    data = data[, -length(data)],  #data, train_data_loop
+colum <- 1
+for (e in 1:length(scenarios)) {
+  data_scenarios <- compute_target (
+    data = data[, c(x,y)],
     x = 1:length(x),
     y = (length(x)+1):(length(x)+length(y)),
     #z = z,
-    final_model = final_model$final_model,
-    orientation = orientation,
-    cut_off = prob #final_model$final_model[["cut_off"]]
+    final_model = final_model_p,
+    # orientation = orientation,
+    cut_off = scenarios[e],
+    imp_vector = result_SA
   )
   
-  data_contr[, length(data[, -length(data)]) + loop] <- (scores_cafee * min(data$y)) 
+  data_contr[, colum] <- data_scenarios[, (length(x)+1):(length(x)+length(y))]
   
-  loop <- loop + 1
+  colum <- colum + 1
 }
-
-library(openxlsx) 
-write.xlsx(data_contr, file = "data_contr.xlsx")
 
 ################################################################################
 
