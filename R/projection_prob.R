@@ -24,12 +24,12 @@ compute_target <- function (
       z <- 0
     }
     
-    # maximum and minimum values posibles a esperar
-    max_value_x <- apply(X = as.matrix(data[, x]), MARGIN = 2, FUN = max)
-    min_value_x <- apply(X = as.matrix(data[, x]), MARGIN = 2, FUN = min)
-      
-    max_value_y <- apply(X = as.matrix(data[, y]), MARGIN = 2, FUN = max)
-    min_value_y <- apply(X = as.matrix(data[, y]), MARGIN = 2, FUN = min)
+    # # maximum and minimum values posibles a esperar
+    # max_value_x <- apply(X = as.matrix(data[, x]), MARGIN = 2, FUN = max)
+    # min_value_x <- apply(X = as.matrix(data[, x]), MARGIN = 2, FUN = min)
+    #   
+    # max_value_y <- apply(X = as.matrix(data[, y]), MARGIN = 2, FUN = max)
+    # min_value_y <- apply(X = as.matrix(data[, y]), MARGIN = 2, FUN = min)
     
     # save data points from scenario
     data_scenario <- as.data.frame(
@@ -42,27 +42,34 @@ compute_target <- function (
     
     names(data_scenario) <- names(data)
     
+    # JA aproach
+    mean_x <- apply(as.matrix(data[,x]), 2, mean)
+    mean_y <- apply(as.matrix(data[,y]), 2, mean)
+    
+    score_imp_x <- as.numeric(imp_vector[x])
+    score_imp_y <- as.numeric(imp_vector[y])
+    
+    score_imp_x * mean_x
+    score_imp_y * mean_y
+    
+    betas <- as.data.frame(matrix(
+      data = NA,
+      ncol = 1,
+      nrow = nrow(data)
+    ))
+    
     # loop for each observation
     for (i in 1:nrow(data)) {
+      #browser()
       
+      #if(i == 5) {browser()}
       print(paste("DMU: ", i))
       print(paste("En curso:", (round(i/nrow(data), 4) * 100)))
       
       # Inicializar el rango inicial de 'y'
+      range_beta <- as.matrix(seq(from = -5, to = 20, length.out = 20))
       found_cut_off <- FALSE
       iter_count <- 0
-      
-      # JA aproach
-      mean_x <- apply(as.matrix(data[,x]), 2, mean)
-      mean_y <- apply(as.matrix(data[,y]), 2, mean)
-      
-      score_imp_x <- as.numeric(imp_vector[x])
-      score_imp_y <- as.numeric(imp_vector[y])
-      
-      score_imp_x * mean_x
-      score_imp_y * mean_y
-      
-      range_beta <- as.matrix(seq(from = -10, to = 2, length.out = 10))
       
       while (!found_cut_off) {
         
@@ -73,22 +80,33 @@ compute_target <- function (
         matrix_eff <- as.data.frame(matrix(
           data = NA,
           ncol = length(c(x, y)),
-          nrow = 10
+          nrow = length(range_beta)
         ))
         
         # Nombrar las columnas como en data original
         names(matrix_eff) <- names(data)
         
-        ###ESTE ES EL PROBLEMA
         # Asignar valores para 'x' y 'y'
-        matrix_eff[, x] <- data[i,x] + (range_beta * (-score_imp_x) * mean_x)
-        matrix(
-          data = (-score_imp_x) * mean_x,
+        matrix_eff[, x] <- data[i,x] 
+        
+        change_x <- matrix(
+          data = rep((-score_imp_x) * mean_x, each =  nrow(matrix_eff)),
           nrow = nrow(matrix_eff),
           ncol = length(mean_x)
         )
         
-        matrix_eff[, y] <- data[i,y] + (range_beta * (score_imp_y) * mean_y) 
+        matrix_eff[, x] <- sweep(change_x, 1, range_beta, "*") + matrix_eff[, x]
+        
+        
+        matrix_eff[, y] <- data[i, y] 
+        
+        change_y <- matrix(
+          data = rep((score_imp_y) * mean_y, each = nrow(matrix_eff)),
+          nrow = nrow(matrix_eff),
+          ncol = length(mean_y)
+        )
+        
+        matrix_eff[, y] <- sweep(change_y, 1, range_beta, "*") + matrix_eff[, y]
         
         # Calcular probabilidad de eficiencia para cada fila
         eff_vector <- apply(matrix_eff, 1, function(row) {
@@ -114,6 +132,8 @@ compute_target <- function (
           data_scenario[i, x] <- matrix_eff[idx, x]
           data_scenario[i, y] <- matrix_eff[idx, y]
           
+          betas[i,] <- range_beta[idx]
+          
           print("end while")
           break
           
@@ -131,23 +151,16 @@ compute_target <- function (
             pos <- pos[as.integer(length(pos)/2)]
           }
           
-          # Si 'cut_off' está fuera del rango, romper el bucle
-          if (pos == length(eff_vector)) {
-            
-            diference <- range_y[10] - range_y[9]
-            range_y <- c(range_y, max(range_y[10] + diference))
-            
-          }
-          
           # Refinar el rango de 'y' entre las posiciones pos y pos + 1
-          range_beta <- seq(from = range_beta[pos], to = range_beta[pos + 1], length.out = 10)
+          range_beta <- seq(from = range_beta[pos], to = range_beta[pos + 1], length.out = 20)
           
         }
         
-        if (range_beta[10] - range_beta[1] < 0.00000001) {
+        if (range_beta[20] - range_beta[1] < 0.00000001) {
           
-          data_scenario[i, x] <- matrix_eff[5, x]
-          data_scenario[i, y] <- matrix_eff[5, y]
+          data_scenario[i, x] <- matrix_eff[10, x]
+          data_scenario[i, y] <- matrix_eff[10, y]
+          betas[i,] <- range_beta[10]
           print("end while by dif")
           found_cut_off <- TRUE
           
@@ -155,14 +168,24 @@ compute_target <- function (
         
         if (iter_count == 20) {
           
-          data_scenario[i, x] <- matrix_eff[5, x]
-          data_scenario[i, y] <- matrix_eff[5, y]
+          data_scenario[i, x] <- matrix_eff[10, x]
+          data_scenario[i, y] <- matrix_eff[10, y]
+          
+          betas <- range_beta[10]
+          
           print("end while by iter")
           found_cut_off <- TRUE
+          
         }
+        
       } # end while
+      
     }# end for
     
-  return(data_scenario)
+    names(betas) <- "betas"
+    
+    data_scenario <- cbind(data_scenario, betas)
+    
+  return(list(data_scenario = data_scenario, betas = betas)) 
       
 }

@@ -58,46 +58,46 @@ target_method <- "BCC"
 
 set.seed(314)
 methods <- list (
-  # # svm
-  # "svmPoly" = list(
-  #     hyparams = list(
-  #       "degree" = c(1, 2, 3, 4, 5),
-  #       "scale" = c(0.001, 0.1, 1, 10, 100),
-  #       "C" = c(0.001, 0.1, 1, 10, 100)
-  #     )
-  # ),
-  # # neuronal network
-  # "nnet" = list(
-  #   hyparams = list(
-  #     "size" = c(1, 5, 10, 20),
-  #     "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
-  #     ),
-  #   options = list (
-  #     maxit = 1000,
-  #     softmax = TRUE
-  #   )
-  # )
-  
   # svm
   "svmPoly" = list(
       hyparams = list(
-        "degree" = c(1),
-        "scale" = c(100),
-        "C" = c(0.1)
+        "degree" = c(1, 2, 3, 4, 5),
+        "scale" = c(0.001, 0.1, 1, 10, 100),
+        "C" = c(0.001, 0.1, 1, 10, 100)
       )
   ),
   # neuronal network
   "nnet" = list(
     hyparams = list(
-      "size" = c(5),
-      "decay" = c(0.1)
+      "size" = c(1, 5, 10, 20),
+      "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
       ),
     options = list (
       maxit = 1000,
       softmax = TRUE
     )
   )
-  
+
+  # # svm
+  # "svmPoly" = list(
+  #     hyparams = list(
+  #       "degree" = c(1),
+  #       "scale" = c(100),
+  #       "C" = c(0.1)
+  #     )
+  # ),
+  # # neuronal network
+  # "nnet" = list(
+  #   hyparams = list(
+  #     "size" = c(5),
+  #     "decay" = c(0.1)
+  #     ),
+  #   options = list (
+  #     maxit = 1000,
+  #     softmax = TRUE
+  #   )
+  # )
+  # 
 )
 
 # =========== #
@@ -242,34 +242,24 @@ for (i in 1:length(methods)) {
 
   
   # to get probabilities senarios
-  scenarios <- seq(0.65, 0.95, 0.05)
+  scenarios <- seq(0.75, 0.95, 0.1)
   
-  # load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/resultados_art_XAI_CV.RData")
-  data_copy <- data
-  data <- data[, c(x,y)]
-  x <- 1:4
-  y <- 5
-  # final_model_p <-  list_method[["nnet"]][["finalModel"]]
-  final_model <- list_method[["nnet"]][["finalModel"]]
-  cut_off <- 0.65
-  imp_vector = result_SA
-  e <- 7
-  # 
-  # matrix with optimal values based on probability of being efficient
-  data_contr <- as.data.frame(
-    matrix(
-      data = NA,
-      ncol = length(x) + length(y) + length(scenarios),
-      nrow = nrow(data)
-    )
-  )
-  
-  names(data_contr) <- c(scenarios) 
-  
+  # # load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/resultados_art_XAI_CV.RData")
+  # data_copy <- data
+  # data <- data[, c(x,y)]
+  # x <- 1:4
+  # y <- 5
+  # # final_model_p <-  list_method[["nnet"]][["finalModel"]]
+  # final_model <- list_method[["nnet"]][["finalModel"]]
+  # cut_off <- 0.65
+  # imp_vector = result_SA
+  # e <- 7
+
   data_list <- list()
+  data_betas <- list()
   
   for (e in 1:length(scenarios)) {
-    data_scenarios <- compute_target (
+    data_scenario <- compute_target (
       data = data[, c(x,y)],
       x = 1:length(x),
       y = (length(x)+1):(length(x)+length(y)),
@@ -280,11 +270,12 @@ for (i in 1:length(methods)) {
       imp_vector = result_SA
     )
     
-    data_list[[e]] <- data_scenarios
-    
+    data_list[[e]] <- data_scenario$data_scenario
+    data_betas[[e]] <- data_scenario$betas
   }
   
   names(data_list) <- scenarios
+  names(data_betas) <- scenarios
   
   # information model
   list <- list()
@@ -294,8 +285,9 @@ for (i in 1:length(methods)) {
   list[[3]] <- importance
   list[[4]] <- result_SA
   list[[5]] <- data_list
+  list[[6]] <- data_betas
 
-  names(list) <- c("finalModel", "metrics", "SA", "imporance", "data_contrafactual")
+  names(list) <- c("finalModel", "metrics", "SA", "imporance", "data_contrafactual", "betas")
   
   list_method[[i]] <- list
   
@@ -303,7 +295,7 @@ for (i in 1:length(methods)) {
 
 names(list_method) <- names(methods)
 
-#save(list_method, file = "resultados_art_XAI_CV.RData")
+save(list_method, file = "resultados_art_XAI_CV.RData")
 # 
 # # library(openxlsx)
 # write.xlsx(list_method$nnet$metrics, file = "metrics_NN.xlsx")
@@ -319,10 +311,20 @@ names(list_method) <- names(methods)
 # write.xlsx(data_complete_SVM, file = "data_complete_SVM.xlsx")
 
 
+# get
 
+# Columnas en las que quieres contar los negativos
+columnas_interes <- c("total_assets", "employees", "fixed_assets", "personal_expenses", "operating_income")
 
+# Función para contar negativos en columnas específicas de un data.frame
+contar_negativos <- function(df, columnas) {
+  # Asegurarse de que las columnas existen en el data.frame
+  columnas <- columnas[columnas %in% names(df)]
+  # Contar los valores negativos en cada columna especificada
+  sapply(df[columnas], function(col) sum(col < 0, na.rm = TRUE))
+}
 
-
+resultado <- lapply(list_method$svmPoly$data_contrafactual, contar_negativos, columnas = columnas_interes)
 
 
 
