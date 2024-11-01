@@ -31,8 +31,8 @@ library(rminer)
 #############
 # PISA 2018 #
 #############
-load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-#load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+#load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 data <- firms
 
 # save a copy
@@ -257,6 +257,7 @@ for (i in 1:length(methods)) {
 
   data_list <- list()
   data_betas <- list()
+  metrics_list <- list()
   
   for (e in 1:length(scenarios)) {
     data_scenario <- compute_target (
@@ -272,10 +273,27 @@ for (i in 1:length(methods)) {
     
     data_list[[e]] <- data_scenario$data_scenario
     data_betas[[e]] <- data_scenario$betas
+    
+    main_metrics <- as.data.frame(matrix(
+      data = NA,
+      ncol = ncol(data[,c(x,y)]) + 1,
+      nrow = 3
+    ))
+    
+    main_metrics[1,] <- apply(data_scenario$data_scenario, 2, median, na.rm = TRUE)
+    main_metrics[2,] <- apply(data_scenario$data_scenario, 2, median, na.rm = TRUE)
+    main_metrics[3,] <- apply(data_scenario$data_scenario, 2, sd, na.rm = TRUE)
+    
+    names(main_metrics) <- names(data_scenario$data_scenario)
+    row.names(main_metrics) <- c("mean", "median", "sd")
+    
+    metrics_list[[e]] <- main_metrics
   }
   
   names(data_list) <- scenarios
   names(data_betas) <- scenarios
+  names(metrics_list) <- scenarios
+  
   
   # information model
   list <- list()
@@ -286,8 +304,9 @@ for (i in 1:length(methods)) {
   list[[4]] <- result_SA
   list[[5]] <- data_list
   list[[6]] <- data_betas
+  list[[7]] <- metrics_list
 
-  names(list) <- c("finalModel", "metrics", "SA", "imporance", "data_contrafactual", "betas")
+  names(list) <- c("finalModel", "metrics", "SA", "imporance", "data_contrafactual", "beta", "resume_metrics")
   
   list_method[[i]] <- list
   
@@ -297,18 +316,21 @@ names(list_method) <- names(methods)
 
 save(list_method, file = "resultados_art_XAI_CV.RData")
 # 
-# # library(openxlsx)
+library(openxlsx)
 # write.xlsx(list_method$nnet$metrics, file = "metrics_NN.xlsx")
 # write.xlsx(list_method$svmPoly$metrics, file = "metrics_SVM.xlsx")
-
+# 
 # 
 # 
 # data_complete_NN <- cbind(data[, c(x,y)], list_method[["nnet"]][["data_contrafactual"]])
 # data_complete_SVM <- cbind(data[, c(x,y)], list_method[["svmPoly"]][["data_contrafactual"]])
-
+# 
 # library(openxlsx)
 # write.xlsx(data_complete_NN, file = "data_complete_NN.xlsx")
 # write.xlsx(data_complete_SVM, file = "data_complete_SVM.xlsx")
+
+write.xlsx(list_method[["svmPoly"]][["resume_metrics"]], file = "statistics_metrics_SVM.xlsx")
+write.xlsx(list_method[["nnet"]][["resume_metrics"]], file = "statistics_metrics_NN.xlsx")
 
 
 # get

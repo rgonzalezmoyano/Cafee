@@ -182,7 +182,7 @@ compute_target <- function (
       
     }# end for
     
-    names(betas) <- "betas"
+    names(betas) <- "beta"
     
     data_scenario <- cbind(data_scenario, betas)
     
