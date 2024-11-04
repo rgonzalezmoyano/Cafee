@@ -26,7 +26,7 @@ compute_target <- function (
     
     # # maximum and minimum values posibles a esperar
     # max_value_x <- apply(X = as.matrix(data[, x]), MARGIN = 2, FUN = max)
-    # min_value_x <- apply(X = as.matrix(data[, x]), MARGIN = 2, FUN = min)
+    min_value_x <- apply(X = as.matrix(data[, x]), MARGIN = 2, FUN = min)
     #   
     # max_value_y <- apply(X = as.matrix(data[, y]), MARGIN = 2, FUN = max)
     # min_value_y <- apply(X = as.matrix(data[, y]), MARGIN = 2, FUN = min)
@@ -60,14 +60,25 @@ compute_target <- function (
     
     # loop for each observation
     for (i in 1:nrow(data)) {
-      #browser()
-      
-      #if(i == 5) {browser()}
+  
       print(paste("DMU: ", i))
       print(paste("En curso:", (round(i/nrow(data), 4) * 100)))
       
       # Inicializar el rango inicial de 'y'
       range_beta <- as.matrix(seq(from = -5, to = 20, length.out = 20))
+      
+      change_x <- matrix(
+        data = rep((-score_imp_x) * mean_x, each =  nrow(matrix_eff)),
+        nrow = nrow(matrix_eff),
+        ncol = length(mean_x)
+      )
+      
+      change_y <- matrix(
+        data = rep((score_imp_y) * mean_y, each = nrow(matrix_eff)),
+        nrow = nrow(matrix_eff),
+        ncol = length(mean_y)
+      )
+      
       found_cut_off <- FALSE
       iter_count <- 0
       
@@ -89,22 +100,9 @@ compute_target <- function (
         # Asignar valores para 'x' y 'y'
         matrix_eff[, x] <- data[i,x] 
         
-        change_x <- matrix(
-          data = rep((-score_imp_x) * mean_x, each =  nrow(matrix_eff)),
-          nrow = nrow(matrix_eff),
-          ncol = length(mean_x)
-        )
-        
         matrix_eff[, x] <- sweep(change_x, 1, range_beta, "*") + matrix_eff[, x]
         
-        
         matrix_eff[, y] <- data[i, y] 
-        
-        change_y <- matrix(
-          data = rep((score_imp_y) * mean_y, each = nrow(matrix_eff)),
-          nrow = nrow(matrix_eff),
-          ncol = length(mean_y)
-        )
         
         matrix_eff[, y] <- sweep(change_y, 1, range_beta, "*") + matrix_eff[, y]
         
@@ -177,6 +175,14 @@ compute_target <- function (
           found_cut_off <- TRUE
           
         }
+        
+        # if (any(matrix_eff[, x] < 0)) {
+        #   
+        #   browser()
+        #   
+        #   
+        #   
+        #   }
         
       } # end while
       

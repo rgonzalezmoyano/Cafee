@@ -58,19 +58,39 @@ target_method <- "BCC"
 
 set.seed(314)
 methods <- list (
+  # # svm
+  # "svmPoly" = list(
+  #     hyparams = list(
+  #       "degree" = c(1, 2, 3, 4, 5),
+  #       "scale" = c(0.001, 0.1, 1, 10, 100),
+  #       "C" = c(0.001, 0.1, 1, 10, 100)
+  #     )
+  # ),
+  # # neuronal network
+  # "nnet" = list(
+  #   hyparams = list(
+  #     "size" = c(1, 5, 10, 20),
+  #     "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
+  #     ),
+  #   options = list (
+  #     maxit = 1000,
+  #     softmax = TRUE
+  #   )
+  # )
+
   # svm
   "svmPoly" = list(
       hyparams = list(
-        "degree" = c(1, 2, 3, 4, 5),
-        "scale" = c(0.001, 0.1, 1, 10, 100),
-        "C" = c(0.001, 0.1, 1, 10, 100)
+        "degree" = c(1),
+        "scale" = c(100),
+        "C" = c(0.1)
       )
   ),
   # neuronal network
   "nnet" = list(
     hyparams = list(
-      "size" = c(1, 5, 10, 20),
-      "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
+      "size" = c(5),
+      "decay" = c(0.1)
       ),
     options = list (
       maxit = 1000,
@@ -78,26 +98,6 @@ methods <- list (
     )
   )
 
-  # # svm
-  # "svmPoly" = list(
-  #     hyparams = list(
-  #       "degree" = c(1),
-  #       "scale" = c(100),
-  #       "C" = c(0.1)
-  #     )
-  # ),
-  # # neuronal network
-  # "nnet" = list(
-  #   hyparams = list(
-  #     "size" = c(5),
-  #     "decay" = c(0.1)
-  #     ),
-  #   options = list (
-  #     maxit = 1000,
-  #     softmax = TRUE
-  #   )
-  # )
-  # 
 )
 
 # =========== #
@@ -329,8 +329,8 @@ library(openxlsx)
 # write.xlsx(data_complete_NN, file = "data_complete_NN.xlsx")
 # write.xlsx(data_complete_SVM, file = "data_complete_SVM.xlsx")
 
-write.xlsx(list_method[["svmPoly"]][["resume_metrics"]], file = "statistics_metrics_SVM.xlsx")
-write.xlsx(list_method[["nnet"]][["resume_metrics"]], file = "statistics_metrics_NN.xlsx")
+# write.xlsx(list_method[["svmPoly"]][["resume_metrics"]], file = "statistics_metrics_SVM.xlsx")
+# write.xlsx(list_method[["nnet"]][["resume_metrics"]], file = "statistics_metrics_NN.xlsx")
 
 
 # get
