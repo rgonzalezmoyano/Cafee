@@ -61,12 +61,22 @@ compute_target <- function (
     # loop for each observation
     for (i in 1:nrow(data)) {
   
-      print(paste("DMU: ", i))
-      print(paste("En curso:", (round(i/nrow(data), 4) * 100)))
-      
+      # print(paste("DMU: ", i))
+      # print(paste("En curso:", (round(i/nrow(data), 4) * 100)))
+      # browser()
       # Inicializar el rango inicial de 'y'
-      range_beta <- as.matrix(seq(from = -5, to = 20, length.out = 20))
+      range_beta <- as.matrix(seq(from = -10, to = 20, length.out = 20))
       
+      # Crear la matriz para aplicar predict()
+      matrix_eff <- as.data.frame(matrix(
+        data = NA,
+        ncol = length(c(x, y)),
+        nrow = length(range_beta)
+      ))
+      
+      # Nombrar las columnas como en data original
+      names(matrix_eff) <- names(data)
+    
       change_x <- matrix(
         data = rep((-score_imp_x) * mean_x, each =  nrow(matrix_eff)),
         nrow = nrow(matrix_eff),
@@ -85,17 +95,7 @@ compute_target <- function (
       while (!found_cut_off) {
         
         iter_count <- iter_count + 1
-        print(iter_count)
-        
-        # Crear la matriz para aplicar predict()
-        matrix_eff <- as.data.frame(matrix(
-          data = NA,
-          ncol = length(c(x, y)),
-          nrow = length(range_beta)
-        ))
-        
-        # Nombrar las columnas como en data original
-        names(matrix_eff) <- names(data)
+        #print(iter_count)
         
         # Asignar valores para 'x' y 'y'
         matrix_eff[, x] <- data[i,x] 
@@ -132,7 +132,7 @@ compute_target <- function (
           
           betas[i,] <- range_beta[idx]
           
-          print("end while")
+          # print("end while")
           break
           
         } else {
