@@ -57,52 +57,52 @@ y <- c(8)
 target_method <- "BCC"
 
 seed <- 0
-
+seed <- 12
 repeat {
   
   print(seed)
   set.seed(seed) # 7 en nnet, 3 muy pocos; 
   
   methods <- list (
-  #   # svm
-  #   "svmPoly" = list(
-  #     hyparams = list(
-  #       "degree" = c(1, 2, 3, 4, 5),
-  #       "scale" = c(0.001, 0.1, 1, 10, 100),
-  #       "C" = c(0.001, 0.1, 1, 10, 100)
-  #     )
-  #   ),
-  #   # neuronal network
-  #   "nnet" = list(
-  #     hyparams = list(
-  #       "size" = c(1, 5, 10, 20),
-  #       "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
-  #     ),
-  #     options = list (
-  #       maxit = 1000,
-  #       softmax = TRUE
-  #     )
-  #   )
-    
-    # svm
-    "svmPoly" = list(
-        hyparams = list(
-          "degree" = c(5), # 5
-          "scale" = c(0.1),# 0.1
-          "C" = c(10) # 10
-        )
-    ),
     # neuronal network
     "nnet" = list(
       hyparams = list(
-        "size" = c(20),
-        "decay" = c(1)
-        ),
+        "size" = c(1, 5, 10, 15, 20, 30),
+        "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
+      ),
       options = list (
         maxit = 1000,
         softmax = TRUE
       )
     )
+    # # svm
+    # "svmPoly" = list(
+    #   hyparams = list(
+    #     "degree" = c(1, 2, 3, 4, 5),
+    #     "scale" = c(0.001, 0.1, 1, 10, 100),
+    #     "C" = c(0.001, 0.1, 1, 10, 100)
+    #   )
+    # )
+
+    # # svm
+    # "svmPoly" = list(
+    #     hyparams = list(
+    #       "degree" = c(5), # 5
+    #       "scale" = c(0.1),# 0.1
+    #       "C" = c(10) # 10
+    #     )
+    # ),
+    # # neuronal network
+    # "nnet" = list(
+    #   hyparams = list(
+    #     "size" = c(20),
+    #     "decay" = c(1)
+    #     ),
+    #   options = list (
+    #     maxit = 1000,
+    #     softmax = TRUE
+    #   )
+    # )
     
   )
   
@@ -158,7 +158,6 @@ repeat {
     # console information
     print(paste("METODO:", i,  names(methods)[i]))
     print("")
-    
     
     # model result
     final_model <- efficiency_estimation (
@@ -248,9 +247,25 @@ repeat {
     
     print(paste("Inputs importance: ",sum(result_SA[1:length(x)])))
     print(paste("Outputs importance: ",sum(result_SA[(length(x)+1):(length(x)+length(y))])))
+    print(seed)
+    
+    # Calcular probabilidad de eficiencia para cada fila
+    eff_vector <- apply(data[, c(x,y)], 1, function(row) {
+      
+      row_df <- as.data.frame(t(row))
+      colnames(row_df) <- names(data[, c(x,y)])
+      
+      pred <- unlist(predict(final_model_p, row_df, type = "prob")[1])
+      
+      return(pred)
+    })
+    
+    idx_max_eff <- which.max(eff_vector)
+    max_eff <- unname(eff_vector[idx_max_eff])
     
     # to get probabilities senarios
     scenarios <- seq(0.75, 0.95, 0.1)
+    scenarios <- c(scenarios, max_eff) 
     
     data_list <- list()
     data_betas <- list()
@@ -258,6 +273,7 @@ repeat {
     
     for (e in 1:length(scenarios)) {
       
+      # new x and y in data_scenario
       x_target <- 1:length(x)
       y_target <- (length(x)+1):(length(x)+length(y))
       
@@ -271,12 +287,19 @@ repeat {
         imp_vector = result_SA
       )
       
-      if(any(data_scenario$data_scenario[, c(x_target,y_target)] < 0)) {
+      if(any(data_scenario$data_scenario[, c(x_target,y_target)] < 0 | any(is.na(data_scenario$betas)))) {
         seed <- seed + 1
         need_rep <- TRUE
         break
       }
       
+      # change efficient units (beta < 0); not change
+      idx_eff <- which(data_scenario$betas < 0)
+      
+      data_scenario$data_scenario[idx_eff, ] <- data[idx_eff, c(x,y)]
+      data_scenario$data_scenario[idx_eff, "beta"] <- rep(NA, length(idx_eff))
+      
+      # save data_scenario
       data_list[[e]] <- data_scenario$data_scenario
       
       data_betas[[e]] <- data_scenario$betas
@@ -333,7 +356,7 @@ repeat {
 names(list_method) <- names(methods)
 
 save(list_method, file = "resultados_art_XAI_CV.RData")
-# #
+#
 # library(openxlsx)
 # write.xlsx(list_method$nnet$metrics, file = "metrics_NN.xlsx")
 # write.xlsx(list_method$svmPoly$metrics, file = "metrics_SVM.xlsx")
