@@ -31,8 +31,8 @@ library(rminer)
 #############
 # PISA 2018 #
 #############
-load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-#load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+#load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 data <- firms
 
 # save a copy
@@ -267,9 +267,11 @@ repeat {
     scenarios <- seq(0.75, 0.95, 0.1)
     scenarios <- c(scenarios, max_eff) 
     
-    data_list <- list()
-    data_betas <- list()
+    data_list <- list() # all results have scenarios[e] probability
+    data_real_list <- list()
+    data_beta <- list()
     metrics_list <- list()
+    peer_list <- list()
     
     for (e in 1:length(scenarios)) {
       
@@ -293,26 +295,74 @@ repeat {
         break
       }
       
-      # change efficient units (beta < 0); not change
-      idx_eff <- which(data_scenario$betas < 0)
+      # determinate peer
+      # first, determinate efficient units
+      idx_eff <- which(data_scenario$betas <= 0)
       
-      data_scenario$data_scenario[idx_eff, ] <- data[idx_eff, c(x,y)]
-      data_scenario$data_scenario[idx_eff, "beta"] <- rep(NA, length(idx_eff))
+      # save distances structure
+      save_dist <- matrix(
+        data = NA,
+        ncol = length(idx_eff),
+        nrow = nrow(data)
+      )
+      
+      # calculate distances
+      for (unit_eff in idx_eff) {
+        # set reference
+        reference <- data[unit_eff, c(x,y)]
+        
+        distance <- unname(apply(data[, c(x,y)], 1, function(x) sqrt(sum((x - reference)^2))))
+        
+        # get position in save results
+        idx_dis <- which(idx_eff == unit_eff)
+        save_dist[,idx_dis] <- as.matrix(distance)
+      }
+      
+      # # change to dataframe
+      # save_dist <- as.data.frame(save_dist)
+      # names(save_dist) <- idx_eff
+      
+      near_idx_eff <- apply(save_dist, 1, function(row) {
+        
+        which.min(abs(row))
+      
+        })
+      
+      peer_restult <- matrix(
+        data = NA,
+        ncol = 1,
+        nrow = nrow(data)
+      )
+      
+      peer_restult[, 1] <- idx_eff[near_idx_eff]
+      
+      # change data to not worst the efficeint units
+      data_real <- data_scenario$data_scenario
+      
+      data_real[idx_eff,] <- data[idx_eff, c(x,y)]
       
       # save data_scenario
       data_list[[e]] <- data_scenario$data_scenario
       
-      data_betas[[e]] <- data_scenario$betas
+      # save data real
+      data_real_list[[e]] <- data_real
       
+      # save beta
+      data_beta[[e]] <- data_scenario$betas
+      
+      #save_peer
+      peer_list[[e]] <- peer_restult
+      
+      # metrics: mean, median, sd
       main_metrics <- as.data.frame(matrix(
         data = NA,
-        ncol = ncol(data[,c(x,y)]) + 1,
+        ncol = ncol(data[,c(x,y)]),
         nrow = 3
       ))
-      
-      main_metrics[1,] <- apply(data_scenario$data_scenario, 2, mean, na.rm = TRUE)
-      main_metrics[2,] <- apply(data_scenario$data_scenario, 2, median, na.rm = TRUE)
-      main_metrics[3,] <- apply(data_scenario$data_scenario, 2, sd, na.rm = TRUE)
+      # CHANGE?
+      main_metrics[1,] <- apply(data_real, 2, mean, na.rm = TRUE)
+      main_metrics[2,] <- apply(data_real, 2, median, na.rm = TRUE)
+      main_metrics[3,] <- apply(data_real, 2, sd, na.rm = TRUE)
       
       names(main_metrics) <- names(data_scenario$data_scenario)
       row.names(main_metrics) <- c("mean", "median", "sd")
@@ -326,8 +376,10 @@ repeat {
     }
     
     names(data_list) <- scenarios
-    names(data_betas) <- scenarios
+    names(data_real_list) <- scenarios
+    names(data_beta) <- scenarios
     names(metrics_list) <- scenarios
+    names(peer_list) <- scenarios
     
     # information model
     list <- list()
@@ -337,11 +389,14 @@ repeat {
     list[[3]] <- importance
     list[[4]] <- result_SA
     list[[5]] <- data_list
-    list[[6]] <- data_betas
-    list[[7]] <- metrics_list
-    list[[8]] <- seed
+    list[[6]] <- data_real_list
+    list[[7]] <- peer_list
+    list[[8]] <- data_beta
+    list[[9]] <- metrics_list
+    list[[10]] <- seed
+    list[[11]] <- c(unname(idx_max_eff), max_eff)
     
-    names(list) <- c("finalModel", "metrics", "SA", "imporance", "data_contrafactual", "beta", "resume_metrics", "seed")
+    names(list) <- c("finalModel", "metrics", "SA", "imporance", "data_contrafactual", "data_real", "peer", "beta", "resume_metrics", "seed", "most_eff")
     
     list_method[[i]] <- list
     
@@ -355,7 +410,7 @@ repeat {
 
 names(list_method) <- names(methods)
 
-save(list_method, file = "resultados_art_XAI_CV.RData")
+save(list_method, file = "resultados_art_XAI_NN_CV.RData")
 #
 # library(openxlsx)
 # write.xlsx(list_method$nnet$metrics, file = "metrics_NN.xlsx")

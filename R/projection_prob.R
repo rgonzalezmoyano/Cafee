@@ -161,7 +161,7 @@ compute_target <- function (
               data_scenario[i, x] <- rep(NA, ncol(matrix_eff[,x]))
               data_scenario[i, y] <- rep(NA, ncol(matrix_eff[,y]))
               
-              betas[i,] <- NA
+              betas[i,] <- 1
               break
             }
            
@@ -179,7 +179,9 @@ compute_target <- function (
           
           data_scenario[i, x] <- matrix_eff[15, x]
           data_scenario[i, y] <- matrix_eff[15, y]
+          
           betas[i,] <- range_beta[15]
+          
           print("end while by dif")
           found_cut_off <- TRUE
           
@@ -201,9 +203,12 @@ compute_target <- function (
       
     }# end for
     
+    if(any(is.na(betas))) {
+      browser()
+    }
     names(betas) <- "beta"
     
-    data_scenario <- cbind(data_scenario, betas)
+    # data_scenario <- cbind(data_scenario, betas)
     
   return(list(data_scenario = data_scenario, betas = betas)) 
       
