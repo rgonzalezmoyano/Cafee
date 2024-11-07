@@ -88,9 +88,9 @@ efficiency_estimation <- function (
 
   } else if (target_method == "BCC") {
     
-    # ============================ #
-    # Label by additive model DEA  #
-    # ============================ #
+    # ======================= #
+    # Label by BCC model DEA  #
+    # ======================= #
      
     # compute DEA scores through a BCC model
      add_scores <-  rad_out (
@@ -115,6 +115,34 @@ efficiency_estimation <- function (
       levels = rev(levels(data$class_efficiency))
     )
 
+    levels(data$class_efficiency) <- c("efficient", "not_efficient")
+    
+  } else if (target_method == "additive") {
+    
+    # ============================ #
+    # Label by additive model DEA  #
+    # ============================ #
+    
+    # compute DEA scores through a BCC model
+    add_scores <-  compute_scores_additive (
+      data = data,
+      x = x,
+      y = y
+    ) 
+    browser()
+    # determine efficient and inefficient DMUs
+    class_efficiency <- ifelse(add_scores[, 1] <= 0.0001, 1, 0)
+    
+    data <- as.data.frame (
+      cbind(data, class_efficiency)
+    )
+    
+    data$class_efficiency <- factor(data$class_efficiency)
+    data$class_efficiency <- factor (
+      data$class_efficiency,
+      levels = rev(levels(data$class_efficiency))
+    )
+    
     levels(data$class_efficiency) <- c("efficient", "not_efficient")
   }
   

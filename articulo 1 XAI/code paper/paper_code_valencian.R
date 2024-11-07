@@ -31,8 +31,8 @@ library(rminer)
 #############
 # PISA 2018 #
 #############
-#load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+#load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 data <- firms
 
 # save a copy
@@ -54,7 +54,7 @@ y <- c(8)
 #z <- c(2, 8) # environment variables
 
 # different types to label
-target_method <- "BCC"
+target_method <- "additive"
 
 seed <- 0
 seed <- 12
