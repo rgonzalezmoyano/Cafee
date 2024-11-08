@@ -129,7 +129,7 @@ efficiency_estimation <- function (
       x = x,
       y = y
     ) 
-    browser()
+    
     # determine efficient and inefficient DMUs
     class_efficiency <- ifelse(add_scores[, 1] <= 0.0001, 1, 0)
     
@@ -144,6 +144,7 @@ efficiency_estimation <- function (
     )
     
     levels(data$class_efficiency) <- c("efficient", "not_efficient")
+    
   }
   
   pre_data <- data

@@ -1,0 +1,8 @@
+Platt, J. (1999). Probabilistic outputs for support vector machines and comparisons to regularized likelihood methods. Advances in large margin classifiers, 10(3), 61-74.
+8648
+
+Wu, T. F., Lin, C. J., & Weng, R. (2003). Probability estimates for multi-class classification by pairwise coupling. Advances in Neural Information Processing Systems, 16.
+2514
+
+Lin, H. T., Lin, C. J., & Weng, R. C. (2007). A note on Platt’s probabilistic outputs for support vector machines. Machine learning, 68, 267-276.
+1130

@@ -1,0 +1,19 @@
+G.M. Weiss, "Mining with Rarity: A Unifying Framework", ACM SIGKDD Explorations Newsletter, vol. 6, no. 1, pp. 7-19, 2004.
+1983
+
+Maimon, O., & Rokach, L. (Eds.). (2005). Data mining and knowledge discovery handbook (Vol. 2, No. 2005). New York: Springer.
+LIBRO
+3205
+
+G.M. Weiss, "Mining Rare Cases" in Data Mining and Knowledge Discovery Handbook: A Complete Guide for Practitioners and Researchers, Springer, pp. 765-776, 2005.
+CAPITULO
+74
+
+Batista, G. E., Prati, R. C., & Monard, M. C. (2004). A study of the behavior of several methods for balancing machine learning training data. ACM SIGKDD explorations newsletter, 6(1), 20-29.
+4733
+
+Japkowicz, N., & Stephen, S. (2002). The class imbalance problem: A systematic study. Intelligent data analysis, 6(5), 429-449.
+4150
+
+Weiss, G. M., & Provost, F. (2003). Learning when training data are costly: The effect of class distribution on tree induction. Journal of artificial intelligence research, 19, 315-354.
+1273

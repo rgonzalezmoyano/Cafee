@@ -12,8 +12,8 @@ library(haven)
 library(e1071)
 library(rminer)
 
-library("ggplot2")
-library("rminer")
+library(ggplot2)
+library(rminer)
 
 # generate data
 set.seed(1997)
@@ -36,6 +36,10 @@ ggplot() +
   theme_bw() +
   theme(legend.position = "bottom")
 
+# change to be similar to DEA dataset examples
+data[22, "y"] <- 6
+data[21, "y"] <- 7.5
+
 # 
 # library(openxlsx)
 # write.xlsx(data, "data_example.xlsx")
@@ -48,7 +52,7 @@ z <- NULL
 # import
 
 # different types to label
-target_method <- "BCC"
+target_method <- "additive"
 
 set.seed(314)
 methods <- list (
@@ -113,75 +117,11 @@ names(list_method) <- names(methods)
 
 
 ################################################################################
-### probabilities
-# to get probabilities senarios
-scenarios <- seq(0.65, 0.95, 0.05)
-
-data_copy <- data
-data <- data[, c(x,y)]
-
-final_model <- final_model$final_model
-cut_off <- 0.65
-imp_vector = result_SA
-# e <- 7
-# 
-# matrix with optimal values based on probability of being efficient
-data_contr <- as.data.frame(
-  matrix(
-    data = NA,
-    ncol = length(scenarios),
-    nrow = nrow(data)
-  )
-)
-
-names(data_contr) <- c(scenarios) 
-
-colum <- 1
-for (e in 1:length(scenarios)) {
-  data_scenarios <- compute_target (
-    data = data[, c(x,y)],
-    x = 1:length(x),
-    y = (length(x)+1):(length(x)+length(y)),
-    #z = z,
-    final_model = final_model_p,
-    # orientation = orientation,
-    cut_off = scenarios[e],
-    imp_vector = result_SA
-  )
-  
-  data_contr[, colum] <- data_scenarios[, (length(x)+1):(length(x)+length(y))]
-  
-  colum <- colum + 1
-}
 
 ################################################################################
 
 ### determinate efficient class
-efficient_data_0 <- data[, class_efficiency == "efficient"]
-
-plot <- ggplot() +
-  geom_point(data = data, aes(x = x1, y = y, color = class_efficiency)) +
-  scale_color_manual(values = c("green4", "red"), name = "Class", labels = c("efficient", "inefficient")) +
-  labs(x = "input", y = "output") +
-  
-  # name DMUs
-  geom_text(data = data[data$class_efficiency == "efficient", ],
-            aes(x = x1, y = y, label = row.names(data[data$class_efficiency == "efficient", ])),
-            vjust = -1, hjust = 1) + 
-  
-  # exes
-  geom_hline(yintercept = 0) +
-  geom_vline(xintercept = 0) +
-  
-  xlim(0, 10) +
-  ylim(0, 10) +
-
-  theme_bw() +
-  theme(legend.position = "bottom")
-
-plot
-
-ggsave(plot = plot, dpi = 600, filename = "DEA_label.png")
+# fold 1_label_additive
 
 ### determinate efficient class BALANCED INPUT
 data_gra <- data
