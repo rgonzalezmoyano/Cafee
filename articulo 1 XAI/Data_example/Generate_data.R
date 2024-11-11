@@ -117,6 +117,70 @@ names(list_method) <- names(methods)
 
 
 ################################################################################
+# sintetic data example
+
+data
+idx_eff <- which(data$class_efficiency == "efficient")
+
+# save distances structure
+save_dist <- matrix(
+  data = NA,
+  ncol = length(idx_eff),
+  nrow = length(idx_eff)
+)
+
+save_near <- matrix(
+  data = NA,
+  ncol = length(idx_eff),
+  nrow = length(idx_eff)
+)
+
+pos_loop <- 0
+
+for (unit_eff in idx_eff) {
+  pos_loop <- pos_loop + 1
+  # set reference
+  reference <- data[unit_eff, c(x,y)]
+  
+  distance <- unname(apply(data[idx_eff, c(x,y)], 1, function(x) sqrt(sum((x - reference)^2))))
+  
+  # get position in save results
+  idx_dis <- which(idx_eff == unit_eff)
+  save_dist[idx_dis,] <- as.matrix(distance)
+  
+  # get k-near
+  idx_distance <- which(sort(distance) == idx_eff)
+  
+  idx_two <- which(distance == distance_two[2] | distance == distance_two[3])
+  
+  save_near[pos_loop,] <- idx_eff[idx_two]
+  
+}
+
+# delete not real near observations
+for (ref in 1:length(idx_eff)) {
+  
+  unit_ref <- idx_eff[ref] # 13
+  
+  save_near[ref, ]
+  
+  unit_ref_1 <- save_near[ref, 1]
+  pos_ref_1 <- which(idx_eff == unit_ref_1)
+  near_ref_1  <- save_near[pos_ref_1, ]
+  
+  if (!(unit_ref %in% near_ref_1)) {
+    
+  }
+  
+  unit_ref_2 <- save_near[ref, 2]
+  pos_ref_2 <- which(idx_eff == unit_ref_2)
+  near_ref_2  <- save_near[pos_ref_2, ]
+  
+  if (!(unit_ref %in% near_ref_2)) {
+    print("hola")
+  }
+  
+}
 
 ################################################################################
 
