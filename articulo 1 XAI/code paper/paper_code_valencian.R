@@ -265,7 +265,6 @@ repeat {
     
     # to get probabilities senarios
     scenarios <- seq(0.75, 0.95, 0.1)
-    scenarios <- c(scenarios, max_eff) 
     
     data_list <- list() # all results have scenarios[e] probability
     data_real_list <- list()
@@ -359,7 +358,8 @@ repeat {
         ncol = ncol(data[,c(x,y)]),
         nrow = 3
       ))
-      # CHANGE?
+      
+      # metrics
       main_metrics[1,] <- apply(data_real, 2, mean, na.rm = TRUE)
       main_metrics[2,] <- apply(data_real, 2, median, na.rm = TRUE)
       main_metrics[3,] <- apply(data_real, 2, sd, na.rm = TRUE)

@@ -353,16 +353,136 @@ create_dmu <- function (
     }
   }
   
-  # # # grafico
-  # new_dmu_values <- as.data.frame(matrix(data = NA, nrow = 9, ncol = 3))
-  # # projection borrar
-  # for (i in 1:9) {
-  #   dmu <- idx_inp[i]
-  # 
-  # 
-  #     new_dmu_values[i, ] <- proj_data_inp[dmu, ]
-  # 
-  # }
-  
   return(new_dmu_values)
+}
+
+#' @title Create New SMOTE Units to Balance Data
+#'
+#' @description This function creates new DMUs to address data imbalances. If the majority class is efficient, it generates new inefficient DMUs by worsering the observed units. Conversely, if the majority class is inefficient, it projects inefficient DMUs to the frontier. Finally, a random selection if performed to keep a proportion of 0.65 for the majority class and 0.35 for the minority class.
+#' 
+#' @param data A \code{data.frame} containing the variables used in the model.
+#' @param data_factor A \code{data.frame} containing the factor variables used in the model.
+#' @param x Column indexes of the input variables in the \code{data}.
+#' @param y Column indexes of the output variables in the \code{data}.
+#' @param z Column indexes of environment variables in \code{data}.
+#' @param eff_level Level of efficient units to achive.
+
+#' @return It returns a \code{data.frame} with the newly created set of DMUs incorporated.
+
+SMOTE_balance_data <- function (
+    data, data_factor, x, y, z = NULL, eff_level
+) {
+  
+  # number of inputs
+  nX <- length(x)
+  
+  # number of outputs
+  nY <- length(y)
+  
+  nZ <- length(z)
+  
+  # number of samples
+  N <- nrow(data)
+  
+  data_eff <- data[data$class_efficiency == "efficient",]
+  compute_scores_additive(data_eff, x = x, y = y)
+  
+  # determinate eff units
+  n_eff <- nrow(data_eff)
+  
+  # select unit to compare
+  final_data <- data
+  
+  prop_eff <- prop.table(table(final_data$class_efficiency))[1]
+  eff_level <- eff_level
+  
+  new_eff_point <- as.data.frame(matrix(
+    data = NA,
+    ncol = ncol(data[, c(x,y)]),
+    nrow = 0
+  ))
+  
+  names(new_eff_point) <- names(data[, c(x,y)])
+  
+  ineff_conexion <- as.data.frame(matrix(
+    data = NA,
+    ncol = 2,
+    nrow = 0
+  ))
+  
+  names(ineff_conexion) <- c("reference", "unit_conexion")
+  
+  # =================== #
+  # balance proportions #
+  # =================== #
+  
+  while (prop_eff < eff_level) {
+    
+    repeat {
+      
+      # select unit reference
+      reference <- sample(n_eff, 1)
+      
+      # units to copare
+      conexion <- data_eff[-reference,]
+      
+      unit_conexion <- sample(nrow(conexion), 1)
+      
+      conexion_test <- data.frame(
+        reference = reference,
+        unit_conexion = unit_conexion
+      )
+      
+      bor <- ineff_conexion[reference == reference, ] 
+      bor[unit_conexion == unit_conexion]
+      
+      is_in_ineff_conexion <- any(apply(ineff_conexion, 1, function(row) all(row == unlist(conexion_test))))
+      
+      
+      if (is_in_ineff_conexion == FALSE) {
+        break
+      }
+      
+    }
+    
+    delta <- runif(1, min = 0, max = 1)
+    
+    # generate SMOTE unit
+    new_point <- data_eff[reference, c(x,y)] + (data_eff[unit_conexion, c(x,y)] - data_eff[reference, c(x,y)]) * delta
+    
+    test_eff <- rbind(data_eff[, c(x,y)], new_point)
+    idx_new_point <- n_eff + 1
+    
+    test_additive <- compute_scores_additive(test_eff, x = x, y = y)
+    
+    if (test_additive[idx_new_point] > 0) {
+      
+      # this conexion makes inefficient units
+      conexion_ineff <- data.frame(
+        reference = reference,
+        unit_conexion = unit_conexion
+      )
+      
+      conexion_ineff2 <- data.frame(
+        reference = conexion_ineff$unit_conexion,
+        unit_conexion = conexion_ineff$reference
+      )
+      
+      ineff_conexion <- rbind(ineff_conexion, conexion_ineff, conexion_ineff2)
+      
+    } else {
+      
+      # add correct unit efficient
+      new_eff_point <- rbind(new_eff_point, new_point)
+      
+      new_point$class_efficiency <- "efficient"
+      final_data <- rbind(final_data, new_point)
+      
+    }
+    
+    prop_eff <- prop.table(table(final_data$class_efficiency))[1]
+    
+  }
+  
+  return(final_data)
 }

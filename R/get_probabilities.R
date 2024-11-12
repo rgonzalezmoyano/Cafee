@@ -18,18 +18,11 @@
 compute_target <- function (
     data, x, y, z = NULL, final_model, orientation, cut_off, imp_vector
 ) {
-    
+
     # environment variable 
     if (is.null(z)) {
       z <- 0
     }
-    
-    # # maximum and minimum values posibles a esperar
-    # max_value_x <- apply(X = as.matrix(data[, x]), MARGIN = 2, FUN = max)
-    min_value_x <- apply(X = as.matrix(data[, x]), MARGIN = 2, FUN = min)
-    #   
-    # max_value_y <- apply(X = as.matrix(data[, y]), MARGIN = 2, FUN = max)
-    # min_value_y <- apply(X = as.matrix(data[, y]), MARGIN = 2, FUN = min)
     
     # save data points from scenario
     data_scenario <- as.data.frame(
@@ -60,7 +53,7 @@ compute_target <- function (
   
       print(paste("DMU: ", i))
       print(paste("En curso:", (round(i/nrow(data), 4) * 100)))
-      # if(i == 82){browser()}
+      #if(i == 4){browser()}
       # Inicializar el rango inicial de 'y'
       range_beta <- as.matrix(seq(from = -10, to = 20, length.out = 30))
       
@@ -92,7 +85,7 @@ compute_target <- function (
       while (!found_cut_off) {
         
         iter_count <- iter_count + 1
-        #print(iter_count)
+        print(iter_count)
         
         # Asignar valores para 'x' y 'y'
         matrix_eff[, x] <- data[i,x] 
@@ -141,12 +134,7 @@ compute_target <- function (
           } else {
             
             # Encontrar el intervalo donde se encuentra el cut_off
-            #pos <- findInterval(cut_off, eff_vector)
             pos <- which(eff_vector < cut_off & c(eff_vector[-1], Inf) > cut_off) # [1] 
-            
-            if (is.na(pos)) {
-              pos <- length(eff_vector)
-            }
             
             if (length(pos) == 2) {
               pos <- pos[1]
@@ -154,6 +142,10 @@ compute_target <- function (
               pos <- pos[2]
             } else if (length(pos) > 3){
               pos <- pos[as.integer(length(pos)/2)]
+            }
+            
+            if (is.na(pos)) {
+              pos <- length(eff_vector)
             }
             
             if (pos == length(range_beta)) {
@@ -201,7 +193,7 @@ compute_target <- function (
         
       } # end while
       
-    }# end for
+    } # end for
     
     if(any(is.na(betas))) {
       browser()

@@ -159,18 +159,31 @@ efficiency_estimation <- function (
   obs_prop <- prop.table(table(data$class_efficiency))
 
   # check presence of imbalanced data
+  # if (max(obs_prop[1], obs_prop[2]) > 0.50) {
+  #   data <- balance_data (
+  #     data = data,
+  #     data_factor = data_factor,
+  #     x = x,
+  #     y = y,
+  #     z = z,
+  #     convexity = convexity,
+  #     returns = returns
+  #   )
+  #   
+  #   data <- na.omit(data)
+  # }
+  
   if (max(obs_prop[1], obs_prop[2]) > 0.50) {
-    data <- balance_data (
+    
+    data <- SMOTE_balance_data(
       data = data,
       data_factor = data_factor,
       x = x,
       y = y,
       z = z,
-      convexity = convexity,
-      returns = returns
+      eff_level = 0.4
     )
     
-    data <- na.omit(data)
   }
   
   
