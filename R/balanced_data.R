@@ -384,6 +384,26 @@ SMOTE_balance_data <- function (
   # number of samples
   N <- nrow(data)
   
+  # determinate numbre of efficient and ineeficient units
+  n_real_eff <- nrow(data[data$class_efficiency == "efficient",])
+  n_real_ineff <-nrow(data[data$class_efficiency == "not_efficient",])
+  
+  prop_real <- n_real_eff / n_real_ineff
+  
+  n_new_eff <- n_real_eff
+  n_new_ineff <- n_real_ineff
+  prop <- prop_real
+  
+  while (prop < eff_level) {
+    n_new_eff <- n_new_eff + 2
+    n_new_ineff <- n_new_ineff + 1
+    
+    prop <- n_new_eff/n_new_ineff
+    print(n_new_eff)
+    print(n_new_ineff)
+    print(prop)
+  }
+browser()
   data_eff <- data[data$class_efficiency == "efficient",]
   compute_scores_additive(data_eff, x = x, y = y)
   
@@ -393,9 +413,7 @@ SMOTE_balance_data <- function (
   # select unit to compare
   final_data <- data
   
-  prop_eff <- prop.table(table(final_data$class_efficiency))[1]
-  eff_level <- eff_level
-  
+  # save new units
   new_eff_point <- as.data.frame(matrix(
     data = NA,
     ncol = ncol(data[, c(x,y)]),
@@ -403,6 +421,23 @@ SMOTE_balance_data <- function (
   ))
   
   names(new_eff_point) <- names(data[, c(x,y)])
+  
+  new_ineff_point <- as.data.frame(matrix(
+    data = NA,
+    ncol = ncol(data[, c(x,y)]),
+    nrow = 0
+  ))
+  
+  names(new_ineff_point) <- names(data[, c(x,y)])
+  
+  # save conexions
+  eff_conexion <- as.data.frame(matrix(
+    data = NA,
+    ncol = 2,
+    nrow = 0
+  ))
+  
+  names(eff_conexion) <- c("reference", "unit_conexion")
   
   ineff_conexion <- as.data.frame(matrix(
     data = NA,
@@ -415,29 +450,32 @@ SMOTE_balance_data <- function (
   # =================== #
   # balance proportions #
   # =================== #
+  # ---
+  # eff units
+  # ---
   
-  while (prop_eff < eff_level) {
+  n_save_eff <- n_eff
+  
+  while (n_save_eff < n_new_eff) {
     
     repeat {
       
+      random_units <- sample(1:n_eff, 2, replace = FALSE)
+      
       # select unit reference
-      reference <- sample(n_eff, 1)
+      reference <- random_units[1]
       
-      # units to copare
-      conexion <- data_eff[-reference,]
+      # # units to copare
+      # conexion <- data_eff[-reference,]
       
-      unit_conexion <- sample(nrow(conexion), 1)
+      unit_conexion <- random_units[2]
       
       conexion_test <- data.frame(
         reference = reference,
         unit_conexion = unit_conexion
       )
       
-      bor <- ineff_conexion[reference == reference, ] 
-      bor[unit_conexion == unit_conexion]
-      
       is_in_ineff_conexion <- any(apply(ineff_conexion, 1, function(row) all(row == unlist(conexion_test))))
-      
       
       if (is_in_ineff_conexion == FALSE) {
         break
@@ -454,7 +492,7 @@ SMOTE_balance_data <- function (
     idx_new_point <- n_eff + 1
     
     test_additive <- compute_scores_additive(test_eff, x = x, y = y)
-    
+
     if (test_additive[idx_new_point] > 0) {
       
       # this conexion makes inefficient units
@@ -472,17 +510,72 @@ SMOTE_balance_data <- function (
       
     } else {
       
+      # this conexion makes efficient units
+      conexion_eff <- data.frame(
+        reference = reference,
+        unit_conexion = unit_conexion
+      )
+
+      conexion_eff2 <- data.frame(
+        reference = conexion_eff$unit_conexion,
+        unit_conexion = conexion_eff$reference
+      )
+      
+      eff_conexion <- rbind(eff_conexion, conexion_eff, conexion_eff2)
+      
+      # delete duplicated
+      eff_conexion <- eff_conexion[!duplicated(eff_conexion),]
+      
       # add correct unit efficient
       new_eff_point <- rbind(new_eff_point, new_point)
-      
-      new_point$class_efficiency <- "efficient"
-      final_data <- rbind(final_data, new_point)
+      #new_point$class_efficiency <- "efficient"
       
     }
     
-    prop_eff <- prop.table(table(final_data$class_efficiency))[1]
+    #prop_eff <- prop.table(table(final_data$class_efficiency))[1]
+    n_save_eff <- nrow(new_eff_point)
+  }
+  
+  # ---
+  # not eff units
+  # ---
+  n_inef <- n_real_ineff
+  
+  while (n_inef < n_new_ineff) {
+    
+    # select a random inefficient conexion
+    ineff_conexion_sim <- ineff_conexion[seq(1, nrow(ineff_conexion), by = 2), ]
+    
+    # select a random inefficient conexion
+    idx_inef <-  sample(1:nrow(ineff_conexion_sim), 1)
+    
+    reference <- ineff_conexion_sim[idx_inef, 1]
+    unit_conexion <- ineff_conexion_sim[idx_inef, 2]
+    
+    # generate SMOTE delta
+    delta <- runif(1, min = 0, max = 1)
+    
+    # generate SMOTE unit
+    new_point <- data_eff[reference, c(x,y)] + (data_eff[unit_conexion, c(x,y)] - data_eff[reference, c(x,y)]) * delta
+    
+    # test aditive
+    test_ineff <- rbind(data_eff[, c(x,y)], new_point)
+    idx_new_point <- n_eff + 1
+    
+    test_additive <- compute_scores_additive(test_ineff, x = x, y = y)
+    
+    if (test_additive[idx_new_point] > 0) {
+      new_ineff_point <- rbind(new_ineff_point, new_point)
+    }
+    
+    n_inef <- nrow(new_ineff_point)
     
   }
   
+  new_eff_point$class_efficiency <- "efficient"
+  new_ineff_point$class_efficiency <- "not_efficient"
+  
+  final_data <- rbind(final_data, new_eff_point, new_ineff_point)
+
   return(final_data)
 }

@@ -53,9 +53,9 @@ compute_target <- function (
   
       print(paste("DMU: ", i))
       print(paste("En curso:", (round(i/nrow(data), 4) * 100)))
-      #if(i == 4){browser()}
+
       # Inicializar el rango inicial de 'y'
-      range_beta <- as.matrix(seq(from = -10, to = 20, length.out = 30))
+      range_beta <- as.matrix(seq(from = -5, to = 20, length.out = 30))
       
       # Crear la matriz para aplicar predict()
       matrix_eff <- as.data.frame(matrix(
@@ -107,6 +107,9 @@ compute_target <- function (
           return(pred)
         })
         
+        min_interval <- min(eff_vector)
+        max_interval <- max(eff_vector)
+
         if (length(eff_vector) == 0 | is.null(eff_vector)) {
           
           data_scenario[i, x] <- rep(NA, ncol(matrix_eff[,x]))
@@ -142,24 +145,23 @@ compute_target <- function (
               pos <- pos[2]
             } else if (length(pos) > 3){
               pos <- pos[as.integer(length(pos)/2)]
+            } else if (length(pos) == 0) {
+              pos <- NA
             }
             
             if (is.na(pos)) {
-              pos <- length(eff_vector)
-            }
-            
-            if (pos == length(range_beta)) {
-              
-              data_scenario[i, x] <- rep(NA, ncol(matrix_eff[,x]))
-              data_scenario[i, y] <- rep(NA, ncol(matrix_eff[,y]))
-              
-              betas[i,] <- 1
+              #range_beta <- range_beta *2 
+              # range_beta <- seq(from = range_beta[pos], to = range_beta[pos + 1], length.out = length(range_beta))
               break
+            } else {
+              
+              if (pos == length(eff_vector)) {
+                break
+              }
+              
+              # Refinar el rango de 'y' entre las posiciones pos y pos + 1
+              range_beta <- seq(from = range_beta[pos], to = range_beta[pos + 1], length.out = length(range_beta))
             }
-           
-            
-            # Refinar el rango de 'y' entre las posiciones pos y pos + 1
-            range_beta <- seq(from = range_beta[pos], to = range_beta[pos + 1], length.out = length(range_beta))
             
           }
           
@@ -183,7 +185,7 @@ compute_target <- function (
           
           data_scenario[i, x] <- matrix_eff[15, x]
           data_scenario[i, y] <- matrix_eff[15, y]
-          
+          #browser()
           betas <- range_beta[15]
           
           print("end while by iter")
@@ -196,8 +198,9 @@ compute_target <- function (
     } # end for
     
     if(any(is.na(betas))) {
-      browser()
+      #browser()
     }
+    
     names(betas) <- "beta"
     
     # data_scenario <- cbind(data_scenario, betas)

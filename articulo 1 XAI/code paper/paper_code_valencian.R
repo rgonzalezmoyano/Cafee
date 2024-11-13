@@ -28,9 +28,10 @@ library(rminer)
 # load data
 # ===
 
-#############
-# PISA 2018 #
-#############
+# ======================= #
+# Valencian Comunity 2018 #
+# ======================= #
+
 load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 #load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 data <- firms
@@ -57,7 +58,7 @@ y <- c(8)
 target_method <- "additive"
 
 seed <- 0
-seed <- 12
+seed <- 2
 repeat {
   
   print(seed)
@@ -111,7 +112,7 @@ repeat {
   # =========== #    
   
   # efficiency orientation
-  orientation <- "output"
+  eff_level <- 0.3
   
   # metrics for model evaluation
   MySummary <- function (data, lev = NULL, model = NULL) {
@@ -165,7 +166,7 @@ repeat {
       x = x,
       y = y,
       #z = z,
-      orientation = orientation,
+      eff_level = eff_level,
       trControl = trControl,
       method = methods[i],
       target_method = target_method,
@@ -248,21 +249,7 @@ repeat {
     print(paste("Inputs importance: ",sum(result_SA[1:length(x)])))
     print(paste("Outputs importance: ",sum(result_SA[(length(x)+1):(length(x)+length(y))])))
     print(seed)
-    
-    # Calcular probabilidad de eficiencia para cada fila
-    eff_vector <- apply(data[, c(x,y)], 1, function(row) {
-      
-      row_df <- as.data.frame(t(row))
-      colnames(row_df) <- names(data[, c(x,y)])
-      
-      pred <- unlist(predict(final_model_p, row_df, type = "prob")[1])
-      
-      return(pred)
-    })
-    
-    idx_max_eff <- which.max(eff_vector)
-    max_eff <- unname(eff_vector[idx_max_eff])
-    
+  
     # to get probabilities senarios
     scenarios <- seq(0.75, 0.95, 0.1)
     
