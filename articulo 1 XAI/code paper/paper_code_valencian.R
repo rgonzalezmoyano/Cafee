@@ -32,8 +32,8 @@ library(rminer)
 # Valencian Comunity 2018 #
 # ======================= #
 
-load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-#load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+#load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 data <- firms
 
 # save a copy
@@ -58,7 +58,7 @@ y <- c(8)
 target_method <- "additive"
 
 seed <- 0
-seed <- 2
+#seed <- 2
 repeat {
   
   print(seed)
@@ -112,7 +112,7 @@ repeat {
   # =========== #    
   
   # efficiency orientation
-  eff_level <- 0.3
+  eff_level <- 0.4
   
   # metrics for model evaluation
   MySummary <- function (data, lev = NULL, model = NULL) {

@@ -388,7 +388,7 @@ SMOTE_balance_data <- function (
   n_real_eff <- nrow(data[data$class_efficiency == "efficient",])
   n_real_ineff <-nrow(data[data$class_efficiency == "not_efficient",])
   
-  prop_real <- n_real_eff / n_real_ineff
+  prop_real <- n_real_eff / (n_real_eff + n_real_ineff)
   
   n_new_eff <- n_real_eff
   n_new_ineff <- n_real_ineff
@@ -398,12 +398,12 @@ SMOTE_balance_data <- function (
     n_new_eff <- n_new_eff + 2
     n_new_ineff <- n_new_ineff + 1
     
-    prop <- n_new_eff/n_new_ineff
-    print(n_new_eff)
-    print(n_new_ineff)
-    print(prop)
+    prop <- n_new_eff / (n_new_eff + n_new_ineff)
   }
-browser()
+  
+  create_eff <- n_new_eff - n_real_eff
+  create_ineff <- n_new_ineff - n_real_ineff
+  
   data_eff <- data[data$class_efficiency == "efficient",]
   compute_scores_additive(data_eff, x = x, y = y)
   
@@ -454,9 +454,9 @@ browser()
   # eff units
   # ---
   
-  n_save_eff <- n_eff
+  n_save_eff <- 0
   
-  while (n_save_eff < n_new_eff) {
+  while (n_save_eff < create_eff) {
     
     repeat {
       
@@ -466,8 +466,6 @@ browser()
       reference <- random_units[1]
       
       # # units to copare
-      # conexion <- data_eff[-reference,]
-      
       unit_conexion <- random_units[2]
       
       conexion_test <- data.frame(
@@ -539,9 +537,9 @@ browser()
   # ---
   # not eff units
   # ---
-  n_inef <- n_real_ineff
+  n_inef <- 0
   
-  while (n_inef < n_new_ineff) {
+  while (n_inef < create_ineff) {
     
     # select a random inefficient conexion
     ineff_conexion_sim <- ineff_conexion[seq(1, nrow(ineff_conexion), by = 2), ]

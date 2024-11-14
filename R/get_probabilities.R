@@ -55,7 +55,7 @@ compute_target <- function (
       print(paste("En curso:", (round(i/nrow(data), 4) * 100)))
 
       # Inicializar el rango inicial de 'y'
-      range_beta <- as.matrix(seq(from = -5, to = 20, length.out = 30))
+      range_beta <- as.matrix(seq(from = -10, to = 30, length.out = 30))
       
       # Crear la matriz para aplicar predict()
       matrix_eff <- as.data.frame(matrix(
@@ -85,7 +85,7 @@ compute_target <- function (
       while (!found_cut_off) {
         
         iter_count <- iter_count + 1
-        print(iter_count)
+        # print(iter_count)
         
         # Asignar valores para 'x' y 'y'
         matrix_eff[, x] <- data[i,x] 
