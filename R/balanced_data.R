@@ -365,15 +365,15 @@ create_dmu <- function (
 #' @param x Column indexes of the input variables in the \code{data}.
 #' @param y Column indexes of the output variables in the \code{data}.
 #' @param z Column indexes of environment variables in \code{data}.
-#' @param eff_level Level of efficient units to achive.
+#' @param balance_data Indicate Level of efficient units to achive and the number of efficient and not efficient units.
 
 #' @return It returns a \code{data.frame} with the newly created set of DMUs incorporated.
 
 SMOTE_balance_data <- function (
-    data, data_factor, x, y, z = NULL, eff_level
+    data, data_factor, x, y, z = NULL, balance_data
 ) {
-  
-  # number of inputs
+
+    # number of inputs
   nX <- length(x)
   
   # number of outputs
@@ -394,13 +394,23 @@ SMOTE_balance_data <- function (
   n_new_ineff <- n_real_ineff
   prop <- prop_real
   
+  add_eff <- balance_data[2]
+  if (add_eff == 0){
+    add_eff <- 1
+  }
+  
+  eff_level <- balance_data[1]
+
   while (prop < eff_level) {
-    n_new_eff <- n_new_eff + 2
-    n_new_ineff <- n_new_ineff + 1
+    n_new_eff <- n_new_eff + add_eff
+    
+    if (balance_data[2] != 0) {
+      n_new_ineff <- n_new_ineff + 1
+    }
     
     prop <- n_new_eff / (n_new_eff + n_new_ineff)
   }
-  
+
   create_eff <- n_new_eff - n_real_eff
   create_ineff <- n_new_ineff - n_real_ineff
   
@@ -529,49 +539,55 @@ SMOTE_balance_data <- function (
       #new_point$class_efficiency <- "efficient"
       
     }
-    
+
     #prop_eff <- prop.table(table(final_data$class_efficiency))[1]
     n_save_eff <- nrow(new_eff_point)
+    
   }
   
   # ---
   # not eff units
   # ---
-  n_inef <- 0
   
-  while (n_inef < create_ineff) {
+  if (balance_data[2] != 0){
+    n_inef <- 0
     
-    # select a random inefficient conexion
-    ineff_conexion_sim <- ineff_conexion[seq(1, nrow(ineff_conexion), by = 2), ]
-    
-    # select a random inefficient conexion
-    idx_inef <-  sample(1:nrow(ineff_conexion_sim), 1)
-    
-    reference <- ineff_conexion_sim[idx_inef, 1]
-    unit_conexion <- ineff_conexion_sim[idx_inef, 2]
-    
-    # generate SMOTE delta
-    delta <- runif(1, min = 0, max = 1)
-    
-    # generate SMOTE unit
-    new_point <- data_eff[reference, c(x,y)] + (data_eff[unit_conexion, c(x,y)] - data_eff[reference, c(x,y)]) * delta
-    
-    # test aditive
-    test_ineff <- rbind(data_eff[, c(x,y)], new_point)
-    idx_new_point <- n_eff + 1
-    
-    test_additive <- compute_scores_additive(test_ineff, x = x, y = y)
-    
-    if (test_additive[idx_new_point] > 0) {
-      new_ineff_point <- rbind(new_ineff_point, new_point)
+    while (n_inef < create_ineff) {
+      
+      # select a random inefficient conexion
+      ineff_conexion_sim <- ineff_conexion[seq(1, nrow(ineff_conexion), by = 2), ]
+      
+      # select a random inefficient conexion
+      idx_inef <-  sample(1:nrow(ineff_conexion_sim), 1)
+      
+      reference <- ineff_conexion_sim[idx_inef, 1]
+      unit_conexion <- ineff_conexion_sim[idx_inef, 2]
+      
+      # generate SMOTE delta
+      delta <- runif(1, min = 0, max = 1)
+      
+      # generate SMOTE unit
+      new_point <- data_eff[reference, c(x,y)] + (data_eff[unit_conexion, c(x,y)] - data_eff[reference, c(x,y)]) * delta
+      
+      # test aditive
+      test_ineff <- rbind(data_eff[, c(x,y)], new_point)
+      idx_new_point <- n_eff + 1
+      
+      test_additive <- compute_scores_additive(test_ineff, x = x, y = y)
+      
+      if (test_additive[idx_new_point] > 0) {
+        new_ineff_point <- rbind(new_ineff_point, new_point)
+      }
+      
+      n_inef <- nrow(new_ineff_point)
+      
     }
-    
-    n_inef <- nrow(new_ineff_point)
-    
   }
   
   new_eff_point$class_efficiency <- "efficient"
-  new_ineff_point$class_efficiency <- "not_efficient"
+  if (nrow(new_ineff_point) != 0) {
+    new_ineff_point$class_efficiency <- "not_efficient"
+  }
   
   final_data <- rbind(final_data, new_eff_point, new_ineff_point)
 

@@ -6,7 +6,7 @@
 #' @param x Column indexes of input variables in \code{data}.
 #' @param y Column indexes of output variables in \code{data}.
 #' @param z Column indexes of environment variables in \code{data}.
-#' @param eff_level Indicate the number of SMOTE untits to balance data.
+#' @param balance_data Indicate the number of efficient and not efficient units.
 #' @param target_method Methodology for labeling the data.
 #' @param trControl Parameters for controlling the training process (from the \code{'caret'} package).
 #' @param methods A \code{list} of selected machine learning models and their hyperparameters.
@@ -26,7 +26,7 @@
 
 efficiency_estimation <- function (
     data, x, y, z = NULL, orientation, target_method,
-    trControl, methods, metric, hold_out, eff_level = 0.5, convexity = TRUE, returns = "variable"
+    trControl, methods, metric, hold_out, eff_level = 0.5, balance_data = c(3, 1),  convexity = TRUE, returns = "variable"
     ) {
 
   # save factor variables
@@ -174,16 +174,19 @@ efficiency_estimation <- function (
   # }
   
   if (max(obs_prop[1], obs_prop[2]) > 0.50) {
+    
+    if (balance_data[1] != 0) {
     data <- SMOTE_balance_data(
       data = data,
       data_factor = data_factor,
       x = x,
       y = y,
       z = z,
-      eff_level = eff_level
+      balance_data = balance_data
     )
+   }
   }
-  
+
   if (hold_out != 0) {
     
     # Create train and validation data

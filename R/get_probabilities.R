@@ -51,11 +51,11 @@ compute_target <- function (
     # loop for each observation
     for (i in 1:nrow(data)) {
   
-      print(paste("DMU: ", i))
-      print(paste("En curso:", (round(i/nrow(data), 4) * 100)))
+      # print(paste("DMU: ", i))
+      # print(paste("En curso:", (round(i/nrow(data), 4) * 100)))
 
       # Inicializar el rango inicial de 'y'
-      range_beta <- as.matrix(seq(from = -10, to = 30, length.out = 30))
+      range_beta <- as.matrix(seq(from = -15, to = 40, length.out = 30))
       
       # Crear la matriz para aplicar predict()
       matrix_eff <- as.data.frame(matrix(
@@ -176,7 +176,7 @@ compute_target <- function (
           
           betas[i,] <- range_beta[15]
           
-          print("end while by dif")
+          # print("end while by dif")
           found_cut_off <- TRUE
           
         }
@@ -188,7 +188,7 @@ compute_target <- function (
           #browser()
           betas <- range_beta[15]
           
-          print("end while by iter")
+          # print("end while by iter")
           found_cut_off <- TRUE
           
         }
