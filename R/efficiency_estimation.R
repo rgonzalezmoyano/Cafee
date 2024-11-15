@@ -474,7 +474,7 @@ efficiency_estimation <- function (
   rownames(result_SA) <- NULL
   names(result_SA) <- names(train_data)[-length(train_data)]
   
-  if (names(methods)[i] == "nnet") {
+  if (names(methods) == "nnet") {
     final_model_p <- final_model
   } else {
     final_model_p <- final_model$final_model
@@ -498,7 +498,6 @@ efficiency_estimation <- function (
     return(pred)
   })
   
-  browser()
   eff_vector <- as.data.frame(eff_vector)
   
   id <- as.data.frame(c(1:nrow(eval_data)))

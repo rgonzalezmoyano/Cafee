@@ -32,8 +32,8 @@ library(rminer)
 # Valencian Comunity 2018 #
 # ======================= #
 
-#load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+#load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 data <- firms
 
 # save a copy
@@ -181,7 +181,7 @@ repeat {
     # ============================= #
     # to get probabilities senarios #
     # ============================= #
-    # scenarios <- seq(0.75, 0.95, 0.1)
+    scenarios <- seq(0.75, 0.95, 0.1)
 
     data_list <- list() # all results have scenarios[e] probability
     data_real_list <- list()
@@ -195,36 +195,36 @@ repeat {
       x_target <- 1:length(x)
       y_target <- (length(x)+1):(length(x)+length(y))
 
-      # data_scenario <- compute_target (
-      #   data = data[, c(x,y)],
-      #   x = x_target,
-      #   y = y_target,
-      #   #z = z,
-      #   final_model = final_model_p,
-      #   cut_off = scenarios[e],
-      #   imp_vector = result_SA
-      # )
-      # 
-      # if(any(data_scenario$data_scenario[, c(x_target,y_target)] < 0)) {
-      #   stop()
-      #   seed <- seed + 1
-      #   need_rep <- TRUE
-      #   break
-      # }
+      data_scenario <- compute_target (
+        data = data[, c(x,y)],
+        x = x_target,
+        y = y_target,
+        #z = z,
+        final_model = final_model$final_model,
+        cut_off = scenarios[e],
+        imp_vector = final_model$result_SA
+      )
+
+      if(any(data_scenario$data_scenario[, c(x_target,y_target)] < 0)) {
+        seed <- seed + 1
+        need_rep <- TRUE
+        break
+      }
+
+      # ================ #
+      # determinate peer #
+      # ================ #
       
       eff_vector <- apply(data[, c(x,y)], 1, function(row) {
         
         row_df <- as.data.frame(t(row))
         colnames(row_df) <- names(data[, c(x,y)])
         
-        pred <- unlist(predict(final_model_p, row_df, type = "prob")[1])
+        pred <- unlist(predict(final_model$final_model, row_df, type = "prob")[1])
         
         return(pred)
       })
       
-      # ================ #
-      # determinate peer #
-      # ================ #
       # first, determinate efficient units
       idx_eff <- which(eff_vector > scenarios[e])
 
@@ -340,7 +340,7 @@ repeat {
 
 names(list_method) <- names(methods)
 
-#save(list_method, file = "resultados_art_XAI_NN_CV.RData")
+save(list_method, file = "resultados_art_XAI_NN_CV.RData")
 #
 library(openxlsx)
 #write.xlsx(list_method$nnet$metrics, file = "metrics_NN.xlsx")
