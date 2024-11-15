@@ -398,14 +398,14 @@ efficiency_estimation <- function (
           },
         error = function(e) NULL
       )
-    
+
       if (!is.null(try_cut_off)) {
-       
+
         cut_off <- try_cut_off
         final_model$cut_off <- cut_off
         break
       }
-  }
+   }
   
   # ============================== #
   # detecting importance variables #

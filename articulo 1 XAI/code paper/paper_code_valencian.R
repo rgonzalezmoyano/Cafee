@@ -118,7 +118,7 @@ repeat {
   balance_data <- c(0.4, 4)
   
   # ML metric
-  metric = "Accuracy"
+  metric = "F"
   
   # scenarios to peer
   scenarios <- seq(0.75, 0.95, 0.1)
@@ -195,21 +195,21 @@ repeat {
       x_target <- 1:length(x)
       y_target <- (length(x)+1):(length(x)+length(y))
 
-      data_scenario <- compute_target (
-        data = data[, c(x,y)],
-        x = x_target,
-        y = y_target,
-        #z = z,
-        final_model = final_model$final_model,
-        cut_off = scenarios[e],
-        imp_vector = final_model$result_SA
-      )
-
-      if(any(data_scenario$data_scenario[, c(x_target,y_target)] < 0)) {
-        seed <- seed + 1
-        need_rep <- TRUE
-        break
-      }
+      # data_scenario <- compute_target (
+      #   data = data[, c(x,y)],
+      #   x = x_target,
+      #   y = y_target,
+      #   #z = z,
+      #   final_model = final_model$final_model,
+      #   cut_off = scenarios[e],
+      #   imp_vector = final_model$result_SA
+      # )
+      # 
+      # if(any(data_scenario$data_scenario[, c(x_target,y_target)] < 0)) {
+      #   seed <- seed + 1
+      #   need_rep <- TRUE
+      #   break
+      # }
 
       # ================ #
       # determinate peer #

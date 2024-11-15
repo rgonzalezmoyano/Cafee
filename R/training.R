@@ -104,11 +104,11 @@ train_ml <- function (
         #   maxit = 200,      # Máximo de iteraciones
         #   trace = FALSE     # No mostrar el progreso
         # )
-      
+
         # select best configuration
-        selected_model <- model_nnet[["results"]] %>%
-          arrange(desc(Accuracy), desc(F), desc(Spec), desc(AUC), desc(Kappa))
-      
+        selected_model <- round(model_nnet[["results"]], 1) %>%
+          arrange(desc(Accuracy), desc(F), desc(Spec), desc(AUC), desc(Kappa)) # arrange(desc(F), desc(Precision), desc(AUC), desc(Recall), desc(ROC))
+        
         # add names
         selected_model <- cbind(
           data.frame(
