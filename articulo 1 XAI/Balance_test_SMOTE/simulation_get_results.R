@@ -27,14 +27,14 @@ library(openxlsx)
 # Valencian Comunity 2018 #
 # ======================= #
 
-load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-#load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+#load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 data <- firms
 
 # save a copy
 data_original <- data
 
-# make changes realted to class
+# make changes realted to class 
 data <- change_class(data = data, to_factor = c(5,6))
 
 # filter to valencian comunity
@@ -231,6 +231,61 @@ for (row in 1:nrow(results)) {
     print(paste("Outputs importance: ",sum(result_SA[(length(x)+1):(length(x)+length(y))])))
     print(seed)
     
+    # ============================= #
+    # to get probabilities senarios #
+    # ============================= #
+    scenarios <- seq(0.75, 0.95, 0.1)
+
+    data_list <- list() # all results have scenarios[e] probability
+    data_real_list <- list()
+    data_beta <- list()
+    metrics_list <- list()
+    peer_list <- list()
+  
+    for (e in 1:length(scenarios)) {
+      print(paste("scenario: ", e))
+      # new x and y in data_scenario
+      x_target <- 1:length(x)
+      y_target <- (length(x)+1):(length(x)+length(y))
+
+      data_scenario <- compute_target (
+        data = data[, c(x,y)],
+        x = x_target,
+        y = y_target,
+        #z = z,
+        final_model = final_model_p,
+        cut_off = scenarios[e],
+        imp_vector = result_SA
+      )
+
+      # determinate peer
+      # first, determinate efficient units
+      idx_eff <- which(data_scenario$betas <= 0)
+
+      # save distances structure
+      save_dist <- matrix(
+        data = NA,
+        ncol = length(idx_eff),
+        nrow = nrow(data)
+      )
+
+      # calculate distances
+      for (unit_eff in idx_eff) {
+        # set reference
+        reference <- data[unit_eff, c(x,y)]
+
+        distance <- unname(apply(data[, c(x,y)], 1, function(x) sqrt(sum((x - reference)^2))))
+
+        # get position in save results
+        idx_dis <- which(idx_eff == unit_eff)
+        save_dist[,idx_dis] <- as.matrix(distance)
+       }
+      }
+      # # change to dataframe
+      # save_dist <- as.data.frame(save_dist)
+      # names(save_dist) <- idx_eff
+    
+    
     # save results
     results[row, 3] <- nrow(final_model$final_model$trainingData)
     results[row, 4:14] <- final_model$selected_model_metrics
@@ -240,5 +295,5 @@ for (row in 1:nrow(results)) {
 } # end loop grid
 
 names(results) <- c("eff_%", "make ineff unit each", "number dataset", names(final_model$selected_model_metrics), names(result_SA))
-write.xlsx(results, file = "results_NN.xlsx")
-#write.xlsx(result_SA, file = "result_NN.xlsx")
+# write.xlsx(results, file = "results_NN.xlsx")
+# write.xlsx(result_SA, file = "result_NN.xlsx")

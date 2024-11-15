@@ -364,16 +364,6 @@ efficiency_estimation <- function (
         trControl = trainControl(method = "oob")
       )
       
-      # plot_rf <- train (
-      #   form = class_efficiency ~.,
-      #   data = data,
-      #   method = row.names(selected_model),
-      #   tuneGrid = parms_vals[[best_model_index]],
-      #   ntree = max(methods[i]$rf$options$ntree),
-      #   # verbose = FALSE,
-      #   trControl = trainControl(method = "oob")
-      # )
-      
     } else if (names(methods[best_model_index]) == "nnet") {
       
       final_model <- train (
@@ -417,7 +407,118 @@ efficiency_estimation <- function (
       }
   }
   
-  return(list(final_model = final_model, selected_model_metrics = selected_model))
+  # ============================== #
+  # detecting importance variables #
+  # ============================== #
+  
+  # necesary data to calculate importance in rminer
+  train_data <- final_model[["trainingData"]]
+  names(train_data)[1] <- "ClassEfficiency"
+  
+  dataset_dummy <- model.matrix(ClassEfficiency~ . - 1, data = train_data)
+  train_data <- cbind(train_data[1], dataset_dummy)
+  
+  train_data <- train_data[,c(2:length(train_data),1)]
+  
+  # importance with our model of Caret
+  mypred <- function(M, data) {
+    return (predict(M, data[-length(data)], type = "prob"))
+  }
+  
+  # Define methods and measures
+  methods_SA <- c("1D-SA") # c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
+  measures_SA <- c("AAD") #  c("AAD", "gradient", "variance", "range")
+  
+  levels <- 7
+  
+  if (names(methods)[i] == "nnet") {
+    # with rminer
+    m <- rminer::fit(
+      ClassEfficiency ~.,
+      data = train_data,
+      model = "mlp",
+      scale = "none",
+      size = final_model$bestTune$size,
+      decay = final_model$bestTune$decay
+      #entropy = FALSE
+      #softmax = TRUE
+    )
+    
+    # Calculate the importance for the current method and measure
+    importance <- Importance(
+      M = m,
+      RealL = levels, # Levels
+      data = train_data,
+      method = methods_SA,
+      measure = measures_SA,
+      baseline = "mean", # mean, median, with the baseline example (should have the same attribute names as data).
+      responses = TRUE
+    )
+    
+  } else {
+    # Calculate the importance for the current method and measure
+    importance <- Importance(
+      M = final_model$final_model$finalModel,
+      RealL = levels, # Levels
+      data = train_data, # data
+      method = methods_SA,
+      measure = measures_SA,
+      baseline = "mean", # mean, median, with the baseline example (should have the same attribute names as data).
+      responses = TRUE,
+      PRED = mypred,
+      outindex = length(train_data) # length(train_data)
+    )
+  }
+  
+  result_SA <- as.data.frame(t((round(importance$imp, 3))))[, -length(importance$imp)]
+  rownames(result_SA) <- NULL
+  names(result_SA) <- names(train_data)[-length(train_data)]
+  
+  if (names(methods)[i] == "nnet") {
+    final_model_p <- final_model
+  } else {
+    final_model_p <- final_model$final_model
+  }
+  
+  print(paste("Inputs importance: ", sum(result_SA[1:length(x)])))
+  print(paste("Outputs importance: ", sum(result_SA[(length(x)+1):(length(x)+length(y))])))
+  print(paste("Seed: ", seed))
+  
+  # =========== #
+  # get ranking #
+  # =========== #
+  
+  eff_vector <- apply(eval_data[, c(x,y)], 1, function(row) {
+    
+    row_df <- as.data.frame(t(row))
+    colnames(row_df) <- names(data[, c(x,y)])
+    
+    pred <- unlist(predict(final_model_p, row_df, type = "prob")[1])
+    
+    return(pred)
+  })
+  
+  browser()
+  eff_vector <- as.data.frame(eff_vector)
+  
+  id <- as.data.frame(c(1:nrow(eval_data)))
+  names(id) <- "id"
+  eff_vector <- cbind(id, eff_vector)
+  
+  ranking_order <- eff_vector[order(eff_vector$eff_vector, decreasing = TRUE), ]
+  # ============================= #
+  # to get probabilities senarios #
+  # ============================= #
+  
+  return(list(
+    final_model = final_model,
+    selected_model_metrics = selected_model,
+    importance = importance,
+    result_SA = result_SA,
+    eff_vector = eff_vector,
+    ranking_order = ranking_order
+    )
+  )
   
 }
 

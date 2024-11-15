@@ -47,159 +47,164 @@ compute_target <- function (
       ncol = 1,
       nrow = nrow(data)
     ))
-
+    
+    length_betas <- 30
+    
     # loop for each observation
     for (i in 1:nrow(data)) {
-  
+      #if (i == 29) {browser()}
       # print(paste("DMU: ", i))
       # print(paste("En curso:", (round(i/nrow(data), 4) * 100)))
 
-      # Inicializar el rango inicial de 'y'
-      range_beta <- as.matrix(seq(from = -15, to = 40, length.out = 30))
+      if (predict(final_model, data[i,], type = "prob")[1] > cut_off) {
+        betas[i,] <- 0
+        
+        data_scenario[i,] <- data[i,]
+        
+      } else {
       
-      # Crear la matriz para aplicar predict()
-      matrix_eff <- as.data.frame(matrix(
-        data = NA,
-        ncol = length(c(x, y)),
-        nrow = length(range_beta)
-      ))
-      
-      # Nombrar las columnas como en data original
-      names(matrix_eff) <- names(data)
-    
-      change_x <- matrix(
-        data = rep((-score_imp_x) * mean_x, each =  nrow(matrix_eff)),
-        nrow = nrow(matrix_eff),
-        ncol = length(mean_x)
-      )
-      
-      change_y <- matrix(
-        data = rep((score_imp_y) * mean_y, each = nrow(matrix_eff)),
-        nrow = nrow(matrix_eff),
-        ncol = length(mean_y)
-      )
-      
-      found_cut_off <- FALSE
-      iter_count <- 0
-      
-      while (!found_cut_off) {
+        # Inicializar el rango inicial de 'y'
+        range_beta <- as.matrix(seq(from = 0, to = 30, length.out = length_betas))
         
-        iter_count <- iter_count + 1
-        # print(iter_count)
+        # Crear la matriz para aplicar predict()
+        matrix_eff <- as.data.frame(matrix(
+          data = NA,
+          ncol = length(c(x, y)),
+          nrow = length(range_beta)
+        ))
         
-        # Asignar valores para 'x' y 'y'
-        matrix_eff[, x] <- data[i,x] 
+        # Nombrar las columnas como en data original
+        names(matrix_eff) <- names(data)
         
-        matrix_eff[, x] <- sweep(change_x, 1, range_beta, "*") + matrix_eff[, x]
+        change_x <- matrix(
+          data = rep((-score_imp_x) * mean_x, each =  nrow(matrix_eff)),
+          nrow = nrow(matrix_eff),
+          ncol = length(mean_x)
+        )
         
-        matrix_eff[, y] <- data[i, y] 
+        change_y <- matrix(
+          data = rep((score_imp_y) * mean_y, each = nrow(matrix_eff)),
+          nrow = nrow(matrix_eff),
+          ncol = length(mean_y)
+        )
         
-        matrix_eff[, y] <- sweep(change_y, 1, range_beta, "*") + matrix_eff[, y]
+        found_cut_off <- FALSE
+        iter_count <- 0
         
-        # Calcular probabilidad de eficiencia para cada fila
-        eff_vector <- apply(matrix_eff, 1, function(row) {
+        while (!found_cut_off) {
           
-          row_df <- as.data.frame(t(row))
-          colnames(row_df) <- names(data)
+          iter_count <- iter_count + 1
+          # print(iter_count)
           
-          pred <- unlist(predict(final_model, row_df, type = "prob")[1])
+          # Asignar valores para 'x' y 'y'
+          matrix_eff[, x] <- data[i,x] 
           
-          return(pred)
-        })
-        
-        min_interval <- min(eff_vector)
-        max_interval <- max(eff_vector)
-
-        if (length(eff_vector) == 0 | is.null(eff_vector)) {
+          matrix_eff[, x] <- sweep(change_x, 1, range_beta, "*") + matrix_eff[, x]
           
-          data_scenario[i, x] <- rep(NA, ncol(matrix_eff[,x]))
-          data_scenario[i, y] <- rep(NA, ncol(matrix_eff[,y]))
+          matrix_eff[, y] <- data[i, y] 
           
-          betas[i,] <- NA
-          break
+          matrix_eff[, y] <- sweep(change_y, 1, range_beta, "*") + matrix_eff[, y]
           
-        } else {
-          
-          # Verificar si alguna predicción coincide con el cut_off
-          if (any(round(eff_vector, 10) == round(cut_off, 10))) {
-            idx <- which(round(eff_vector, 7) == round(cut_off, 7))[1]  # Tomamos la primera coincidencia
-            found_cut_off <- TRUE
+          # Calcular probabilidad de eficiencia para cada fila
+          eff_vector <- apply(matrix_eff, 1, function(row) {
             
-            # Guardar los valores de 'x' y 'y' que coinciden con el cut_off
-            data_scenario[i, x] <- matrix_eff[idx, x]
-            data_scenario[i, y] <- matrix_eff[idx, y]
+            row_df <- as.data.frame(t(row))
+            colnames(row_df) <- names(data)
             
-            betas[i,] <- range_beta[idx]
+            pred <- unlist(predict(final_model, row_df, type = "prob")[1])
             
-            # print("end while")
+            return(pred)
+          })
+          
+          # min_interval <- min(eff_vector)
+          # max_interval <- max(eff_vector)
+          
+          if (length(eff_vector) == 0 | is.null(eff_vector)) {
+            
+            data_scenario[i, x] <- rep(NA, ncol(matrix_eff[,x]))
+            data_scenario[i, y] <- rep(NA, ncol(matrix_eff[,y]))
+            
+            betas[i,] <- NA
             break
             
           } else {
             
-            # Encontrar el intervalo donde se encuentra el cut_off
-            pos <- which(eff_vector < cut_off & c(eff_vector[-1], Inf) > cut_off) # [1] 
-            
-            if (length(pos) == 2) {
-              pos <- pos[1]
-            } else if (length(pos) == 3) {
-              pos <- pos[2]
-            } else if (length(pos) > 3){
-              pos <- pos[as.integer(length(pos)/2)]
-            } else if (length(pos) == 0) {
-              pos <- NA
-            }
-            
-            if (is.na(pos)) {
-              #range_beta <- range_beta *2 
-              # range_beta <- seq(from = range_beta[pos], to = range_beta[pos + 1], length.out = length(range_beta))
+            # Verificar si alguna predicción coincide con el cut_off
+            if (any(round(eff_vector, 10) == round(cut_off, 10))) {
+              idx <- which(round(eff_vector, 7) == round(cut_off, 7))[1]  # Tomamos la primera coincidencia
+              found_cut_off <- TRUE
+              
+              # Guardar los valores de 'x' y 'y' que coinciden con el cut_off
+              data_scenario[i, x] <- matrix_eff[idx, x]
+              data_scenario[i, y] <- matrix_eff[idx, y]
+              
+              betas[i,] <- range_beta[idx]
+              
+              # print("end while")
               break
+              
             } else {
               
-              if (pos == length(eff_vector)) {
-                break
+              # Encontrar el intervalo donde se encuentra el cut_off
+              pos <- which(eff_vector < cut_off & c(eff_vector[-1], Inf) > cut_off) # [1] 
+              
+              if (length(pos) == 2) {
+                pos <- pos[1]
+              } else if (length(pos) == 3) {
+                pos <- pos[2]
+              } else if (length(pos) > 3){
+                pos <- pos[as.integer(length(pos)/2)]
+              } else if (length(pos) == 0) {
+                pos <- NA
               }
               
-              # Refinar el rango de 'y' entre las posiciones pos y pos + 1
-              range_beta <- seq(from = range_beta[pos], to = range_beta[pos + 1], length.out = length(range_beta))
+              if (is.na(pos)) {
+                #range_beta <- range_beta *2 
+                # range_beta <- seq(from = range_beta[pos], to = range_beta[pos + 1], length.out = length(range_beta))
+                break
+              } else {
+                
+                if (pos == length(eff_vector)) {
+                  break
+                }
+                
+                # Refinar el rango de 'y' entre las posiciones pos y pos + 1
+                range_beta <- seq(from = range_beta[pos], to = range_beta[pos + 1], length.out = length(range_beta))
+              }
+              
             }
             
           }
           
-        }
+          if (range_beta[length_betas] - range_beta[1] < 0.0000000001) {
+            
+            data_scenario[i, x] <- matrix_eff[(length_betas/2), x]
+            data_scenario[i, y] <- matrix_eff[(length_betas/2), y]
+            
+            betas[i,] <- range_beta[(length_betas/2)]
+            
+            # print("end while by dif")
+            found_cut_off <- TRUE
+            
+          }
+          
+          if (iter_count == 20) {
+            
+            data_scenario[i, x] <- matrix_eff[(length_betas/2), x]
+            data_scenario[i, y] <- matrix_eff[(length_betas/2), y]
+            
+            betas <- range_beta[(length_betas/2)]
+            
+            # print("end while by iter")
+            found_cut_off <- TRUE
+            
+          }
+          
+        } # end while
         
-        #browser()
-        
-        if (range_beta[30] - range_beta[1] < 0.0000000001) {
-          
-          data_scenario[i, x] <- matrix_eff[15, x]
-          data_scenario[i, y] <- matrix_eff[15, y]
-          
-          betas[i,] <- range_beta[15]
-          
-          # print("end while by dif")
-          found_cut_off <- TRUE
-          
-        }
-        
-        if (iter_count == 20) {
-          
-          data_scenario[i, x] <- matrix_eff[15, x]
-          data_scenario[i, y] <- matrix_eff[15, y]
-          #browser()
-          betas <- range_beta[15]
-          
-          # print("end while by iter")
-          found_cut_off <- TRUE
-          
-        }
-        
-      } # end while
-      
-    } # end for
+      }
     
-    if(any(is.na(betas))) {
-      #browser()
-    }
+    } # end for
     
     names(betas) <- "beta"
     
