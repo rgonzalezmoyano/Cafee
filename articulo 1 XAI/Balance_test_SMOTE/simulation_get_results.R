@@ -150,8 +150,8 @@ for (row in 1:nrow(results)) {
       method = methods[i],
       target_method = target_method,
       metric = metric,
-      hold_out = hold_out,
-      scenarios = scenarios
+      hold_out = hold_out
+      #scenarios = scenarios
     )
   
     # save results
