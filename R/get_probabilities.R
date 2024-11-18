@@ -32,7 +32,7 @@ compute_target <- function (
         nrow = nrow(data)
       )
     )
-    
+   
     names(data_scenario) <- names(data)
     
     # JA aproach

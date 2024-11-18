@@ -106,8 +106,9 @@ train_ml <- function (
         # )
 
         # select best configuration
-        selected_model <- round(model_nnet[["results"]], 1) %>%
+        selected_model <- round(model_nnet[["results"]], 2) %>%
           arrange(desc(Accuracy), desc(F), desc(Spec), desc(AUC), desc(Kappa)) # arrange(desc(F), desc(Precision), desc(AUC), desc(Recall), desc(ROC))
+        # arrange(desc(Accuracy), desc(F), desc(Spec), desc(AUC), desc(Kappa)) # arrange(desc(F), desc(Precision), desc(AUC), desc(Recall), desc(ROC))
         
         # add names
         selected_model <- cbind(
