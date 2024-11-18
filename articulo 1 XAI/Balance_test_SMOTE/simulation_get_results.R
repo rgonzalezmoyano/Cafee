@@ -27,8 +27,8 @@ library(openxlsx)
 # Valencian Comunity 2018 #
 # ======================= #
 
-load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-#load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+#load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 data <- firms
 
 # save a copy
@@ -150,8 +150,8 @@ for (row in 1:nrow(results)) {
       method = methods[i],
       target_method = target_method,
       metric = metric,
-      hold_out = hold_out
-      #scenarios = scenarios
+      hold_out = hold_out,
+      scenarios = scenarios
     )
   
     # save results
@@ -159,7 +159,7 @@ for (row in 1:nrow(results)) {
     results[row, 4:14] <- final_model$selected_model_metrics
     results[row, 15:19] <- final_model$result_SA
     results[row, 20:22] <- t(as.matrix(final_model$count_na))
-
+print(results)
   } # end bucle for (methods)  
   
 } # end loop grid

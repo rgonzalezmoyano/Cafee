@@ -516,10 +516,10 @@ efficiency_estimation <- function (
   metrics_list <- list()
   peer_list <- list()
   na_count_list <- list()
-  
+
   for (e in 1:length(scenarios)) {
-    print(paste("scenario: ", e))
-    
+    print(paste("scenario: ", scenarios[e]))
+    print(final_model)
     data_scenario <- compute_target (
       data = eval_data[,c(x,y)],
       x = x,
@@ -533,84 +533,96 @@ efficiency_estimation <- function (
     if(all(is.na(data_scenario$data_scenario))) {
       browser()
       
+      # peer
+      peer_restult <- NA
+      
+      # save_peer
+      peer_list[[e]] <- peer_restult
+      
+      # main_metrics
+      main_metrics <- NA
+      
+      # save main_metrics
+      metrics_list[[e]] <- main_metrics 
+      
       print("pause")
+    } else {
+      
+      if(any(data_scenario$data_scenario[, c(x,y)] < 0)) {
+        
+        data_scenario$data_scenario[apply(data_scenario$data_scenario, 1, function(row) any(row < 0) || any(is.na(row))), ] <- NA
+        
+        na_idx <- which(apply(data_scenario$data_scenario, 1, function(row) any(is.na(row))))
+        data_scenario$betas[na_idx,] <- NA
+      }
+      
+      # ================ #
+      # determinate peer #
+      # ================ #
+      
+      # first, determinate efficient units
+      idx_eff <- which(eff_vector$eff_vector > scenarios[e])
+      
+      # save distances structure
+      save_dist <- matrix(
+        data = NA,
+        ncol = length(idx_eff),
+        nrow = nrow(eval_data)
+      )
+      
+      # calculate distances
+      for (unit_eff in idx_eff) {
+        # set reference
+        reference <- data[unit_eff, c(x,y)]
+        
+        distance <- unname(apply(eval_data[, c(x,y)], 1, function(x) sqrt(sum((x - reference)^2))))
+        
+        # get position in save results
+        idx_dis <- which(idx_eff == unit_eff)
+        save_dist[,idx_dis] <- as.matrix(distance)
+      }
+      
+      near_idx_eff <- apply(save_dist, 1, function(row) {
+        
+        which.min(abs(row))
+        
+      })
+      
+      peer_restult <- matrix(
+        data = NA,
+        ncol = 1,
+        nrow = nrow(eval_data)
+      )
+      
+      peer_restult[, 1] <- idx_eff[near_idx_eff]
+      
+      # save_peer
+      peer_list[[e]] <- peer_restult
+      
+      # join data plus betas to metrics for scenario
+      data_metrics <- cbind(data_scenario$data_scenario, data_scenario$betas)
+      na_row <- which(apply(data_metrics, 1, function(row) all(is.na(row))))
+      count_na <- length(na_row)
+      na_count_list[[e]] <- count_na
+      
+      # metrics: mean, median, sd
+      main_metrics <- as.data.frame(matrix(
+        data = NA,
+        ncol = ncol(data_metrics[,c(x,y)]) + 1,
+        nrow = 3
+      ))
+      
+      # metrics
+      main_metrics[1,] <- apply(data_metrics, 2, mean, na.rm = TRUE)
+      main_metrics[2,] <- apply(data_metrics, 2, median, na.rm = TRUE)
+      main_metrics[3,] <- apply(data_metrics, 2, sd, na.rm = TRUE)
+      
+      names(main_metrics) <- names(data_metrics)
+      row.names(main_metrics) <- c("mean", "median", "sd")
+      
+      metrics_list[[e]] <- main_metrics
+      
     }
-    
-    if(any(data_scenario$data_scenario[, c(x,y)] < 0)) {
-      
-      data_scenario$data_scenario[apply(data_scenario$data_scenario, 1, function(row) any(row < 0) || any(is.na(row))), ] <- NA
-      
-      na_idx <- which(apply(data_scenario$data_scenario, 1, function(row) any(is.na(row))))
-      data_scenario$betas[na_idx,] <- NA
-    }
-    
-    # ================ #
-    # determinate peer #
-    # ================ #
-    
-    # first, determinate efficient units
-    idx_eff <- which(eff_vector$eff_vector > scenarios[e])
-    
-    # save distances structure
-    save_dist <- matrix(
-      data = NA,
-      ncol = length(idx_eff),
-      nrow = nrow(eval_data)
-    )
-    
-    # calculate distances
-    for (unit_eff in idx_eff) {
-      # set reference
-      reference <- data[unit_eff, c(x,y)]
-      
-      distance <- unname(apply(eval_data[, c(x,y)], 1, function(x) sqrt(sum((x - reference)^2))))
-      
-      # get position in save results
-      idx_dis <- which(idx_eff == unit_eff)
-      save_dist[,idx_dis] <- as.matrix(distance)
-    }
-    
-    near_idx_eff <- apply(save_dist, 1, function(row) {
-      
-      which.min(abs(row))
-      
-    })
-    
-    peer_restult <- matrix(
-      data = NA,
-      ncol = 1,
-      nrow = nrow(eval_data)
-    )
-    
-    peer_restult[, 1] <- idx_eff[near_idx_eff]
-    
-    #save_peer
-    peer_list[[e]] <- peer_restult
-    
-    # join data plus betas to metrics for scenario
-    data_metrics <- cbind(data_scenario$data_scenario, data_scenario$betas)
-    na_row <- which(apply(data_metrics, 1, function(row) all(is.na(row))))
-    count_na <- length(na_row)
-    
-    na_count_list[[e]] <- count_na
-    
-    # metrics: mean, median, sd
-    main_metrics <- as.data.frame(matrix(
-      data = NA,
-      ncol = ncol(data_metrics[,c(x,y)]) + 1,
-      nrow = 3
-    ))
-    
-    # metrics
-    main_metrics[1,] <- apply(data_metrics, 2, mean, na.rm = TRUE)
-    main_metrics[2,] <- apply(data_metrics, 2, median, na.rm = TRUE)
-    main_metrics[3,] <- apply(data_metrics, 2, sd, na.rm = TRUE)
-    
-    names(main_metrics) <- names(data_metrics)
-    row.names(main_metrics) <- c("mean", "median", "sd")
-    
-    metrics_list[[e]] <- main_metrics 
-    
     
   } # end loop scenarios
  
