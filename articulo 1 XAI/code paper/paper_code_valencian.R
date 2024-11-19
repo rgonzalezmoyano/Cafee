@@ -32,8 +32,8 @@ library(rminer)
 # Valencian Comunity 2018 #
 # ======================= #
 
-# load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+#load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 data <- firms
 
 # save a copy
@@ -183,9 +183,10 @@ for (i in 1:length(methods)) {
 
 names(list_method) <- names(methods)
 
-# save(list_method, file = "resultados_art_XAI_NN_CV.RData")
+#save(list_method, file = "resultados_art_XAI_NN_CV_0.4_4.RData")
 #
 library(openxlsx)
+
 #write.xlsx(list_method$nnet$metrics, file = "metrics_NN.xlsx")
 # write.xlsx(list_method$svmPoly$metrics, file = "metrics_SVM.xlsx")
 # 

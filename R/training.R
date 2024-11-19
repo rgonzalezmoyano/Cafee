@@ -107,8 +107,15 @@ train_ml <- function (
 
         # select best configuration
         selected_model <- round(model_nnet[["results"]], 2) %>%
-          arrange(desc(Accuracy), desc(F), desc(Spec), desc(AUC), desc(Kappa)) # arrange(desc(F), desc(Precision), desc(AUC), desc(Recall), desc(ROC))
-        # arrange(desc(Accuracy), desc(F), desc(Spec), desc(AUC), desc(Kappa)) # arrange(desc(F), desc(Precision), desc(AUC), desc(Recall), desc(ROC))
+          arrange(desc(Accuracy), desc(F), desc(Sens), desc(AUC), desc(Kappa)) # arrange(desc(F), desc(Precision), desc(AUC), desc(Recall), desc(ROC))
+        # arrange(desc(F), desc(Accuracy), desc(AUC), desc(Kappa)) # arrange(desc(F), desc(Precision), desc(AUC), desc(Recall), desc(ROC))
+        
+        selected_model <-  round(model_nnet[["results"]], 2) %>%
+          arrange(desc(F), desc(Sens), desc(Accuracy), desc(AUC), desc(Kappa))
+        
+        selected_model <- round(model_nnet[["results"]], 2) %>%
+          mutate(Balance_accuracy = (Sens + Spec) / 2) %>%  # Añadir la nueva métrica
+          arrange(desc(Balance_accuracy), desc(F), desc(AUC), desc(Kappa))
         
         # add names
         selected_model <- cbind(

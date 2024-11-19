@@ -563,64 +563,78 @@ efficiency_estimation <- function (
       # first, determinate efficient units
       idx_eff <- which(eff_vector$eff_vector > scenarios[e])
       
-      # save distances structure
-      save_dist <- matrix(
-        data = NA,
-        ncol = length(idx_eff),
-        nrow = nrow(eval_data)
-      )
-      
-      # calculate distances
-      for (unit_eff in idx_eff) {
-        # set reference
-        reference <- data[unit_eff, c(x,y)]
+      if (!length(idx_eff) == 0) {
         
-        distance <- unname(apply(eval_data[, c(x,y)], 1, function(x) sqrt(sum((x - reference)^2))))
+        # save distances structure
+        save_dist <- matrix(
+          data = NA,
+          ncol = length(idx_eff),
+          nrow = nrow(eval_data)
+        )
+        browser()
         
-        # get position in save results
-        idx_dis <- which(idx_eff == unit_eff)
-        save_dist[,idx_dis] <- as.matrix(distance)
+        w_eval_data <- sweep(eval_data, 1, result_SA, "*")
+        
+        
+        # calculate distances
+        for (unit_eff in idx_eff) {
+          # set reference
+          reference <- eval_data[unit_eff, c(x,y)]
+          
+          distance <- unname(apply(eval_data[, c(x,y)], 1, function(x) sqrt(sum((x - reference)^2))))
+          
+          # get position in save results
+          idx_dis <- which(idx_eff == unit_eff)
+          save_dist[,idx_dis] <- as.matrix(distance)
+        }
+        
+        near_idx_eff <- apply(save_dist, 1, function(row) {
+          
+          which.min(abs(row))
+          
+        })
+        
+        peer_restult <- matrix(
+          data = NA,
+          ncol = 1,
+          nrow = nrow(eval_data)
+        )
+        
+        peer_restult[, 1] <- idx_eff[near_idx_eff]
+        
+        # save_peer
+        peer_list[[e]] <- peer_restult
+        
+        # join data plus betas to metrics for scenario
+        data_metrics <- cbind(data_scenario$data_scenario, data_scenario$betas)
+        na_row <- which(apply(data_metrics, 1, function(row) all(is.na(row))))
+        count_na <- length(na_row)
+        na_count_list[[e]] <- count_na
+        
+        # metrics: mean, median, sd
+        main_metrics <- as.data.frame(matrix(
+          data = NA,
+          ncol = ncol(data_metrics[,c(x,y)]) + 1,
+          nrow = 3
+        ))
+        
+        # metrics
+        main_metrics[1,] <- apply(data_metrics, 2, mean, na.rm = TRUE)
+        main_metrics[2,] <- apply(data_metrics, 2, median, na.rm = TRUE)
+        main_metrics[3,] <- apply(data_metrics, 2, sd, na.rm = TRUE)
+        
+        names(main_metrics) <- names(data_metrics)
+        row.names(main_metrics) <- c("mean", "median", "sd")
+        
+        metrics_list[[e]] <- main_metrics
+        
+      } else {
+        
+        
+        peer_list[[e]] <- NULL
+        na_count_list[[e]] <- nrow(eval_data)
+        metrics_list[[e]] <- NULL
       }
-      
-      near_idx_eff <- apply(save_dist, 1, function(row) {
-        
-        which.min(abs(row))
-        
-      })
-      
-      peer_restult <- matrix(
-        data = NA,
-        ncol = 1,
-        nrow = nrow(eval_data)
-      )
-      
-      peer_restult[, 1] <- idx_eff[near_idx_eff]
-      
-      # save_peer
-      peer_list[[e]] <- peer_restult
-      
-      # join data plus betas to metrics for scenario
-      data_metrics <- cbind(data_scenario$data_scenario, data_scenario$betas)
-      na_row <- which(apply(data_metrics, 1, function(row) all(is.na(row))))
-      count_na <- length(na_row)
-      na_count_list[[e]] <- count_na
-      
-      # metrics: mean, median, sd
-      main_metrics <- as.data.frame(matrix(
-        data = NA,
-        ncol = ncol(data_metrics[,c(x,y)]) + 1,
-        nrow = 3
-      ))
-      
-      # metrics
-      main_metrics[1,] <- apply(data_metrics, 2, mean, na.rm = TRUE)
-      main_metrics[2,] <- apply(data_metrics, 2, median, na.rm = TRUE)
-      main_metrics[3,] <- apply(data_metrics, 2, sd, na.rm = TRUE)
-      
-      names(main_metrics) <- names(data_metrics)
-      row.names(main_metrics) <- c("mean", "median", "sd")
-      
-      metrics_list[[e]] <- main_metrics
       
     }
     
