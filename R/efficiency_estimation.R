@@ -572,8 +572,11 @@ efficiency_estimation <- function (
           nrow = nrow(eval_data)
         )
         browser()
+        result_SA_matrix <- matrix(rep(result_SA, each = nrow(eval_data)), nrow = nrow(eval_data), byrow = FALSE)
         
-        w_eval_data <- sweep(eval_data, 1, result_SA, "*")
+        w_eval_data <- eval_data[, c(x, y)] * result_SA_matrix
+        sweep(eval_data[, c(x, y)], 2, result_SA_matrix, "*")
+        sweep(eval_data[, c(x, y)], 2, result_SA, "*")
         
         
         # calculate distances
