@@ -159,34 +159,32 @@ efficiency_estimation <- function (
   # observed proportion of efficient and inefficient DMUs
   obs_prop <- prop.table(table(data$class_efficiency))
 
-  # check presence of imbalanced data
-  # if (max(obs_prop[1], obs_prop[2]) > 0.50) {
-  #   data <- balance_data (
-  #     data = data,
-  #     data_factor = data_factor,
-  #     x = x,
-  #     y = y,
-  #     z = z,
-  #     convexity = convexity,
-  #     returns = returns
-  #   )
-  #   
-  #   data <- na.omit(data)
-  # }
-  
-  if (max(obs_prop[1], obs_prop[2]) > 0.50) {
+  for (balance in 1:balance_data$balance_proportions){
     
-    if (balance_data[1] != 0) {
-      data <- SMOTE_balance_data(
-        data = data,
-        data_factor = data_factor,
-        x = x,
-        y = y,
-        z = z,
-        balance_data = balance_data
-      )
-    }
-  }
+    balance_data_prop <- balance_data[["balance_proportions"]][balance]
+    sub_frontier <- balance_data[["sub_frontier"]]
+    
+    # check presence of imbalanced data
+    if (max(obs_prop[1], obs_prop[2]) > 0.50) {
+
+      if (balance != 0) {
+        data <- SMOTE_convex_balance_data(
+          data = data,
+          data_factor = data_factor,
+          x = x,
+          y = y,
+          z = z,
+          balance_data = balance_data_prop,
+          sub_frontier = sub_frontier
+        )
+        
+      }
+      
+    } # balance data
+    
+  } # loop balance_data
+  
+ 
   
   data_after_balance <- data
   
@@ -571,13 +569,13 @@ efficiency_estimation <- function (
           ncol = length(idx_eff),
           nrow = nrow(eval_data)
         )
-        browser()
-        result_SA_matrix <- matrix(rep(result_SA, each = nrow(eval_data)), nrow = nrow(eval_data), byrow = FALSE)
         
-        w_eval_data <- eval_data[, c(x, y)] * result_SA_matrix
-        sweep(eval_data[, c(x, y)], 2, result_SA_matrix, "*")
-        sweep(eval_data[, c(x, y)], 2, result_SA, "*")
-        
+        # result_SA_matrix <- matrix(rep(result_SA, each = nrow(eval_data)), nrow = nrow(eval_data), byrow = FALSE)
+        # 
+        # w_eval_data <- eval_data[, c(x, y)] * result_SA_matrix
+        # sweep(eval_data[, c(x, y)], 2, result_SA_matrix, "*")
+        # sweep(eval_data[, c(x, y)], 2, result_SA, "*")
+        # 
         
         # calculate distances
         for (unit_eff in idx_eff) {

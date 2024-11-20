@@ -70,9 +70,18 @@ methods <- list (
 # score cafee #
 # =========== #    
 
-
 # efficiency orientation
-orientation <- "output"
+convexity <- TRUE
+returns <- "variable"
+
+# SMOTE proportions
+balance_data <- c(0.4, 4)
+
+# ML metric
+metric = "F"
+
+# scenarios to peer
+scenarios <- seq(0.75, 0.95, 0.1)
 
 # metrics for model evaluation
 MySummary <- function (data, lev = NULL, model = NULL) {
@@ -88,10 +97,9 @@ MySummary <- function (data, lev = NULL, model = NULL) {
   
   c(acc_kpp, auc_sen_spe, pre_rec)
   
-  
 } 
 
-# Parameters for controlling the training process
+# parameters for controlling the training process
 trControl <- trainControl (
   method = "cv",
   number = 5,
@@ -100,18 +108,40 @@ trControl <- trainControl (
   savePredictions = "all"
 )
 
-hold_out <- 0.00
-# https://topepo.github.io/caret/train-models-by-tag.html
-
-metric = "Accuracy"
-
-convexity <- TRUE
-returns <- "variable"
+hold_out <- 0.00 # https://topepo.github.io/caret/train-models-by-tag.html
 
 # save model information
-list_method <- list() 
-
+list_method <- list()  
   
+
+# loop method
+for (i in 1:length(methods)) {
+  
+  # for (a in 1:nrow(balance_data)) {
+  #   
+  # }
+  # console information
+  print(paste("METODO:", i,  names(methods)[i]))
+  print("")
+  
+  # model result
+  final_model <- efficiency_estimation (
+    data = data,
+    x = x,
+    y = y,
+    #z = z,
+    balance_data = balance_data,
+    trControl = trControl,
+    method = methods[i],
+    target_method = target_method,
+    metric = metric,
+    hold_out = hold_out,
+    scenarios = scenarios
+  )
+  
+  list_method[[i]] <- final_model
+  
+} # end bucle for (methods)  
 
 names(list_method) <- names(methods)
 

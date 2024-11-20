@@ -373,7 +373,43 @@ SMOTE_balance_data <- function (
     data, data_factor, x, y, z = NULL, balance_data
 ) {
 
-    # number of inputs
+ 
+  
+  data_eff <- data[data$class_efficiency == "efficient", ]
+  
+  idx_eff <- 1:nrow(data_eff)
+  
+  lambda <- rep(0.1666667, ncol(data))
+  
+  # 0.25 para 4
+  # 0.2 para 5
+  # 0.1666667 para 6
+  
+  combinations <- as.data.frame(t(combn(idx_eff, 6)))
+  
+  # create convex combintaions
+  resultados_df <- t(apply(combinations, 1, function(indices) {
+    
+    # select row
+    seleccion <- data[indices, c(x,y)]
+    
+    # calculate
+    colSums(seleccion * lambda)
+  }))
+  
+  
+  add_test <- compute_scores_additive(resultados_df, x = x, y = y)
+  
+  length(which(add_test < 0.0000001))
+  
+  # para combinaciones de 4: 35
+  # para combinaciones de 5: 45
+  # para combinaciones de 6: 41
+  
+  
+  browser()
+  
+  # number of inputs
   nX <- length(x)
   
   # number of outputs
@@ -544,6 +580,7 @@ SMOTE_balance_data <- function (
     n_save_eff <- nrow(new_eff_point)
     
   }
+  eff_conexion[seq(1, nrow(eff_conexion), by = 2),]
   
   # ---
   # not eff units
@@ -591,5 +628,128 @@ SMOTE_balance_data <- function (
   
   final_data <- rbind(final_data, new_eff_point, new_ineff_point)
 
+  return(final_data)
+}
+
+#' @title Create New SMOTE Units to Balance Data combinations of m + s 
+#'
+#' @description This function creates new DMUs to address data imbalances. If the majority class is efficient, it generates new inefficient DMUs by worsering the observed units. Conversely, if the majority class is inefficient, it projects inefficient DMUs to the frontier. Finally, a random selection if performed to keep a proportion of 0.65 for the majority class and 0.35 for the minority class.
+#' 
+#' @param data A \code{data.frame} containing the variables used in the model.
+#' @param data_factor A \code{data.frame} containing the factor variables used in the model.
+#' @param x Column indexes of the input variables in the \code{data}.
+#' @param y Column indexes of the output variables in the \code{data}.
+#' @param z Column indexes of environment variables in \code{data}.
+#' @param balance_data Indicate level of efficient units to achive and the number of efficient and not efficient units.
+#' @param sub_frontier Indicate how many units not efficient it must be created.
+
+#' @return It returns a \code{data.frame} with the newly created set of DMUs incorporated.
+
+SMOTE_convex_balance_data <- function (
+    data, data_factor, x, y, z = NULL, balance_data, sub_frontier
+) {
+
+  # =========================================================== #
+  # determinate number of efficient and not efficient to create #
+  # =========================================================== #
+  
+  # determinate numbre of efficient and ineeficient units
+  n_real_eff <- nrow(data[data$class_efficiency == "efficient",])
+  n_real_ineff <-nrow(data[data$class_efficiency == "not_efficient",])
+  
+  prop_real <- n_real_eff / nrow(data)
+  
+  # n_new_eff <- n_real_eff
+  n_new_eff <- 0
+  
+  #n_new_ineff <- n_real_ineff
+  n_new_ineff <- 0
+  
+  prop <- prop_real
+  
+  if (is.null(sub_frontier)) {
+    
+    add_not_eff == 0
+    
+  } else {
+    
+    # save proprtion efficient
+    numerator <- as.numeric(substr(sub_frontier, 1, 1))
+    denominator <- as.numeric(substr(sub_frontier, 3, 3))
+    
+    add_not_eff <- numerator / denominator
+  }
+  
+  make_ineff <- 0
+  loop <- 0
+  
+  while (make_ineff < 1) {
+    
+    loop <- loop + 1
+    make_ineff <- make_ineff + add_not_eff
+    
+  }
+  
+  add_eff <- loop - 1
+  
+  eff_level <- balance_data
+  eff_level <- 0.4
+  
+  test_n_eff <- n_real_eff
+  test_n_ineff <- n_real_ineff
+  
+  while (prop < eff_level) {
+    
+    test_n_eff <- test_n_eff + add_eff
+    
+    if (sub_frontier != 0) {
+      test_n_ineff <- test_n_ineff + 1
+    }
+    
+    prop <- test_n_eff / (test_n_eff + test_n_ineff)
+  }
+  
+  create_eff <- test_n_eff - n_real_eff
+  create_ineff <- test_n_ineff - n_real_ineff
+  
+  
+  browser()
+  browser()
+  
+  # ====================================================== #
+  # create convex combinations to achieve create_eff units #
+  # ====================================================== #
+  
+  # determinate 
+  data_eff <- data[data$class_efficiency == "efficient", ]
+  
+  idx_eff <- 1:nrow(data_eff)
+  
+  # proportion importance
+  len <- length(c(x,y))
+  
+  prop_imp <- 1/len
+  
+  lambda <- rep(prop_imp, ncol(data_eff[, c(x,y)]))
+  
+  n_comb <- 5
+
+  combinations <- as.data.frame(t(combn(idx_eff, n_comb)))
+  
+  # create convex combintaions
+  resultados_df <- t(apply(combinations, 1, function(indices) {
+    
+    # select row
+    seleccion <- data_eff[indices, c(x,y)]
+    
+    # calculate
+    colSums(seleccion * lambda)
+  }))
+  
+  add_test <- compute_scores_additive(resultados_df, x = x, y = y)
+  
+  length(which(add_test < 0.0000001))
+
+  
   return(final_data)
 }
