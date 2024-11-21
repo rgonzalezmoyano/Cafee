@@ -801,10 +801,12 @@ SMOTE_convex_balance_data <- function (
     
     # test additive
     test_add <- compute_scores_additive(test_eff, x = x, y = y)
-    
+    b <- compute_scores_additive(results_convx, x = x, y = y)
+    which(b < 0.0000001)
+    which(test_add < 0.0000001)
     # leave original eff units, get index 
     new_results_convx <- results_convx[(nrow(data_eff) + 1):nrow(test_eff),]
-    idx_eff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] < 0.0000000001)
+    idx_eff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] < 0.0000001)
     
     new_eff_conx_unit <- new_results_convx[idx_eff, ]
     

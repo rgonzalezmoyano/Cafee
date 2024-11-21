@@ -27,86 +27,86 @@ library(rminer)
 # ===
 # load data
 # ===
-#############
-# PISA 2018 #
-#############
-data_2018 <- read_dta("C:/Users/Ricardo/Downloads/Data Spain PISA 2018.dta")
-data_2018$Region <- as.factor(data_2018$Region)
-data_2018$SCHLTYPE <- as.factor(data_2018$SCHLTYPE)
-
-# preProces
-data_NA <- data_2018[which(is.na(data_2018$SCHLTYPE)), ]
-borrar <- table(data_NA$Region)
-
-inf_NA <- matrix(
-  data = NA,
-  ncol = 3,
-  nrow = length(unique(data_2018$Region))
-)
-
-inf_NA <- as.data.frame(inf_NA)
-
-names(inf_NA) <- c("region", "num_NA", "percent_NA")
-
-idx_reg <- sort(unique(data_2018$Region))
-
-inf_NA$region <- idx_reg
-
-for (i in 1:nrow(inf_NA)) {
-
-  i_data <- data_2018 %>%
-    filter(Region == i)
-
-  value <- sum(apply(i_data, 1, anyNA))
-
-  inf_NA$num_NA[i] <- value
-  inf_NA$percent_NA[i] <- round(value / nrow(i_data) * 100, 2)
-
-}
-
-# save errors and NA in models
-inf_NA
-
-# preProcess
-data <- data_2018
-#data <- data[1:200, ]
-idx_NA <- which(is.na(data$SCHLTYPE))
-data <- data[-idx_NA,]
-
-# ===
-# Information to cafee
-# ===
-
-# x and y indexes
-x <- c(10, 7, 6)
-y <- c(3:5)
-#z <- c(2, 8) # environment variables
-
-# # ======================= #
-# # Valencian Comunity 2018 #
-# # ======================= #
+# #############
+# # PISA 2018 #
+# #############
+# data_2018 <- read_dta("C:/Users/Ricardo/Downloads/Data Spain PISA 2018.dta")
+# data_2018$Region <- as.factor(data_2018$Region)
+# data_2018$SCHLTYPE <- as.factor(data_2018$SCHLTYPE)
 # 
-# # load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-# load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-# data <- firms
+# # preProces
+# data_NA <- data_2018[which(is.na(data_2018$SCHLTYPE)), ]
+# borrar <- table(data_NA$Region)
 # 
-# # save a copy
-# data_original <- data
+# inf_NA <- matrix(
+#   data = NA,
+#   ncol = 3,
+#   nrow = length(unique(data_2018$Region))
+# )
 # 
-# # make changes realted to class
-# data <- change_class(data = data, to_factor = c(5,6))
+# inf_NA <- as.data.frame(inf_NA)
 # 
-# # filter to valencian comunity
-# data <- data[data$autonomous_community == "Comunidad Valenciana",]
+# names(inf_NA) <- c("region", "num_NA", "percent_NA")
+# 
+# idx_reg <- sort(unique(data_2018$Region))
+# 
+# inf_NA$region <- idx_reg
+# 
+# for (i in 1:nrow(inf_NA)) {
+# 
+#   i_data <- data_2018 %>%
+#     filter(Region == i)
+# 
+#   value <- sum(apply(i_data, 1, anyNA))
+# 
+#   inf_NA$num_NA[i] <- value
+#   inf_NA$percent_NA[i] <- round(value / nrow(i_data) * 100, 2)
+# 
+# }
+# 
+# # save errors and NA in models
+# inf_NA
+# 
+# # preProcess
+# data <- data_2018
+# #data <- data[1:200, ]
+# idx_NA <- which(is.na(data$SCHLTYPE))
+# data <- data[-idx_NA,]
 # 
 # # ===
 # # Information to cafee
 # # ===
 # 
 # # x and y indexes
-# x <- c(9:12)
-# y <- c(8)
+# x <- c(10, 7, 6)
+# y <- c(3:5)
 # #z <- c(2, 8) # environment variables
+
+# ======================= #
+# Valencian Comunity 2018 #
+# ======================= #
+
+# load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+data <- firms
+
+# save a copy
+data_original <- data
+
+# make changes realted to class
+data <- change_class(data = data, to_factor = c(5,6))
+
+# filter to valencian comunity
+data <- data[data$autonomous_community == "Comunidad Valenciana",]
+
+# ===
+# Information to cafee
+# ===
+
+# x and y indexes
+x <- c(9:12)
+y <- c(8)
+#z <- c(2, 8) # environment variables
 
 # different types to label
 target_method <- "additive"
