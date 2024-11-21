@@ -763,67 +763,72 @@ SMOTE_convex_balance_data <- function (
     combinations$particion <- ceiling(seq_along(shuffle_data) / n_batch)
     
     batch_all <- split(combinations[shuffle_data, ], combinations$particion)
-   
-    # create convex combintaions
-    print("calculate combinations points")
     
-    iter <- 0
-    while (nrow(eff_convex) < create_eff) {
+  } else {
+    
+    batch_all <- list()
+    batch_all[[1]] <- combinations
+    
+  }
+    
+  # create convex combintaions
+  print("calculate combinations points")
+  
+  iter <- 0
+  while (nrow(eff_convex) < create_eff) {
+    
+    iter <- iter + 1
+    print(iter)
+    
+    # units to classify
+    results_convx <- t(apply(batch_all[[iter]][,c(x,y)], 1, function(indices) {
       
-      iter <- iter + 1
-      print(iter)
+      # select row
+      seleccion <- data_eff[unlist(as.vector(indices)), c(x,y)]
       
-      # units to classify
-      results_convx <- t(apply(batch_all[[iter]][,c(x,y)], 1, function(indices) {
-        
-        # select row
-        seleccion <- data_eff[unlist(as.vector(indices)), c(x,y)]
-        
-        # calculate
-        colSums(seleccion * lambda)
-      }))
+      # calculate
+      colSums(seleccion * lambda)
+    }))
+    
+    # change to dataframe 
+    results_convx <- as.data.frame(results_convx)
+    
+    # change name
+    names(results_convx) <- names(data_eff[, c(x,y)])
+    
+    # create test dataset additive
+    test_eff <- rbind(data_eff[, c(x,y)], results_convx)
+    
+    # test additive
+    test_add <- compute_scores_additive(test_eff, x = x, y = y)
+    
+    # leave original eff units, get index 
+    new_results_convx <- results_convx[(nrow(data_eff) + 1):nrow(test_eff),]
+    idx_eff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] < 0.0000000001)
+    
+    new_eff_conx_unit <- new_results_convx[idx_eff, ]
+    
+    # save unit efficient
+    eff_convex <- rbind(eff_convex, new_eff_conx_unit)
+    
+    # save not efficient
+    ineff_to_save <- new_results_convx
+    browser()
+    if(nrow(new_eff_conx_unit) != 0) {
       
-      # change to dataframe 
-      results_convx <- as.data.frame(results_convx)
-      
-      # change name
-      names(results_convx) <- names(data_eff[, c(x,y)])
-      
-      # create test dataset additive
-      test_eff <- rbind(data_eff[, c(x,y)], results_convx)
-      
-      # test additive
-      test_add <- compute_scores_additive(test_eff, x = x, y = y)
-      
-      # leave original eff units, get index 
-      new_results_convx <- results_convx[(nrow(data_eff) + 1):nrow(test_eff),]
-      idx_eff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] < 0.0000000001)
-      
-      new_eff_conx_unit <- test_eff[idx_eff, ]
-      
-      # save unit efficient
-      eff_convex <- rbind(eff_convex, new_eff_conx_unit)
-      
-      # save not efficient
-      ineff_to_save <- new_results_convx
-      
-      if(nrow(new_eff_conx_unit) != 0) {
-        
-        ineff_to_save <- ineff_to_save[-idx_eff,]
-        
-      }
-
-      ineff_convex <- rbind(ineff_convex, ineff_to_save)
-      
-      # get prop information
-      print(paste("There are:", nrow(eff_convex)))
-      print(paste("It must be created:", create_eff))
-      print(paste(nrow(eff_convex)/create_eff * 100, "%"))
+      ineff_to_save <- ineff_to_save[-idx_eff,]
       
     }
     
-  }
-  
+    ineff_convex <- rbind(ineff_convex, ineff_to_save)
+    
+    # get prop information
+    print(paste("There are:", nrow(eff_convex)))
+    print(paste("It must be created:", create_eff))
+    print(paste(nrow(eff_convex)/create_eff * 100, "%"))
+    
+  }  
+
   final_data <- rbind(eff_convex, ineff_convex)
 
   return(final_data)

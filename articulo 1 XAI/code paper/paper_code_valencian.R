@@ -53,15 +53,15 @@ idx_reg <- sort(unique(data_2018$Region))
 inf_NA$region <- idx_reg
 
 for (i in 1:nrow(inf_NA)) {
-  
-  i_data <- data_2018 %>% 
+
+  i_data <- data_2018 %>%
     filter(Region == i)
-  
+
   value <- sum(apply(i_data, 1, anyNA))
-  
+
   inf_NA$num_NA[i] <- value
   inf_NA$percent_NA[i] <- round(value / nrow(i_data) * 100, 2)
-  
+
 }
 
 # save errors and NA in models
@@ -86,8 +86,8 @@ y <- c(3:5)
 # # Valencian Comunity 2018 #
 # # ======================= #
 # 
-# load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-# #load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+# # load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+# load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 # data <- firms
 # 
 # # save a copy
