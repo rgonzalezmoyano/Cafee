@@ -86,8 +86,8 @@ library(rminer)
 # Valencian Comunity 2018 #
 # ======================= #
 
-# load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+#load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 data <- firms
 
 # save a copy
@@ -166,6 +166,11 @@ methods <- list (
 # SMOTE proportions
 balance_data <- list(
   balance_proportions = c(0, 0.2, 0.3, 0.4, 0.5),
+  sub_frontier = "1/3"
+)
+
+balance_data <- list(
+  balance_proportions = 0.4,
   sub_frontier = "1/3"
 )
 
