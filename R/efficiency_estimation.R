@@ -196,6 +196,33 @@ efficiency_estimation <- function (
     
     data_after_balance <- data
     
+    library(cxhull)
+    data_hull <- as.matrix(eval_data[, c(x,y)])
+
+    hull <- cxhull(data_hull)
+    
+    browser()
+    
+    facets <- matrix(
+      data = NA,
+      ncol = ncol(eval_data[, c(x,y)]),
+      nrow = length(hull[["facets"]])
+    )
+    
+
+    facets[1, ] <- hull[["facets"]][[1]][["vertices"]]
+    facets[2, ] <- hull[["facets"]][[2]][["vertices"]]
+    
+    facets0 <- lapply(hull[["facets"]], function(facet) data_hull[facet[["vertices"]], ])
+    
+    facets_points <- lapply(hull$facets[["vertices"]], function(indices) data_hull[indices,])
+    
+    facets_points <- lapply(hull$facets, function(facet) {
+      indices <- unlist(facet)  # Convertir cada faceta en un vector de índices
+      data_hull[indices, ]      # Seleccionar puntos correspondientes
+    })
+    
+    
     if (hold_out != 0) {
       
       # Create train and validation data

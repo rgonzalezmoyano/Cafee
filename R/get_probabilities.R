@@ -48,7 +48,7 @@ compute_target <- function (
       nrow = nrow(data)
     ))
     
-    length_betas <- 50
+    length_betas <- 100
 
     # loop for each observation
     for (i in 1:nrow(data)) {
