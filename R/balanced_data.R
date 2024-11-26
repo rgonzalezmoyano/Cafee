@@ -693,7 +693,6 @@ SMOTE_convex_balance_data <- function (
   add_eff <- loop - 1
   
   eff_level <- balance_data
-  eff_level <- 0.4
   
   test_n_eff <- n_real_eff
   test_n_ineff <- n_real_ineff
@@ -810,9 +809,7 @@ SMOTE_convex_balance_data <- function (
     
     # test additive
     test_add <- compute_scores_additive(test_eff, x = x, y = y)
-    b <- compute_scores_additive(results_convx, x = x, y = y)
-    which(b < 0.0001)
-    which(test_add < 0.0001)
+
     # leave original eff units, get index 
     new_results_convx <- results_convx[(nrow(data_eff) + 1):nrow(test_eff),]
     idx_eff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] < 0.0001)
@@ -831,11 +828,12 @@ SMOTE_convex_balance_data <- function (
     if(nrow(new_eff_conx_unit) != 0) {
       
       ineff_to_save <- ineff_to_save[-idx_eff,]
+      ineff_to_save <- na.omit(ineff_to_save)
       
     }
     
     ineff_convex <- rbind(ineff_convex, ineff_to_save)
-    
+
     # get prop information
     print(paste("There are:", nrow(eff_convex)))
     print(paste("It must be created:", create_eff))
@@ -901,7 +899,7 @@ SMOTE_convex_balance_data <- function (
     if (count_batch == n_total_batch & true_eff == create_eff) {break}
     
   } # end while
-  
+
   select_ineff_idx <- sample(nrow(ineff_convex), size = create_ineff, replace = FALSE) 
   
   if (any(duplicated(select_ineff_idx))) {
@@ -916,6 +914,7 @@ SMOTE_convex_balance_data <- function (
   ineff_convex$class_efficiency <- "not_efficient"
   
   final_data <- rbind(data, eff_convex, ineff_convex)
-
+if (any(is.na(final_data))) {browser()}
+  
   return(final_data)
 }

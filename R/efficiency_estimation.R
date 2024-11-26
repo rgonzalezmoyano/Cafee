@@ -159,17 +159,27 @@ efficiency_estimation <- function (
   # observed proportion of efficient and inefficient DMUs
   obs_prop <- prop.table(table(data$class_efficiency))
   
-  result_final_model <- list()
-
-  for (balance in 1:balance_data$balance_proportions) {
+  # set sub frontier
+  sub_frontier <- balance_data[["sub_frontier"]]
+  
+  save_models_balance <- vector("list", length = length(balance_data$balance_proportions))
+  names(save_models_balance) <- balance_data$balance_proportions
+  
+  save_confusion_matrix <- vector("list", length = length(balance_data$balance_proportions))
+  names(save_confusion_matrix) <- balance_data$balance_proportions
+  
+  compare_confusion_matrix <- vector("list", length = length(balance_data$balance_proportions))
+  names(compare_confusion_matrix) <- balance_data$balance_proportions
+  
+  for (balance in 1:length(balance_data$balance_proportions)) {
     
     balance_data_prop <- balance_data[["balance_proportions"]][balance]
-    sub_frontier <- balance_data[["sub_frontier"]]
+    data <- eval_data
     
     # check presence of imbalanced data
     if (max(obs_prop[1], obs_prop[2]) > 0.50) {
 
-      if (balance != 0) {
+      if (balance_data[["balance_proportions"]][balance] != 0) {
         data <- SMOTE_convex_balance_data(
           data = data,
           data_factor = data_factor,
@@ -209,7 +219,7 @@ efficiency_estimation <- function (
     # ====================== #
     # SELECT HYPERPARAMETERS #
     # ====================== #
-    
+
     ml_model <- train_ml (
       data = train_data,
       trControl = trControl,
@@ -218,6 +228,7 @@ efficiency_estimation <- function (
     )
     
     # Best training 
+    # n_matrix <- length(methods) * length(balance_data$balance_proportions)
     confusion_matrix <- vector("list", length = length(methods))
     names(confusion_matrix) <- names(methods)
     
@@ -306,21 +317,9 @@ efficiency_estimation <- function (
           tuneGrid = parms_vals[[i]]
         )
       }
-      browser()
-      browser()
+
       y_obs <- valid_data$class_efficiency
-      # y_hat <- predict(best_ml_model, valid_data)
-      
-      y_hat_pro <- predict(best_ml_model, valid_data, type = "prob")[1]
-      
-      y_hat_idx <- which(y_hat_pro > scenarios[1])
-      
-      y_hat <-  rep("not_efficient", length(y_obs)) 
-      y_hat[y_hat_idx] <- "efficient"
-      
-      levels(y_hat) <- c("efficient", "not_efficient")
-      
-      y_hat
+      y_hat <- predict(best_ml_model, valid_data) # 0.5 but can it change? 0.75, 0.85, 0.95
 
       #create confusion matrix and calculate metrics related to confusion matrix
       confusion_matrix[[i]] <- confusionMatrix (
@@ -329,6 +328,7 @@ efficiency_estimation <- function (
         mode = "everything",
         positive = "efficient"
       )[["byClass"]]
+      
     }
     
     # matrix for model evaluation
@@ -343,14 +343,18 @@ efficiency_estimation <- function (
     colnames(precision_models) <- names(confusion_matrix[[1]])
     rownames(precision_models) <- names(methods)
     
+    names(precision_models)[ncol(precision_models)] <- "Balanced_Accuracy"
+   
     for (i in 1:length(methods)) {
       precision_models[i, ] <- confusion_matrix[[i]]
     }
     
     # select the best model by metric
     selected_model <- precision_models %>%
-      arrange(desc("Balanced Accuracy"), desc(F1), desc(Sensitivity))
+      arrange(desc("Balanced_Accuracy"), desc(F1), desc(Precision), desc(Sensitivity))
     selected_model <- selected_model[1, ]
+    
+    save_confusion_matrix[[balance]] <- selected_model
     
     # index of the best model in ml_model
     best_model_index <- which(row.names(selected_model) == ml_model[[i]]["method"]) # names(ml_model)
@@ -418,275 +422,381 @@ efficiency_estimation <- function (
       }
     }
     
-    # ============================== #
-    # detecting importance variables #
-    # ============================== #
+    save_models_balance[[balance]] <- final_model
+    save_confusion_matrix[[balance]] <- confusion_matrix
+
+  } # loop balance_data
+
+  decision_balance <- as.data.frame(matrix(
+    data = NA,
+    ncol = length(c("Method", "Balance", names(save_confusion_matrix[[1]][[1]]))),
+    nrow = length(balance_data$balance_proportions)
+  ))
+  
+  names(decision_balance) <- c("Method", "Balance", names(save_confusion_matrix[[1]][[1]]))
+  
+  for (n in 1:length(balance_data$balance_proportions)) {
+    decision_balance[n, 1] <- names(save_confusion_matrix[[n]])
+    decision_balance[n, 2] <-  names(save_confusion_matrix[n])
     
-    # necesary data to calculate importance in rminer
-    train_data <- final_model[["trainingData"]]
-    names(train_data)[1] <- "ClassEfficiency"
+    decision_balance[n, 3:ncol(decision_balance)] <- save_confusion_matrix[[n]][[names(save_confusion_matrix[[n]])]]
+  }
+
+  train_decision_balance <- decision_balance
+  
+  train_decision_balance[, 3:ncol(decision_balance)] <- round(decision_balance[, 3:ncol(decision_balance)], 2)
+
+  # change name to arrange correct
+  names(train_decision_balance)[13] <- "Balanced_Accuracy"
+  
+  train_decision_balance <- train_decision_balance %>% 
+    arrange(desc(Balanced_Accuracy), desc(F1), desc(Precision), desc(Specificity))
+  
+  ###
+  # test with real data
+  ###
+  test_decision_balance <- as.data.frame(matrix(
+    data = NA,
+    ncol = length(c("Method", "Balance", names(save_confusion_matrix[[1]][[1]]))),
+    nrow = length(balance_data$balance_proportions)
+  ))
+  
+  names(test_decision_balance) <- c("Method", "Balance", names(save_confusion_matrix[[1]][[1]]))
+  
+  # test confusion matrix
+  test_confmatrix <- list()
+  y_obs_test <- eval_data$class_efficiency
+  
+  for (m in 1:length(save_models_balance)) {
     
-    dataset_dummy <- model.matrix(ClassEfficiency~ . - 1, data = train_data)
-    train_data <- cbind(train_data[1], dataset_dummy)
+    y_pre_test <- predict(save_models_balance[m], eval_data)[[1]]
     
-    train_data <- train_data[,c(2:length(train_data),1)]
-    
-    # importance with our model of Caret
-    mypred <- function(M, data) {
-      return (predict(M, data[-length(data)], type = "prob"))
-    }
-    
-    # Define methods and measures
-    methods_SA <- c("1D-SA") # c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
-    measures_SA <- c("AAD") #  c("AAD", "gradient", "variance", "range")
-    
-    levels <- 7
-    
-    if (names(methods)[i] == "nnet") {
-      # with rminer
-      m <- rminer::fit(
-        ClassEfficiency ~.,
-        data = train_data,
-        model = "mlp",
-        scale = "none",
-        size = final_model$bestTune$size,
-        decay = final_model$bestTune$decay
-        #entropy = FALSE
-        #softmax = TRUE
-      )
-      
-      # Calculate the importance for the current method and measure
-      importance <- Importance(
-        M = m,
-        RealL = levels, # Levels
-        data = train_data,
-        method = methods_SA,
-        measure = measures_SA,
-        baseline = "mean", # mean, median, with the baseline example (should have the same attribute names as data).
-        responses = TRUE
-      )
-      
-    } else {
-      # Calculate the importance for the current method and measure
-      importance <- Importance(
-        M = final_model$final_model$finalModel,
-        RealL = levels, # Levels
-        data = train_data, # data
-        method = methods_SA,
-        measure = measures_SA,
-        baseline = "mean", # mean, median, with the baseline example (should have the same attribute names as data).
-        responses = TRUE,
-        PRED = mypred,
-        outindex = length(train_data) # length(train_data)
-      )
-    }
-    
-    result_SA <- as.data.frame(t((round(importance$imp, 3))))[, -length(importance$imp)]
-    rownames(result_SA) <- NULL
-    names(result_SA) <- names(train_data)[-length(train_data)]
-    
-    if (names(methods) == "nnet") {
-      final_model_p <- final_model
-    } else {
-      final_model_p <- final_model$final_model
-    }
-    
-    print(paste("Inputs importance: ", sum(result_SA[1:length(x)])))
-    print(paste("Outputs importance: ", sum(result_SA[(length(x)+1):(length(x)+length(y))])))
-    print(paste("Seed: ", seed))
-    
-    # =========== #
-    # get ranking #
-    # =========== #
-    
-    eff_vector <- apply(eval_data[, c(x,y)], 1, function(row) {
-      
-      row_df <- as.data.frame(t(row))
-      colnames(row_df) <- names(data[, c(x,y)])
-      
-      pred <- unlist(predict(final_model_p, row_df, type = "prob")[1])
-      
-      return(pred)
-    })
-    
-    eff_vector <- as.data.frame(eff_vector)
-    
-    id <- as.data.frame(c(1:nrow(eval_data)))
-    names(id) <- "id"
-    eff_vector <- cbind(id, eff_vector)
-    
-    ranking_order <- eff_vector[order(eff_vector$eff_vector, decreasing = TRUE), ]
-    
-    # ============================= #
-    # to get probabilities senarios #
-    # ============================= #
-    
-    metrics_list <- list()
-    peer_list <- list()
-    na_count_list <- list()
-    
-    for (e in 1:length(scenarios)) {
-      print(paste("scenario: ", scenarios[e]))
-      print(final_model)
-      data_scenario <- compute_target (
-        data = eval_data[,c(x,y)],
-        x = x,
-        y = y,
-        #z = z,
-        final_model = final_model,
-        cut_off = scenarios[e],
-        imp_vector = result_SA
-      )
-      
-      if(all(is.na(data_scenario$data_scenario))) {
-        browser()
-        
-        # peer
-        peer_restult <- NA
-        
-        # save_peer
-        peer_list[[e]] <- peer_restult
-        
-        # main_metrics
-        main_metrics <- NA
-        
-        # save main_metrics
-        metrics_list[[e]] <- main_metrics 
-        
-        print("pause")
-      } else {
-        
-        if(any(data_scenario$data_scenario[, c(x,y)] < 0)) {
-          
-          data_scenario$data_scenario[apply(data_scenario$data_scenario, 1, function(row) any(row < 0) || any(is.na(row))), ] <- NA
-          
-          na_idx <- which(apply(data_scenario$data_scenario, 1, function(row) any(is.na(row))))
-          data_scenario$betas[na_idx,] <- NA
-        }
-        
-        # ================ #
-        # determinate peer #
-        # ================ #
-        
-        # first, determinate efficient units
-        idx_eff <- which(eff_vector$eff_vector > scenarios[e])
-        
-        if (!length(idx_eff) == 0) {
-          
-          # save distances structure
-          save_dist <- matrix(
-            data = NA,
-            ncol = length(idx_eff),
-            nrow = nrow(eval_data)
-          )
-          
-          # result_SA_matrix <- matrix(rep(result_SA, each = nrow(eval_data)), nrow = nrow(eval_data), byrow = FALSE)
-          # 
-          # w_eval_data <- eval_data[, c(x, y)] * result_SA_matrix
-          # sweep(eval_data[, c(x, y)], 2, result_SA_matrix, "*")
-          # sweep(eval_data[, c(x, y)], 2, result_SA, "*")
-          # 
-          
-          # calculate distances
-          for (unit_eff in idx_eff) {
-            # set reference
-            reference <- eval_data[unit_eff, c(x,y)]
-            
-            distance <- unname(apply(eval_data[, c(x,y)], 1, function(x) sqrt(sum((x - reference)^2))))
-            
-            # get position in save results
-            idx_dis <- which(idx_eff == unit_eff)
-            save_dist[,idx_dis] <- as.matrix(distance)
-          }
-          
-          near_idx_eff <- apply(save_dist, 1, function(row) {
-            
-            which.min(abs(row))
-            
-          })
-          
-          peer_restult <- matrix(
-            data = NA,
-            ncol = 1,
-            nrow = nrow(eval_data)
-          )
-          
-          peer_restult[, 1] <- idx_eff[near_idx_eff]
-          
-          # save_peer
-          peer_list[[e]] <- peer_restult
-          
-          # join data plus betas to metrics for scenario
-          data_metrics <- cbind(data_scenario$data_scenario, data_scenario$betas)
-          na_row <- which(apply(data_metrics, 1, function(row) all(is.na(row))))
-          count_na <- length(na_row)
-          na_count_list[[e]] <- count_na
-          
-          # metrics: mean, median, sd
-          main_metrics <- as.data.frame(matrix(
-            data = NA,
-            ncol = ncol(data_metrics[,c(x,y)]) + 1,
-            nrow = 3
-          ))
-          
-          # metrics
-          main_metrics[1,] <- apply(data_metrics, 2, mean, na.rm = TRUE)
-          main_metrics[2,] <- apply(data_metrics, 2, median, na.rm = TRUE)
-          main_metrics[3,] <- apply(data_metrics, 2, sd, na.rm = TRUE)
-          
-          names(main_metrics) <- names(data_metrics)
-          row.names(main_metrics) <- c("mean", "median", "sd")
-          
-          metrics_list[[e]] <- main_metrics
-          
-        } else {
-          
-          
-          peer_list[[e]] <- NULL
-          na_count_list[[e]] <- nrow(eval_data)
-          metrics_list[[e]] <- NULL
-        }
-        
-      }
-      
-    } # end loop scenarios
-    
-    names(metrics_list) <- scenarios
-    names(peer_list) <- scenarios
-    names(na_count_list) <- scenarios
-    
-    # check real data performance
-    y_obs <- valid_data$class_efficiency
-    y_hat_ <- predict(best_ml_model, valid_data)
-    # jkjk =
-    
-    #create confusion matrix and calculate metrics related to confusion matrix
-    confusion_matrix[[i]] <- confusionMatrix (
-      data = y_hat,
-      reference = y_obs,
+    test_confmatrix[[m]] <- confusionMatrix (
+      data = y_pre_test,
+      reference = y_obs_test,
       mode = "everything",
       positive = "efficient"
     )[["byClass"]]
+  }
+  names(test_confmatrix) <- balance_data$balance_proportions
+  
+  for (n in 1:length(balance_data$balance_proportions)) {
+    test_decision_balance[n, 1] <- save_models_balance[[n]][["method"]]
+    test_decision_balance[n, 2] <-  names(test_confmatrix[n])
     
-    result_final_model[[balance]] <- list(
-      final_model = final_model,
-      performance_train_dataset = selected_model,
-      #performance_real_data = 
-      importance = importance,
-      result_SA = result_SA,
-      eff_vector = eff_vector,
-      ranking_order = ranking_order,
-      peer_list = peer_list,
-      metrics_list = metrics_list,
-      count_na = na_count_list
+    test_decision_balance[n, 3:ncol(decision_balance)] <- round(test_confmatrix[[n]], 2)
+  }
+  
+  selected_real_balance <- test_decision_balance
+  
+  names(selected_real_balance)[13] <- "Balanced_Accuracy"
+
+  selected_real_balance <- selected_real_balance %>% 
+    arrange(desc(Balanced_Accuracy), desc(F1), desc(Precision), desc(Sensitivity), Balance)
+  
+  # select best balance hyperparameter
+  first <- selected_real_balance[1, 3:ncol(selected_real_balance)]
+  
+  duplicated_metrics <- as.numeric(names(which(apply(selected_real_balance[2:3, 3:ncol(selected_real_balance)], 1, function(x) all(x == first)) == TRUE)))
+  
+  if (length(duplicated_metrics) == 0) {
+    duplicated_metrics <- 0
+    
+    # the correct balance on real data
+    best_balance <- selected_real_balance[1, 2]
+    
+  } else {
+    
+    best_real_balance <- selected_real_balance[c(1, duplicated_metrics),2]
+    
+    best_train_balance <- train_decision_balance[which(train_decision_balance$Balance %in% best_real_balance), ]
+    
+    best_balance <- best_train_balance[1, 2]
+  }
+
+  # load final model and train data
+  final_model <- save_models_balance[[best_balance]]
+  
+  # ============================== #
+  # detecting importance variables #
+  # ============================== #
+  
+  # necesary data to calculate importance in rminer
+  train_data <- final_model[["trainingData"]]
+  names(train_data)[1] <- "ClassEfficiency"
+  
+  dataset_dummy <- model.matrix(ClassEfficiency~ . - 1, data = train_data)
+  train_data <- cbind(train_data[1], dataset_dummy)
+  
+  train_data <- train_data[,c(2:length(train_data),1)]
+  
+  # importance with our model of Caret
+  mypred <- function(M, data) {
+    return (predict(M, data[-length(data)], type = "prob"))
+  }
+  
+  # Define methods and measures
+  methods_SA <- c("1D-SA") # c("1D-SA", "sens", "DSA", "MSA", "CSA", "GSA")
+  measures_SA <- c("AAD") #  c("AAD", "gradient", "variance", "range")
+  
+  levels <- 7
+  
+  if (names(methods)[i] == "nnet") {
+    # with rminer
+    m <- rminer::fit(
+      ClassEfficiency ~.,
+      data = train_data,
+      model = "mlp",
+      scale = "none",
+      size = final_model$bestTune$size,
+      decay = final_model$bestTune$decay
+      #entropy = FALSE
+      #softmax = TRUE
     )
     
-    browser()
-    browser()
+    # Calculate the importance for the current method and measure
+    importance <- Importance(
+      M = m,
+      RealL = levels, # Levels
+      data = train_data,
+      method = methods_SA,
+      measure = measures_SA,
+      baseline = "mean", # mean, median, with the baseline example (should have the same attribute names as data).
+      responses = TRUE
+    )
     
-  } # loop balance_data
+  } else {
+    # Calculate the importance for the current method and measure
+    importance <- Importance(
+      M = final_model$final_model$finalModel,
+      RealL = levels, # Levels
+      data = train_data, # data
+      method = methods_SA,
+      measure = measures_SA,
+      baseline = "mean", # mean, median, with the baseline example (should have the same attribute names as data).
+      responses = TRUE,
+      PRED = mypred,
+      outindex = length(train_data) # length(train_data)
+    )
+  }
   
-  return(result_final_model)
+  result_SA <- as.data.frame(t((round(importance$imp, 3))))[, -length(importance$imp)]
+  rownames(result_SA) <- NULL
+  names(result_SA) <- names(train_data)[-length(train_data)]
+  
+  if (names(methods) == "nnet") {
+    final_model_p <- final_model
+  } else {
+    final_model_p <- final_model$final_model
+  }
+  
+  print(paste("Inputs importance: ", sum(result_SA[1:length(x)])))
+  print(paste("Outputs importance: ", sum(result_SA[(length(x)+1):(length(x)+length(y))])))
+  print(paste("Seed: ", seed))
+  
+  # =========== #
+  # get ranking #
+  # =========== #
+  
+  eff_vector <- apply(eval_data[, c(x,y)], 1, function(row) {
+    
+    row_df <- as.data.frame(t(row))
+    colnames(row_df) <- names(data[, c(x,y)])
+    
+    pred <- unlist(predict(final_model_p, row_df, type = "prob")[1])
+    
+    return(pred)
+  })
+  
+  eff_vector <- as.data.frame(eff_vector)
+  
+  id <- as.data.frame(c(1:nrow(eval_data)))
+  names(id) <- "id"
+  eff_vector <- cbind(id, eff_vector)
+  
+  ranking_order <- eff_vector[order(eff_vector$eff_vector, decreasing = TRUE), ]
+  
+  # ============================= #
+  # to get probabilities senarios #
+  # ============================= #
+  
+  data_scenario_list <- list()
+  metrics_list <- list()
+  peer_list <- list()
+  na_count_list <- list()
+  n_not_prob_list <- list()
+  
+  for (e in 1:length(scenarios)) {
+    print(paste("scenario: ", scenarios[e]))
+    print(final_model)
+    data_scenario <- compute_target (
+      data = eval_data[,c(x,y)],
+      x = x,
+      y = y,
+      #z = z,
+      final_model = final_model,
+      cut_off = scenarios[e],
+      imp_vector = result_SA
+    )
+
+    if(all(is.na(data_scenario$data_scenario))) {
+      print("all na")
+      browser()
+      
+      # peer
+      peer_restult <- NA
+      
+      # save_peer
+      peer_list[[e]] <- peer_restult
+      
+      # main_metrics
+      main_metrics <- NA
+      
+      # save main_metrics
+      metrics_list[[e]] <- main_metrics 
+      
+      print("pause")
+    } else {
+      
+      if(any(data_scenario$data_scenario[, c(x,y)] < 0)) {
+        
+        data_scenario$data_scenario[apply(data_scenario$data_scenario, 1, function(row) any(row < 0) || any(is.na(row))), ] <- NA
+        
+        na_idx <- which(apply(data_scenario$data_scenario, 1, function(row) any(is.na(row))))
+        data_scenario$betas[na_idx,] <- NA
+      }
+      
+      data_scenario_list[[e]] <- data_scenario
+      
+      # ================ #
+      # determinate peer #
+      # ================ #
+      
+      # first, determinate efficient units
+      idx_eff <- which(eff_vector$eff_vector > scenarios[e])
+      
+      if (!length(idx_eff) == 0) {
+        
+        # save distances structure
+        save_dist <- matrix(
+          data = NA,
+          ncol = length(idx_eff),
+          nrow = nrow(eval_data)
+        )
+        
+        # result_SA_matrix <- matrix(rep(result_SA, each = nrow(eval_data)), nrow = nrow(eval_data), byrow = FALSE)
+        # 
+        # w_eval_data <- eval_data[, c(x, y)] * result_SA_matrix
+        # sweep(eval_data[, c(x, y)], 2, result_SA_matrix, "*")
+        # sweep(eval_data[, c(x, y)], 2, result_SA, "*")
+        # 
+        
+        # calculate distances
+        for (unit_eff in idx_eff) {
+          # set reference
+          reference <- eval_data[unit_eff, c(x,y)]
+          
+          distance <- unname(apply(eval_data[, c(x,y)], 1, function(x) sqrt(sum((x - reference)^2))))
+          
+          # get position in save results
+          idx_dis <- which(idx_eff == unit_eff)
+          save_dist[,idx_dis] <- as.matrix(distance)
+        }
+        
+        near_idx_eff <- apply(save_dist, 1, function(row) {
+          
+          which.min(abs(row))
+          
+        })
+        
+        peer_restult <- matrix(
+          data = NA,
+          ncol = 1,
+          nrow = nrow(eval_data)
+        )
+        
+        peer_restult[, 1] <- idx_eff[near_idx_eff]
+        
+        # save_peer
+        peer_list[[e]] <- peer_restult
+  
+        # join data plus betas to metrics for scenario
+        data_metrics <- cbind(data_scenario$data_scenario, round(data_scenario$betas, 5))
+        
+        # number not scenario 
+        n_not_prob <- which(data_metrics$probability < scenarios[e])
+        n_not_prob_list[[e]] <- n_not_prob
+        
+        # count na
+        na_row <- which(apply(data_metrics, 1, function(row) all(is.na(row))))
+        count_na <- length(na_row)
+        na_count_list[[e]] <- count_na
+        
+        # metrics: mean, median, sd
+        main_metrics <- as.data.frame(matrix(
+          data = NA,
+          ncol = ncol(data_metrics),
+          nrow = 3
+        ))
+
+        # metrics
+        main_metrics[1,] <- apply(data_metrics, 2, mean, na.rm = TRUE)
+        main_metrics[2,] <- apply(data_metrics, 2, median, na.rm = TRUE)
+        main_metrics[3,] <- apply(data_metrics, 2, sd, na.rm = TRUE)
+        
+        names(main_metrics) <- names(data_metrics)
+        row.names(main_metrics) <- c("mean", "median", "sd")
+        
+        metrics_list[[e]] <- main_metrics
+        
+      } else {
+        
+        peer_list[[e]] <- NULL
+        na_count_list[[e]] <- nrow(eval_data)
+        metrics_list[[e]] <- NULL
+      }
+      
+    }
+    
+  } # end loop scenarios
+  
+  names(data_scenario_list) <- scenarios
+  names(metrics_list) <- scenarios
+  names(peer_list) <- scenarios
+  names(na_count_list) <- scenarios
+  names(n_not_prob_list) <- scenarios
+  
+  # check real data performance
+  y_obs <- eval_data$class_efficiency
+  y_hat <- predict(final_model, eval_data)
+  
+  #create confusion matrix and calculate metrics related to confusion matrix
+  performance_real_data <- confusionMatrix (
+    data = y_hat,
+    reference = y_obs,
+    mode = "everything",
+    positive = "efficient"
+  )[["byClass"]]
+
+  final_model <- list(
+    train_decision_balance = train_decision_balance,
+    real_decision_balance = selected_real_balance,
+    best_balance = best_balance,
+    final_model = final_model,
+    performance_train_dataset = selected_model,
+    performance_real_data = performance_real_data,
+    importance = importance,
+    result_SA = result_SA,
+    eff_vector = eff_vector,
+    ranking_order = ranking_order,
+    peer_list = peer_list,
+    data_scenario_list = data_scenario_list,
+    metrics_list = metrics_list,
+    count_na = na_count_list,
+    n_not_prob_list = n_not_prob_list
+  )
+  
+  return(final_model)
   
 }
 

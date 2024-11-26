@@ -166,13 +166,13 @@ methods <- list (
 # SMOTE proportions
 balance_data <- list(
   balance_proportions = c(0, 0.2, 0.3, 0.4, 0.5),
-  sub_frontier = "1/3"
+  sub_frontier = "1/4"
 )
 
-balance_data <- list(
-  balance_proportions = 0.4,
-  sub_frontier = "1/3"
-)
+# balance_data <- list(
+#   balance_proportions = c(0, 0.2, 0.4),  #0.2, c(0.2, 0.4),
+#   sub_frontier = "1/3"
+# )
 
 # ML metric
 metric = "F"
