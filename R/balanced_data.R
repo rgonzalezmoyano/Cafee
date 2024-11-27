@@ -838,7 +838,7 @@ SMOTE_convex_balance_data <- function (
     print(paste("There are:", nrow(eff_convex)))
     print(paste("It must be created:", create_eff))
     print(paste(nrow(eff_convex)/create_eff * 100, "%"))
-    
+
     true_eff <- nrow(eff_convex)
     
     # if there are not enough efficient units, use 
@@ -915,6 +915,6 @@ SMOTE_convex_balance_data <- function (
   
   final_data <- rbind(data, eff_convex, ineff_convex)
 if (any(is.na(final_data))) {browser()}
-  
+
   return(final_data)
 }

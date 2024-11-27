@@ -190,38 +190,62 @@ efficiency_estimation <- function (
           sub_frontier = sub_frontier
         )
 
+        library(cxhull)
+        data_hull <- as.matrix(eval_data[which(eval_data$class_efficiency == "efficient"), c(x,y)])
+        
+        hull <- cxhull(data_hull)
+        
+        facets <- matrix(
+          data = NA,
+          ncol = ncol(eval_data[, c(x,y)]),
+          nrow = length(hull[["facets"]])
+        )
+ 
+        lambda <- 1/ncol(eval_data[,c(x,y)])
+        
+        facets_detect <- lapply(hull[["facets"]], function(facet) {
+          
+          all_facets <- facet[["vertices"]]
+          
+          # if (length(all_facets) == 5) {
+          #   
+          #   all_facets <- data_hull[all_facets, ]
+          #   colSums(all_facets * lambda)
+          #   
+          # } else {
+          #   
+          #   NULL  
+          #   
+          # }
+          
+        })
+        
+        
+        
+        facets_filtered <- facets_detect[!sapply(facets_detect, is.null)]
+        
+        facets <- do.call(rbind, facets_filtered) 
+        
+        
+        browser()
+        
+        data_test_hull <- rbind(data_hull, facets)
+        
+        test_add_hull <- compute_scores_additive(
+          data = data_test_hull,
+          x = x,
+          y = y
+        )
+        n_eff_org <- length(which(eval_data$class_efficiency == "efficient"))
+        
+        idx_convex <- which(as.matrix(test_add_hull[-(1:n_eff_org),]) < 0.0001)
+        convex_combinations <- facets[idx_convex, ]
+    
       }
       
     } # end balance data
     
     data_after_balance <- data
-    
-    library(cxhull)
-    data_hull <- as.matrix(eval_data[, c(x,y)])
-
-    hull <- cxhull(data_hull)
-    
-    browser()
-    
-    facets <- matrix(
-      data = NA,
-      ncol = ncol(eval_data[, c(x,y)]),
-      nrow = length(hull[["facets"]])
-    )
-    
-
-    facets[1, ] <- hull[["facets"]][[1]][["vertices"]]
-    facets[2, ] <- hull[["facets"]][[2]][["vertices"]]
-    
-    facets0 <- lapply(hull[["facets"]], function(facet) data_hull[facet[["vertices"]], ])
-    
-    facets_points <- lapply(hull$facets[["vertices"]], function(indices) data_hull[indices,])
-    
-    facets_points <- lapply(hull$facets, function(facet) {
-      indices <- unlist(facet)  # Convertir cada faceta en un vector de índices
-      data_hull[indices, ]      # Seleccionar puntos correspondientes
-    })
-    
     
     if (hold_out != 0) {
       
