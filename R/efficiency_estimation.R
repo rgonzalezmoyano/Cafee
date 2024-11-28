@@ -261,14 +261,14 @@ efficiency_estimation <- function (
               
         round( compute_scores_additive(efficient_rpref[which(efficient_rpref$pareto_eff == 1), c(x,y)], x = x, y = y), 3)
         
-        tech_xmat = eval_data[,x]
-        tech_ymat = eval_data[,y]
-        eval_xmat = eval_data[,x]
-        eval_ymat = eval_data[,y]
+        tech_xmat = as.matrix(eval_data[,x])
+        tech_ymat = as.matrix(eval_data[,y])
+        eval_xmat = as.matrix(eval_data[,x])
+        eval_ymat = as.matrix(eval_data[,y])
         wam(
-          tech_xmat = eval_data[,x],
+          tech_xmat = as.matrix(eval_data[,x]),
           tech_ymat = as.matrix(eval_data[,y]),
-          eval_xmat = eval_data[,x],
+          eval_xmat = as.matrix(eval_data[,x]),
           eval_ymat = as.matrix(eval_data[,y]),
           weights = "WAM",
           convexity = TRUE,
