@@ -191,7 +191,7 @@ efficiency_estimation <- function (
         )
 
         library(cxhull)
-        data_hull <- as.matrix(eval_data[which(eval_data$class_efficiency == "efficient"), c(x,y)])
+        data_hull <- as.matrix(eval_data[, c(x,y)])
         
         hull <- cxhull(data_hull)
         
@@ -207,27 +207,73 @@ efficiency_estimation <- function (
           
           all_facets <- facet[["vertices"]]
           
-          # if (length(all_facets) == 5) {
-          #   
-          #   all_facets <- data_hull[all_facets, ]
-          #   colSums(all_facets * lambda)
-          #   
-          # } else {
-          #   
-          #   NULL  
-          #   
-          # }
-          
+          if (length(all_facets) == length(names(eval_data)[c(x,y)])) {
+
+            all_facets <- data_hull[all_facets, ]
+            colSums(all_facets * lambda)
+
+          } else {
+    
+            NULL
+
+          }
+
         })
-        
-        
         
         facets_filtered <- facets_detect[!sapply(facets_detect, is.null)]
         
         facets <- do.call(rbind, facets_filtered) 
         
+        facets_center <- lapply(hull[["facets"]], function(facet) {
+          
+          all_facets <- facet[["center"]]
+          
+        })
         
+        facets_center <- facets_center[!sapply(facets_detect, is.null)]
+        facets_center <- do.call(rbind, facets_center) 
+        
+        facets[87,]
+        facets_center[87,]
+        
+        which(compute_scores_additive(facets, x = x, y = y) < 0.00001)
+        which(compute_scores_additive(facets_center, x = x, y = y) < 0.00001)
+        
+        data_test_facets <- rbind(eval_data[,c(x,y)], facets)
+        which(compute_scores_additive(data_test_facets, x = x, y = y) < 0.00001)
+        round(facets, 4) == round(facets_center, 4)
+        hull[["facets"]][[427]][["vertices"]]
+        
+        which(compute_scores_additive(eval_data[,c(x,y)], x = x, y = y) < 0.00001)
         browser()
+        which(pareto_efficient(eval_data[,c(x,y)]) == TRUE)
+        
+        library(rPref)
+
+        # Definir la preferencia directamente con el dataframe y sus columnas
+        p <- (low(total_assets) & low(employees) & low(fixed_assets) & low(personal_expenses)) * high(operating_income)
+        efficient_rpref <- psel(eval_data, p, top = nrow(eval_data))
+        efficient_rpref[1:17,]
+        which(eval_data$class_efficiency == "efficient") 
+        names(efficient_rpref)[7] <- "pareto_eff"
+        
+        which(efficient_rpref$pareto_eff == 1)
+              
+        round( compute_scores_additive(efficient_rpref[which(efficient_rpref$pareto_eff == 1), c(x,y)], x = x, y = y), 3)
+        
+        tech_xmat = eval_data[,x]
+        tech_ymat = eval_data[,y]
+        eval_xmat = eval_data[,x]
+        eval_ymat = eval_data[,y]
+        wam(
+          tech_xmat = eval_data[,x],
+          tech_ymat = as.matrix(eval_data[,y]),
+          eval_xmat = eval_data[,x],
+          eval_ymat = as.matrix(eval_data[,y]),
+          weights = "WAM",
+          convexity = TRUE,
+          returns = "variable"
+        )
         
         data_test_hull <- rbind(data_hull, facets)
         
