@@ -189,103 +189,6 @@ efficiency_estimation <- function (
           balance_data = balance_data_prop,
           sub_frontier = sub_frontier
         )
-
-        library(cxhull)
-        data_hull <- as.matrix(eval_data[, c(x,y)])
-        
-        hull <- cxhull(data_hull)
-        
-        facets <- matrix(
-          data = NA,
-          ncol = ncol(eval_data[, c(x,y)]),
-          nrow = length(hull[["facets"]])
-        )
- 
-        lambda <- 1/ncol(eval_data[,c(x,y)])
-        
-        facets_detect <- lapply(hull[["facets"]], function(facet) {
-          
-          all_facets <- facet[["vertices"]]
-          
-          if (length(all_facets) == length(names(eval_data)[c(x,y)])) {
-
-            all_facets <- data_hull[all_facets, ]
-            colSums(all_facets * lambda)
-
-          } else {
-    
-            NULL
-
-          }
-
-        })
-        
-        facets_filtered <- facets_detect[!sapply(facets_detect, is.null)]
-        
-        facets <- do.call(rbind, facets_filtered) 
-        
-        facets_center <- lapply(hull[["facets"]], function(facet) {
-          
-          all_facets <- facet[["center"]]
-          
-        })
-        
-        facets_center <- facets_center[!sapply(facets_detect, is.null)]
-        facets_center <- do.call(rbind, facets_center) 
-        
-        facets[87,]
-        facets_center[87,]
-        
-        which(compute_scores_additive(facets, x = x, y = y) < 0.00001)
-        which(compute_scores_additive(facets_center, x = x, y = y) < 0.00001)
-        
-        data_test_facets <- rbind(eval_data[,c(x,y)], facets)
-        which(compute_scores_additive(data_test_facets, x = x, y = y) < 0.00001)
-        round(facets, 4) == round(facets_center, 4)
-        hull[["facets"]][[427]][["vertices"]]
-        
-        which(compute_scores_additive(eval_data[,c(x,y)], x = x, y = y) < 0.00001)
-        browser()
-        which(pareto_efficient(eval_data[,c(x,y)]) == TRUE)
-        
-        library(rPref)
-
-        # Definir la preferencia directamente con el dataframe y sus columnas
-        p <- (low(total_assets) & low(employees) & low(fixed_assets) & low(personal_expenses)) * high(operating_income)
-        efficient_rpref <- psel(eval_data, p, top = nrow(eval_data))
-        efficient_rpref[1:17,]
-        which(eval_data$class_efficiency == "efficient") 
-        names(efficient_rpref)[7] <- "pareto_eff"
-        
-        which(efficient_rpref$pareto_eff == 1)
-              
-        round( compute_scores_additive(efficient_rpref[which(efficient_rpref$pareto_eff == 1), c(x,y)], x = x, y = y), 3)
-        
-        tech_xmat = as.matrix(eval_data[,x])
-        tech_ymat = as.matrix(eval_data[,y])
-        eval_xmat = as.matrix(eval_data[,x])
-        eval_ymat = as.matrix(eval_data[,y])
-        wam(
-          tech_xmat = as.matrix(eval_data[,x]),
-          tech_ymat = as.matrix(eval_data[,y]),
-          eval_xmat = as.matrix(eval_data[,x]),
-          eval_ymat = as.matrix(eval_data[,y]),
-          weights = "WAM",
-          convexity = TRUE,
-          returns = "variable"
-        )
-        
-        data_test_hull <- rbind(data_hull, facets)
-        
-        test_add_hull <- compute_scores_additive(
-          data = data_test_hull,
-          x = x,
-          y = y
-        )
-        n_eff_org <- length(which(eval_data$class_efficiency == "efficient"))
-        
-        idx_convex <- which(as.matrix(test_add_hull[-(1:n_eff_org),]) < 0.0001)
-        convex_combinations <- facets[idx_convex, ]
     
       }
       
@@ -689,7 +592,7 @@ efficiency_estimation <- function (
   
   print(paste("Inputs importance: ", sum(result_SA[1:length(x)])))
   print(paste("Outputs importance: ", sum(result_SA[(length(x)+1):(length(x)+length(y))])))
-  print(paste("Seed: ", seed))
+  #print(paste("Seed: ", seed))
   
   # =========== #
   # get ranking #
@@ -720,6 +623,7 @@ efficiency_estimation <- function (
   data_scenario_list <- list()
   metrics_list <- list()
   peer_list <- list()
+  peer_weight_list <- list()
   na_count_list <- list()
   n_not_prob_list <- list()
   
@@ -753,6 +657,7 @@ efficiency_estimation <- function (
       metrics_list[[e]] <- main_metrics 
       
       print("pause")
+      
     } else {
       
       if(any(data_scenario$data_scenario[, c(x,y)] < 0)) {
@@ -781,13 +686,13 @@ efficiency_estimation <- function (
           nrow = nrow(eval_data)
         )
         
-        # result_SA_matrix <- matrix(rep(result_SA, each = nrow(eval_data)), nrow = nrow(eval_data), byrow = FALSE)
-        # 
-        # w_eval_data <- eval_data[, c(x, y)] * result_SA_matrix
-        # sweep(eval_data[, c(x, y)], 2, result_SA_matrix, "*")
-        # sweep(eval_data[, c(x, y)], 2, result_SA, "*")
-        # 
-        
+        # save weighted distances structure
+        save_dist_weight <- matrix(
+          data = NA,
+          ncol = length(idx_eff),
+          nrow = nrow(eval_data)
+        )
+          
         # calculate distances
         for (unit_eff in idx_eff) {
           # set reference
@@ -816,6 +721,46 @@ efficiency_estimation <- function (
         
         # save_peer
         peer_list[[e]] <- peer_restult
+        
+        
+        # calculate weighted distances
+        result_SA_matrix <- as.data.frame(matrix(
+          data = rep(unlist(result_SA), each = nrow(eval_data)),
+          nrow = nrow(eval_data),
+          ncol = ncol(eval_data[,c(x,y)]),
+          byrow = FALSE
+        ))
+        names(result_SA_matrix) <- names(eval_data)[c(x,y)]
+        
+        w_eval_data <- eval_data[, c(x, y)] * result_SA_matrix
+        
+        for (unit_eff in idx_eff) {
+          # set reference
+          reference <- w_eval_data[unit_eff,]
+          
+          distance <- unname(apply(w_eval_data, 1, function(x) sqrt(sum((x - reference)^2))))
+          
+          # get position in save results
+          idx_dis <- which(idx_eff == unit_eff)
+          save_dist_weight[,idx_dis] <- as.matrix(distance)
+        }
+ 
+        near_idx_eff_weight <- apply(save_dist_weight, 1, function(row) {
+          
+          which.min(abs(row))
+          
+        })
+        
+        peer_restult_weight <- matrix(
+          data = NA,
+          ncol = 1,
+          nrow = nrow(save_dist_weight)
+        )
+        
+        peer_restult_weight[, 1] <- idx_eff[near_idx_eff]
+        
+        # save_peer
+        peer_weight_list[[e]] <- peer_restult_weight
   
         # join data plus betas to metrics for scenario
         data_metrics <- cbind(data_scenario$data_scenario, round(data_scenario$betas, 5))
@@ -860,6 +805,7 @@ efficiency_estimation <- function (
   names(data_scenario_list) <- scenarios
   names(metrics_list) <- scenarios
   names(peer_list) <- scenarios
+  names(peer_weight_list) <- scenarios
   names(na_count_list) <- scenarios
   names(n_not_prob_list) <- scenarios
   
@@ -887,6 +833,7 @@ efficiency_estimation <- function (
     eff_vector = eff_vector,
     ranking_order = ranking_order,
     peer_list = peer_list,
+    peer_weight_list = peer_weight_list,
     data_scenario_list = data_scenario_list,
     metrics_list = metrics_list,
     count_na = na_count_list,
