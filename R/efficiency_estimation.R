@@ -723,6 +723,18 @@ efficiency_estimation <- function (
         peer_list[[e]] <- peer_restult
         
         
+        # eval_data[1, c(x, y)]
+        # eval_data[3, c(x, y)]
+        # 
+        # eval_data[1, c(x, y)] - eval_data[3, c(x, y)]
+        # 
+        # result_SA * (eval_data[1, c(x, y)] - eval_data[3, c(x, y)])
+        # 
+        # (result_SA * (eval_data[1, c(x, y)] - eval_data[3, c(x, y)]))^2
+        # 
+        # sum((result_SA * (eval_data[1, c(x, y)] - eval_data[3, c(x, y)]))^2)
+        # 
+        # sqrt(sum((result_SA * (eval_data[1, c(x, y)] - eval_data[3, c(x, y)]))^2))
         # calculate weighted distances
         result_SA_matrix <- as.data.frame(matrix(
           data = rep(unlist(result_SA), each = nrow(eval_data)),
@@ -761,7 +773,7 @@ efficiency_estimation <- function (
         
         # save_peer
         peer_weight_list[[e]] <- peer_restult_weight
-  
+        browser()
         # join data plus betas to metrics for scenario
         data_metrics <- cbind(data_scenario$data_scenario, round(data_scenario$betas, 5))
         
