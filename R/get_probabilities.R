@@ -205,13 +205,13 @@ compute_target <- function (
             
           }
           
-          if (range_beta[length_betas] - range_beta[1] < 0.0000001) {
+          if (range_beta[length_betas] - range_beta[1] < 0.0000000001) {
             
             data_scenario[i, x] <- matrix_eff[(length_betas/2), x]
             data_scenario[i, y] <- matrix_eff[(length_betas/2), y]
             
             betas[i, 1] <- range_beta[(length_betas/2)]
-            betas[i, 2] <- cut_off
+            betas[i, 2] <- eff_vector[(length_betas/2)]
             
             # print("end while by dif")
             found_cut_off <- TRUE
@@ -238,9 +238,9 @@ compute_target <- function (
     } # end for
 
     names(betas) <- c("beta", "probability")
-    
+    browser()
     # data_scenario <- cbind(data_scenario, betas)
-    
+  
   return(list(data_scenario = data_scenario, betas = betas)) 
       
 }

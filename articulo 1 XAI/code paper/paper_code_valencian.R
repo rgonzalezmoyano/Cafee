@@ -86,8 +86,8 @@ library(rminer)
 # Valencian Comunity 2018 #
 # ======================= #
 
-# load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+#load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 data <- firms
 
 # save a copy
@@ -164,14 +164,14 @@ methods <- list (
 # =========== #    
 
 # SMOTE proportions
-balance_data <- list(
-  balance_proportions = c(0, 0.2, 0.3, 0.4, 0.5),
-  sub_frontier = "1/4"
-)
+# balance_data <- list(
+#   balance_proportions = c(0, 0.2, 0.3, 0.4, 0.5),
+#   sub_frontier = "1/4"
+# )
 
 balance_data <- list(
-  balance_proportions = c(0.4),  #0.2, c(0.2, 0.4),
-  sub_frontier = "1/3"
+  balance_proportions = c(0.5),  #0.2, c(0.2, 0.4),
+  sub_frontier = "1/4"
 )
 
 # ML metric
@@ -240,7 +240,7 @@ for (i in 1:length(methods)) {
 
 names(list_method) <- names(methods)
 
-#save(list_method, file = "resultados_art_XAI_NN_CV_0.4_4.RData")
+#save(list_method, file = "resultados_art_XAI_NN_CV.RData")
 #
 library(openxlsx)
 
@@ -259,21 +259,11 @@ library(openxlsx)
 # write.xlsx(list_method[["nnet"]][["resume_metrics"]], file = "statistics_metrics_NN.xlsx")
 
 # 
-# # get
-# 
-# # Columnas en las que quieres contar los negativos
-# columnas_interes <- c("total_assets", "employees", "fixed_assets", "personal_expenses", "operating_income")
-# 
-# # Función para contar negativos en columnas específicas de un data.frame
-# contar_negativos <- function(df, columnas) {
-#   # Asegurarse de que las columnas existen en el data.frame
-#   columnas <- columnas[columnas %in% names(df)]
-#   # Contar los valores negativos en cada columna especificada
-#   sapply(df[columnas], function(col) sum(col < 0, na.rm = TRUE))
-# }
-# 
-# resultado_SVM <- lapply(list_method$svmPoly$data_contrafactual, contar_negativos, columnas = columnas_interes); resultado_SVM
-# resultado_NN <- lapply(list_method$nnet$data_contrafactual, contar_negativos, columnas = columnas_interes); resultado_NN
+list_method[["nnet"]][["peer_list"]][["0.75"]] == list_method[["nnet"]][["peer_weight_list"]][["0.75"]]
+list_method[["nnet"]][["peer_list"]][["0.85"]] == list_method[["nnet"]][["peer_weight_list"]][["0.85"]]
+list_method[["nnet"]][["peer_list"]][["0.95"]] == list_method[["nnet"]][["peer_weight_list"]][["0.95"]]
+
+
 
 
 

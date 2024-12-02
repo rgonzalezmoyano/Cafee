@@ -704,7 +704,7 @@ efficiency_estimation <- function (
           idx_dis <- which(idx_eff == unit_eff)
           save_dist[,idx_dis] <- as.matrix(distance)
         }
-        
+
         near_idx_eff <- apply(save_dist, 1, function(row) {
           
           which.min(abs(row))
@@ -722,19 +722,19 @@ efficiency_estimation <- function (
         # save_peer
         peer_list[[e]] <- peer_restult
         
-        
         # eval_data[1, c(x, y)]
         # eval_data[3, c(x, y)]
         # 
         # eval_data[1, c(x, y)] - eval_data[3, c(x, y)]
         # 
-        # result_SA * (eval_data[1, c(x, y)] - eval_data[3, c(x, y)])
+        # ((eval_data[1, c(x, y)] - eval_data[3, c(x, y)]))^2
         # 
-        # (result_SA * (eval_data[1, c(x, y)] - eval_data[3, c(x, y)]))^2
+        # result_SA * ((eval_data[1, c(x, y)] - eval_data[3, c(x, y)]))^2
         # 
-        # sum((result_SA * (eval_data[1, c(x, y)] - eval_data[3, c(x, y)]))^2)
+        # sum(result_SA * ((eval_data[1, c(x, y)] - eval_data[3, c(x, y)])^2))
         # 
-        # sqrt(sum((result_SA * (eval_data[1, c(x, y)] - eval_data[3, c(x, y)]))^2))
+        # sqrt( sum(result_SA * ((eval_data[1, c(x, y)] - eval_data[3, c(x, y)])^2)))
+        
         # calculate weighted distances
         result_SA_matrix <- as.data.frame(matrix(
           data = rep(unlist(result_SA), each = nrow(eval_data)),
@@ -745,18 +745,21 @@ efficiency_estimation <- function (
         names(result_SA_matrix) <- names(eval_data)[c(x,y)]
         
         w_eval_data <- eval_data[, c(x, y)] * result_SA_matrix
-        
+     
         for (unit_eff in idx_eff) {
+          
           # set reference
-          reference <- w_eval_data[unit_eff,]
-          
-          distance <- unname(apply(w_eval_data, 1, function(x) sqrt(sum((x - reference)^2))))
-          
+          reference <- eval_data[unit_eff, c(x,y)]
+         
+          distance <- unname(apply(eval_data[, c(x, y)], 1, function(row) {
+             sqrt((sum(result_SA * ((row - reference)^2))))
+          }))
+
           # get position in save results
           idx_dis <- which(idx_eff == unit_eff)
           save_dist_weight[,idx_dis] <- as.matrix(distance)
         }
- 
+
         near_idx_eff_weight <- apply(save_dist_weight, 1, function(row) {
           
           which.min(abs(row))
@@ -773,7 +776,7 @@ efficiency_estimation <- function (
         
         # save_peer
         peer_weight_list[[e]] <- peer_restult_weight
-        browser()
+
         # join data plus betas to metrics for scenario
         data_metrics <- cbind(data_scenario$data_scenario, round(data_scenario$betas, 5))
         
