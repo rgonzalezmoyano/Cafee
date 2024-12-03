@@ -65,7 +65,7 @@ compute_target <- function (
       } else {
       
         # Inicializar el rango inicial de 'y'
-        range_beta <- as.matrix(seq(from = 0, to = 30, length.out = length_betas))
+        range_beta <- as.matrix(seq(from = 0, to = 20, length.out = length_betas))
         
         # Crear la matriz para aplicar predict()
         matrix_eff <- as.data.frame(matrix(
@@ -238,7 +238,7 @@ compute_target <- function (
     } # end for
 
     names(betas) <- c("beta", "probability")
-    browser()
+
     # data_scenario <- cbind(data_scenario, betas)
   
   return(list(data_scenario = data_scenario, betas = betas)) 
