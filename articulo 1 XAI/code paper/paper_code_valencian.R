@@ -244,12 +244,12 @@ names(list_method) <- names(methods)
 #
 library(openxlsx)
 
-#write.xlsx(list_method$nnet$metrics, file = "metrics_NN.xlsx")
+# write.xlsx(list_method$nnet$metrics, file = "metrics_NN.xlsx")
 # write.xlsx(list_method$svmPoly$metrics, file = "metrics_SVM.xlsx")
 # 
 # 
 # 
-# data_complete_NN <- cbind(data[, c(x,y)], list_method[["nnet"]][["data_contrafactual"]])
+data_complete_NN <- cbind(data[, c(x,y)], list_method[["nnet"]][["data_contrafactual"]])
 # data_complete_SVM <- cbind(data[, c(x,y)], list_method[["svmPoly"]][["data_contrafactual"]])
 # 
 # write.xlsx(data_complete_NN, file = "data_complete_NN.xlsx")
@@ -258,6 +258,8 @@ library(openxlsx)
 # write.xlsx(list_method[["svmPoly"]][["resume_metrics"]], file = "statistics_metrics_SVM.xlsx")
 # write.xlsx(list_method[["nnet"]][["resume_metrics"]], file = "statistics_metrics_NN.xlsx")
 
+write.xlsx(list_method[["nnet"]][["train_decision_balance"]], file = "train_decision_balance.xlsx")
+write.xlsx(list_method[["nnet"]][["real_decision_balance"]], file = "real_decision_balance.xlsx")
 # 
 list_method[["nnet"]][["peer_list"]][["0.75"]] == list_method[["nnet"]][["peer_weight_list"]][["0.75"]]
 list_method[["nnet"]][["peer_list"]][["0.85"]] == list_method[["nnet"]][["peer_weight_list"]][["0.85"]]
