@@ -258,8 +258,9 @@ data_complete_NN <- cbind(data[, c(x,y)], list_method[["nnet"]][["data_contrafac
 # write.xlsx(list_method[["svmPoly"]][["resume_metrics"]], file = "statistics_metrics_SVM.xlsx")
 # write.xlsx(list_method[["nnet"]][["resume_metrics"]], file = "statistics_metrics_NN.xlsx")
 
-write.xlsx(list_method[["nnet"]][["train_decision_balance"]], file = "train_decision_balance.xlsx")
-write.xlsx(list_method[["nnet"]][["real_decision_balance"]], file = "real_decision_balance.xlsx")
+#write.xlsx(list_method[["nnet"]][["train_decision_balance"]], file = "train_decision_balance.xlsx")
+#write.xlsx(list_method[["nnet"]][["metrics_list"]], file = "metrics.xlsx")
+
 # 
 list_method[["nnet"]][["peer_list"]][["0.75"]] == list_method[["nnet"]][["peer_weight_list"]][["0.75"]]
 list_method[["nnet"]][["peer_list"]][["0.85"]] == list_method[["nnet"]][["peer_weight_list"]][["0.85"]]
