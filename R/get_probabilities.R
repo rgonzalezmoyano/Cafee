@@ -48,13 +48,13 @@ compute_target <- function (
       nrow = nrow(data)
     ))
     
-    length_betas <- 100
+    length_betas <- 200
 
     # loop for each observation
     for (i in 1:nrow(data)) {
-      # if (i == 28) {browser()}
-      # print(paste("DMU: ", i)) 
-      # print(paste("En curso:", (round(i/nrow(data), 4) * 100)))
+      # if (i == 4) {browser()}
+      print(paste("DMU: ", i))
+      print(paste("En curso:", (round(i/nrow(data), 4) * 100)))
 
       if (predict(final_model, data[i,], type = "prob")[1] > cut_off) {
         betas[i, 1] <- 0
@@ -116,8 +116,30 @@ compute_target <- function (
           
           matrix_eff[, y] <- sweep(change_y, 1, range_beta, "*") + matrix_eff[, y]
           
-          if (any(which(matrix_eff < 0))) {
-            delete_range_beta <- which(apply(matrix_eff, 1, function(x) any(x < 0)))
+          # know if there are not posible values
+          min_x <- apply(data[,x], 2, min)
+
+          min_x_matrix <- matrix(rep(min_x, each = length(range_beta)), ncol = length(min_x), byrow = FALSE)
+          
+          colnames(min_x_matrix) <- colnames(data[, x])
+
+          if (any(which(matrix_eff[,x] < min_x_matrix))) {
+            
+            select_idx <- matrix(
+              data = FALSE,
+              ncol = 1,
+              nrow = nrow(matrix_eff)
+            )
+            
+            for (idx in 1:nrow(select_idx)) {
+              if (any(matrix_eff[idx,x] < min_x_matrix[idx,])) {
+                select_idx[idx, ] <- TRUE
+              }
+            }
+            
+            delete_range_beta <- which(select_idx == TRUE)
+            
+            #delete_range_beta <- which(apply(matrix_eff[,x], 1, function(x) any(x < 0)))
             
             range_beta <- range_beta[-delete_range_beta,]
             matrix_eff <- matrix_eff[-delete_range_beta,]
