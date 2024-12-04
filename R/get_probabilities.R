@@ -119,10 +119,10 @@ compute_target <- function (
           # know if there are not posible values
           min_x <- apply(data[,x], 2, min)
 
-          min_x_matrix <- matrix(rep(min_x, each = length(range_beta)), ncol = length(min_x), byrow = FALSE)
+          min_x_matrix <- matrix(rep(0, each = length(range_beta)), ncol = length(min_x), byrow = FALSE)
           
           colnames(min_x_matrix) <- colnames(data[, x])
-
+          
           if (any(which(matrix_eff[,x] < min_x_matrix))) {
             
             select_idx <- matrix(
@@ -138,7 +138,7 @@ compute_target <- function (
             }
             
             delete_range_beta <- which(select_idx == TRUE)
-            
+            browser()
             #delete_range_beta <- which(apply(matrix_eff[,x], 1, function(x) any(x < 0)))
             
             range_beta <- range_beta[-delete_range_beta,]

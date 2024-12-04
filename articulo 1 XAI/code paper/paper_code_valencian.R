@@ -169,10 +169,10 @@ balance_data <- list(
   sub_frontier = "1/4"
 )
 
-# balance_data <- list(
-#   balance_proportions = c(0.5),  #0.2, c(0.2, 0.4),
-#   sub_frontier = "1/4"
-# )
+balance_data <- list(
+  balance_proportions = c(0.5),  #0.2, c(0.2, 0.4),
+  sub_frontier = "1/4"
+)
 
 # ML metric
 metric = "F"
@@ -259,7 +259,7 @@ data_complete_NN <- cbind(data[, c(x,y)], list_method[["nnet"]][["data_contrafac
 # write.xlsx(list_method[["nnet"]][["resume_metrics"]], file = "statistics_metrics_NN.xlsx")
 
 #write.xlsx(list_method[["nnet"]][["train_decision_balance"]], file = "train_decision_balance.xlsx")
-write.xlsx(list_method[["nnet"]][["data_scenario_list"]][["0.95"]], file = "data0.95.xlsx")
+write.xlsx(list_method[["nnet"]][["metrics_list"]], file = "metrics.xlsx")
 
 # 
 list_method[["nnet"]][["peer_list"]][["0.75"]] == list_method[["nnet"]][["peer_weight_list"]][["0.75"]]
