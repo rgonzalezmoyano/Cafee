@@ -915,6 +915,6 @@ SMOTE_convex_balance_data <- function (
   
   final_data <- rbind(data, eff_convex, ineff_convex)
 if (any(is.na(final_data))) {browser()}
-
+browser()
   return(final_data)
 }

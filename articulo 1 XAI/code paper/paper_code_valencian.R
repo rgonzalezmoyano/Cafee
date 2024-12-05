@@ -168,11 +168,11 @@ balance_data <- list(
   balance_proportions = c(0, 0.2, 0.3, 0.4, 0.5),
   sub_frontier = "1/4"
 )
-
-balance_data <- list(
-  balance_proportions = c(0.5),  #0.2, c(0.2, 0.4),
-  sub_frontier = "1/4"
-)
+# 
+# balance_data <- list(
+#   balance_proportions = c(0.5),  #0.2, c(0.2, 0.4),
+#   sub_frontier = "1/4"
+# )
 
 # ML metric
 metric = "F"
@@ -267,7 +267,76 @@ list_method[["nnet"]][["peer_list"]][["0.85"]] == list_method[["nnet"]][["peer_w
 list_method[["nnet"]][["peer_list"]][["0.95"]] == list_method[["nnet"]][["peer_weight_list"]][["0.95"]]
 
 
+model <- list_method[["nnet"]][["final_model"]]
+data_train <- list_method[["nnet"]][["final_model"]][["trainingData"]][,-1]
 
+eff_vector <- apply(data_train, 1, function(row) {
+  
+  row_df <- as.data.frame(t(row))
+  colnames(row_df) <- names(data_train)
+  
+  pred <- unlist(predict(model, row_df, type = "prob")[1])
+  
+  return(pred)
+})
+
+eff_vector <- as.data.frame(eff_vector)
+
+id <- as.data.frame(c(1:nrow(data_train)))
+names(id) <- "id"
+eff_vector <- cbind(id, eff_vector)
+
+eff_vector$unit <- "real"
+eff_vector$unit[98:233] <- "synthetic"
+eff_vector$unit <- as.factor(eff_vector$unit)
+eff_vector$histogram <- cut(
+  eff_vector$eff_vector,
+  breaks = seq(0, 1, by = 0.1),  # Intervalos de 0.1
+  include.lowest = TRUE          # Incluir el límite inferior
+)
+
+library(ggplot2)
+ggplot(data = eff_vector, aes(x = histogram, fill = unit)) +
+  geom_bar(color = "black", alpha = 0.8, position = "stack") + # Cambiar a posición "stack"
+  scale_fill_manual(
+    values = c("real" = "orange", "synthetic" = "darkgreen")
+  ) +
+  labs(
+    title = "Train Data efficiencies: Real (97) VS Synthetic (136)",
+    x = "x",
+    y = "Frecuency",
+    fill = "Type"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1), # Rotar etiquetas para mejor legibilidad
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"), # Centrar título
+    axis.title = element_text(size = 12),
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10)
+  )
+
+ggplot(data = eff_vector[eff_vector$unit == "synthetic",], aes(x = eff_vector, fill = unit)) +
+  geom_density(alpha = 0.8, color = "black") + # Cambiar a densidad
+  scale_fill_manual(
+    values = c("real" = "orange", "synthetic" = "darkgreen")
+  ) +
+  labs(
+    title = "Train Data Efficiencies: Real (97) VS Synthetic (136)",
+    x = "x",
+    y = "Density",
+    fill = "Type"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1), # Rotar etiquetas para mejor legibilidad
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"), # Centrar título
+    axis.title = element_text(size = 12),
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10)
+  )
+
+length(which(eff_vector$eff_vector[eff_vector$unit == "real"] < 0.25))
 
 
 
