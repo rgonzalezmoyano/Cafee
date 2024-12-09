@@ -86,8 +86,8 @@ library(rminer)
 # Valencian Comunity 2018 #
 # ======================= #
 
-load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-#load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+#load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 data <- firms
 
 # save a copy
@@ -98,7 +98,9 @@ data <- change_class(data = data, to_factor = c(5,6))
 
 # filter to valencian comunity
 data <- data[data$autonomous_community == "Comunidad Valenciana",]
-
+# data$current_assets <- data$total_assets - data$fixed_assets
+# data <- cbind(data[,1:8], data[,13], data[,10:12])
+# names(data)[9] <-  "current_assets"
 # ===
 # Information to cafee
 # ===
@@ -165,12 +167,12 @@ methods <- list (
 
 # SMOTE proportions
 balance_data <- list(
-  balance_proportions = c(0, 0.2, 0.3, 0.4, 0.5),
+  balance_proportions = c(0, 0.2, 0.3, 0.4, 0.5), # c(0, 0.2, 0.3, 0.4, 0.5)
   sub_frontier = "1/4"
 )
-# 
+
 # balance_data <- list(
-#   balance_proportions = c(0.5),  #0.2, c(0.2, 0.4),
+#   balance_proportions = c(0),  #0.2, c(0.2, 0.4),
 #   sub_frontier = "1/4"
 # )
 
@@ -240,7 +242,7 @@ for (i in 1:length(methods)) {
 
 names(list_method) <- names(methods)
 
-#save(list_method, file = "resultados_art_XAI_NN_CV.RData")
+save(list_method, file = "resultados_art_XAI_NN_CV_current.RData")
 #
 library(openxlsx)
 
@@ -259,7 +261,7 @@ data_complete_NN <- cbind(data[, c(x,y)], list_method[["nnet"]][["data_contrafac
 # write.xlsx(list_method[["nnet"]][["resume_metrics"]], file = "statistics_metrics_NN.xlsx")
 
 #write.xlsx(list_method[["nnet"]][["train_decision_balance"]], file = "train_decision_balance.xlsx")
-write.xlsx(list_method[["nnet"]][["metrics_list"]], file = "metrics.xlsx")
+write.xlsx(eff_vector, file = "metrics.xlsx")
 
 # 
 list_method[["nnet"]][["peer_list"]][["0.75"]] == list_method[["nnet"]][["peer_weight_list"]][["0.75"]]

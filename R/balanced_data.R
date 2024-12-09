@@ -784,7 +784,7 @@ SMOTE_convex_balance_data <- function (
   
   while (nrow(eff_convex) < create_eff) {
     
-    count_batch <- 1
+    count_batch <- count_batch + 1
     iter <- iter + 1
     print(iter)
     
@@ -840,7 +840,7 @@ SMOTE_convex_balance_data <- function (
     print(paste(nrow(eff_convex)/create_eff * 100, "%"))
 
     true_eff <- nrow(eff_convex)
-    
+
     # if there are not enough efficient units, use 
     if(count_batch == n_total_batch & true_eff < create_eff) {
       
@@ -887,7 +887,7 @@ SMOTE_convex_balance_data <- function (
           
         }
         
-      } # end loop for
+      } # end loop while
       
       names(save_lambda_eff) <- names(data_eff[, c(x,y)])
       
@@ -915,6 +915,6 @@ SMOTE_convex_balance_data <- function (
   
   final_data <- rbind(data, eff_convex, ineff_convex)
 if (any(is.na(final_data))) {browser()}
-browser()
+
   return(final_data)
 }

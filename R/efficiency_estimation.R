@@ -437,7 +437,7 @@ efficiency_estimation <- function (
   
   for (n in 1:length(balance_data$balance_proportions)) {
     decision_balance[n, 1] <- names(save_confusion_matrix[[n]])
-    decision_balance[n, 2] <-  names(save_confusion_matrix[n])
+    decision_balance[n, 2] <- names(save_confusion_matrix[n])
     
     decision_balance[n, 3:ncol(decision_balance)] <- save_confusion_matrix[[n]][[names(save_confusion_matrix[[n]])]]
   }
@@ -816,13 +816,18 @@ efficiency_estimation <- function (
     }
     
   } # end loop scenarios
-  
+
   names(data_scenario_list) <- scenarios
-  names(metrics_list) <- scenarios
-  names(peer_list) <- scenarios
-  names(peer_weight_list) <- scenarios
+  
   names(na_count_list) <- scenarios
-  names(n_not_prob_list) <- scenarios
+  
+  
+  if (!(length(metrics_list) == 0)) {
+    names(metrics_list) <- scenarios
+    names(peer_list) <- scenarios
+    names(peer_weight_list) <- scenarios
+    names(n_not_prob_list) <- scenarios
+  }
   
   # check real data performance
   y_obs <- eval_data$class_efficiency
