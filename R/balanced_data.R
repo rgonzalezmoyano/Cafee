@@ -646,7 +646,7 @@ SMOTE_balance_data <- function (
 #' @return It returns a \code{data.frame} with the newly created set of DMUs incorporated.
 
 SMOTE_convex_balance_data <- function (
-    data, data_factor, x, y, z = NULL, balance_data, sub_frontier
+    data, data_factor, x, y, z = NULL, balance_data, sub_frontier = NULL
 ) {
 
   # =========================================================== #
@@ -666,10 +666,12 @@ SMOTE_convex_balance_data <- function (
   n_new_ineff <- 0
   
   prop <- prop_real
-  
+
   if (is.null(sub_frontier)) {
     
-    add_not_eff == 0
+    add_not_eff <- 0
+    sub_frontier <- 0
+    add_not_eff <- 0
     
   } else {
     
@@ -680,23 +682,30 @@ SMOTE_convex_balance_data <- function (
     add_not_eff <- numerator / denominator
   }
   
+  # determinate hao many DMUs create PROPORTION
   make_ineff <- 0
   loop <- 0
-  
-  while (make_ineff < 1) {
+
+  if (!add_not_eff == 0) {
     
-    loop <- loop + 1
-    make_ineff <- make_ineff + add_not_eff
+    while (make_ineff < 1) {
+      
+      loop <- loop + 1
+      make_ineff <- make_ineff + add_not_eff
+      
+    }
     
+    add_eff <- loop - 1
+    
+  } else {
+    add_eff <- 1
   }
-  
-  add_eff <- loop - 1
   
   eff_level <- balance_data
   
   test_n_eff <- n_real_eff
   test_n_ineff <- n_real_ineff
-  
+
   while (prop < eff_level) {
     
     test_n_eff <- test_n_eff + add_eff
@@ -713,7 +722,7 @@ SMOTE_convex_balance_data <- function (
   
   # it is necessary to create create_ineff units
   create_ineff <- test_n_ineff - n_real_ineff
-  
+
   # ====================================================== #
   # create convex combinations to achieve create_eff units #
   # ====================================================== #
@@ -900,21 +909,33 @@ SMOTE_convex_balance_data <- function (
     
   } # end while
 
-  select_ineff_idx <- sample(nrow(ineff_convex), size = create_ineff, replace = FALSE) 
+  if (!create_ineff == 0) {
   
-  if (any(duplicated(select_ineff_idx))) {
-    print("duplicated; not efficient number of units have been created")
-    stop()
+    select_ineff_idx <- sample(nrow(ineff_convex), size = create_ineff, replace = FALSE) 
+  
+    if (any(duplicated(select_ineff_idx))) {
+      print("duplicated; not efficient number of units have been created")
+      stop()
+    }
+  
+    ineff_convex <- ineff_convex[select_ineff_idx,]
+  
+    # add class efficiency
+    eff_convex$class_efficiency <- "efficient"
+    ineff_convex$class_efficiency <- "not_efficient"
+  
+    final_data <- rbind(data, eff_convex, ineff_convex)
+    
+  } else {
+    
+    # add class efficiency
+    eff_convex$class_efficiency <- "efficient"
+    
+    final_data <- rbind(data, eff_convex)
+    
   }
   
-  ineff_convex <- ineff_convex[select_ineff_idx,]
-  
-  # add class efficiency
-  eff_convex$class_efficiency <- "efficient"
-  ineff_convex$class_efficiency <- "not_efficient"
-  
-  final_data <- rbind(data, eff_convex, ineff_convex)
-if (any(is.na(final_data))) {browser()}
+  if (any(is.na(final_data))) {browser()}
 
   return(final_data)
 }

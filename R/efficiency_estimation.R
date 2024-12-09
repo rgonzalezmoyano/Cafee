@@ -26,7 +26,7 @@
 
 efficiency_estimation <- function (
     data, x, y, z = NULL, orientation, target_method,
-    trControl, methods, metric, hold_out, balance_data = c(3, 1),
+    trControl, methods, metric, hold_out, balance_data,
     scenarios = 0.75, convexity = TRUE, returns = "variable"
     ) {
 
