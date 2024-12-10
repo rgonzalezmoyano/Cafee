@@ -852,7 +852,7 @@ SMOTE_convex_balance_data <- function (
 
     # if there are not enough efficient units, use 
     if(count_batch == n_total_batch & true_eff < create_eff) {
-      
+    
       # need to create 
       need_eff <- create_eff - true_eff
       
@@ -911,19 +911,34 @@ SMOTE_convex_balance_data <- function (
 
   if (!create_ineff == 0) {
   
-    select_ineff_idx <- sample(nrow(ineff_convex), size = create_ineff, replace = FALSE) 
-  
+    # select_ineff_idx <- sample(nrow(ineff_convex), size = create_ineff, replace = FALSE) 
+    # 
+    # if (any(duplicated(select_ineff_idx))) {
+    #   print("duplicated; not efficient number of units have been created")
+    #   stop()
+    # }
+    # 
+    # ineff_convex <- ineff_convex[select_ineff_idx,]
+    # 
+    # # add class efficiency
+    # eff_convex$class_efficiency <- "efficient"
+    # ineff_convex$class_efficiency <- "not_efficient"
+    # 
+    # final_data <- rbind(data, eff_convex, ineff_convex)
+    
+    select_ineff_idx <- sample(nrow(eff_convex), size = create_ineff, replace = FALSE)
+
     if (any(duplicated(select_ineff_idx))) {
       print("duplicated; not efficient number of units have been created")
       stop()
     }
-  
-    ineff_convex <- ineff_convex[select_ineff_idx,]
-  
+
+    ineff_convex <- eff_convex[select_ineff_idx,]
+    
     # add class efficiency
     eff_convex$class_efficiency <- "efficient"
     ineff_convex$class_efficiency <- "not_efficient"
-  
+
     final_data <- rbind(data, eff_convex, ineff_convex)
     
   } else {
