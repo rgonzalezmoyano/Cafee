@@ -936,77 +936,77 @@ SMOTE_convex_balance_data <- function (
     # # add efficient as not efficient # Ricardo
     # ================================ #
     
-    select_ineff_idx <- sample(nrow(ineff_convex), size = create_ineff * 2, replace = FALSE)
-
-    if (any(duplicated(select_ineff_idx))) {
-      print("duplicated; not efficient number of units have been created")
-      stop()
-    }
-
-    ineff_convex <- ineff_convex[select_ineff_idx,]
-
-    # add class efficiency
-    eff_convex$class_efficiency <- "efficient"
-    ineff_convex$class_efficiency <- "efficient"
-    
-    # # add confusion
-    # select_ineff_idx <- sample(nrow(eff_convex), size = create_ineff, replace = FALSE)
-    # more_ineff_convex <- eff_convex[select_ineff_idx,]
+    # select_ineff_idx <- sample(nrow(ineff_convex), size = create_ineff, replace = FALSE) # create_ineff
     # 
-    # # add class efficiency
-    # more_ineff_convex$class_efficiency <- "not_efficient"
-
-    final_data <- rbind(data, eff_convex, ineff_convex) # more_ineff_convex
-
-    # ========================== #
-    # add quartile not efficient #
-    # ========================== #
-    # random_ineff_idx <- sample(nrow(ineff_to_save), size = (create_ineff * 20), replace = FALSE)
-    # 
-    # slack_value <- compute_scores_additive(data = ineff_to_save[random_ineff_idx,], x = x, y = y)
-    # 
-    # idx_delete <- which(slack_value < 0.00001)
-    # 
-    # slack_value <- slack_value[-idx_delete]
-    # 
-    # quantile_break <- quantile(slack_value, probs = c(0, 0.25, 0.5, 0.75, 1))
-    # 
-    # quartiles <- cut(slack_value, 
-    #                  breaks = quantile_break, 
-    #                  labels = c("Q1", "Q2", "Q3", "Q4"), 
-    #                  include.lowest = TRUE)
-    # 
-    # # same proportion to each quartile
-    # n_qutl <- create_ineff/4
-    # 
-    # # units to each quartile
-    # units_quartil <- floor(n_qutl)
-    # aditional_units <-  create_ineff - sum(units_quartil * 4)
-    # 
-    # ineff_convex <- as.data.frame(matrix(data = NA, ncol = length(c(x,y)), nrow = 0))
-    # names(ineff_convex) <- names(ineff_to_save)
-    # 
-    # for(qrtl in seq_along(levels(quartiles))) {
-    #   
-    #   quartile <- levels(quartiles)[qrtl]
-    #   
-    #   idx <- which(quartiles == quartile)
-    #   
-    #   if(quartile == "Q4") {
-    #     units_quartil <- units_quartil + aditional_units
-    #   }
-    #   
-    #   selected_idx <- sample(idx, units_quartil, replace = FALSE)
-    # 
-    #   ineff_convex <- rbind(ineff_convex, ineff_to_save[selected_idx,])
-    #   
+    # if (any(duplicated(select_ineff_idx))) {
+    #   print("duplicated; not efficient number of units have been created")
+    #   stop()
     # }
+    # 
+    # ineff_convex <- ineff_convex[select_ineff_idx,]
     # 
     # # add class efficiency
     # eff_convex$class_efficiency <- "efficient"
     # ineff_convex$class_efficiency <- "not_efficient"
     # 
-    # final_data <- rbind(data, eff_convex, ineff_convex)
+    # # # add confusion
+    # # select_ineff_idx <- sample(nrow(eff_convex), size = create_eff/2, replace = FALSE)
+    # # more_ineff_convex <- eff_convex[select_ineff_idx,]
+    # # 
+    # # # add class efficiency
+    # # more_ineff_convex$class_efficiency <- "efficient"
+    # 
+    # final_data <- rbind(data, eff_convex, ineff_convex) # more_ineff_convex 
+
+    # ========================== #
+    # add quartile not efficient #
+    # ========================== #
+    random_ineff_idx <- sample(nrow(ineff_to_save), size = (create_ineff * 20), replace = FALSE)
+
+    slack_value <- compute_scores_additive(data = ineff_to_save[random_ineff_idx,], x = x, y = y)
+
+    idx_delete <- which(slack_value < 0.00001)
+
+    slack_value <- slack_value[-idx_delete]
+
+    quantile_break <- quantile(slack_value, probs = c(0, 0.25, 0.5, 0.75, 1))
+
+    quartiles <- cut(slack_value,
+                     breaks = quantile_break,
+                     labels = c("Q1", "Q2", "Q3", "Q4"),
+                     include.lowest = TRUE)
+
+    # same proportion to each quartile
+    n_qutl <- create_ineff/4
+
+    # units to each quartile
+    units_quartil <- floor(n_qutl)
+    aditional_units <-  create_ineff - sum(units_quartil * 4)
+
+    ineff_convex <- as.data.frame(matrix(data = NA, ncol = length(c(x,y)), nrow = 0))
+    names(ineff_convex) <- names(ineff_to_save)
+
+    for(qrtl in seq_along(levels(quartiles))) {
+
+      quartile <- levels(quartiles)[qrtl]
+
+      idx <- which(quartiles == quartile)
+
+      if(quartile == "Q4") {
+        units_quartil <- units_quartil + aditional_units
+      }
+
+      selected_idx <- sample(idx, units_quartil, replace = FALSE)
+
+      ineff_convex <- rbind(ineff_convex, ineff_to_save[selected_idx,])
+
+    }
+
+    # add class efficiency
+    eff_convex$class_efficiency <- "efficient"
+    ineff_convex$class_efficiency <- "not_efficient"
+
+    final_data <- rbind(data, eff_convex, ineff_convex)
     
   } else {
     

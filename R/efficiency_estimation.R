@@ -836,7 +836,7 @@ efficiency_estimation <- function (
   # check real data performance
   y_obs <- eval_data$class_efficiency
   y_hat <- predict(best_ml_model, eval_data)
-  
+
   #create confusion matrix and calculate metrics related to confusion matrix
   performance_real_data <- confusionMatrix (
     data = y_hat,
