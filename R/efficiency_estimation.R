@@ -820,9 +820,13 @@ efficiency_estimation <- function (
   names(data_scenario_list) <- scenarios
   
   names(na_count_list) <- scenarios
-  
-  
+
   if (!(length(metrics_list) == 0)) {
+    
+    if (!(length(metrics_list)) == length(scenarios)) {
+      scenarios <- scenarios[1:length(metrics_list)]
+    }
+    
     names(metrics_list) <- scenarios
     names(peer_list) <- scenarios
     names(peer_weight_list) <- scenarios
@@ -831,7 +835,7 @@ efficiency_estimation <- function (
   
   # check real data performance
   y_obs <- eval_data$class_efficiency
-  y_hat <- predict(final_model, eval_data)
+  y_hat <- predict(best_ml_model, eval_data)
   
   #create confusion matrix and calculate metrics related to confusion matrix
   performance_real_data <- confusionMatrix (

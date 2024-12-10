@@ -86,8 +86,8 @@ library(rminer)
 # Valencian Comunity 2018 #
 # ======================= #
 
-#load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+#load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 data <- firms
 
 # save a copy
@@ -167,9 +167,9 @@ methods <- list (
 
 # SMOTE proportions
 balance_data <- list(
-  balance_proportions = c(0.5), # seq(0.20, 0.4, 0.05) c(0, 0.2, 0.3, 0.4, 0.5)  0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5),
-  sub_frontier = "1/2"
-)
+  balance_proportions = c(seq(0.30, 0.4, 0.05)), # seq(0.20, 0.4, 0.05) c(0, 0.2, 0.3, 0.4, 0.5)  0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5),
+  sub_frontier = "1/3"
+) # 0.5 y 1/5
 
 # balance_data <- list(
 #   balance_proportions = c(0),  #0.2, c(0.2, 0.4),
@@ -242,7 +242,7 @@ for (i in 1:length(methods)) {
 
 names(list_method) <- names(methods)
 
-save(list_method, file = "resultados_art_XAI_NN_CV_1_2.RData")
+#save(list_method, file = "resultados_art_XAI_NN_CV_1_2.RData")
 #
 library(openxlsx)
 
@@ -250,7 +250,30 @@ library(openxlsx)
 # write.xlsx(list_method$svmPoly$metrics, file = "metrics_SVM.xlsx")
 # 
 # 
-# 
+plot(density(list_method[["nnet"]][["ranking_order"]][["eff_vector"]]), 
+     main = "Gráfico de Densidad Probability", 
+     xlab = "Valores", 
+     ylab = "Densidad", 
+     col = "blue", 
+     lwd = 2)
+hist(list_method[["nnet"]][["ranking_order"]][["eff_vector"]], 
+     probability = TRUE, 
+     col = rgb(0, 0, 1, 0.3), 
+     border = "white", 
+     add = TRUE)
+
+plot(density(list_method[["nnet"]][["data_scenario_list"]][["0.75"]][["betas"]][["beta"]]), 
+     main = "Gráfico de Densidad Betas", 
+     xlab = "Valores", 
+     ylab = "Densidad", 
+     col = "blue", 
+     lwd = 2)
+hist(list_method[["nnet"]][["data_scenario_list"]][["0.75"]][["betas"]][["beta"]], 
+     probability = TRUE, 
+     col = rgb(0, 0, 1, 0.3), 
+     border = "white", 
+     add = TRUE)
+
 data_complete_NN <- cbind(data[, c(x,y)], list_method[["nnet"]][["data_contrafactual"]])
 # data_complete_SVM <- cbind(data[, c(x,y)], list_method[["svmPoly"]][["data_contrafactual"]])
 # 
