@@ -962,8 +962,12 @@ SMOTE_convex_balance_data <- function (
     # add quartile not efficient #
     # ========================== #
     random_ineff_idx <- sample(nrow(ineff_to_save), size = (create_ineff * 20), replace = FALSE)
+    
+    data_ineff_test <- rbind(data_eff[, c(x,y)], ineff_to_save[random_ineff_idx,])
 
-    slack_value <- compute_scores_additive(data = ineff_to_save[random_ineff_idx,], x = x, y = y)
+    slack_value <- compute_scores_additive(data = data_ineff_test, x = x, y = y)
+
+    #slack_value <- slack_value[(nrow(data_eff) + 1):nrow(slack_value)]
 
     idx_delete <- which(slack_value < 0.00001)
 

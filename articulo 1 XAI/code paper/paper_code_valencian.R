@@ -86,8 +86,8 @@ library(rminer)
 # Valencian Comunity 2018 #
 # ======================= #
 
-#load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+#load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 data <- firms
 
 # save a copy
@@ -168,7 +168,7 @@ methods <- list (
 # SMOTE proportions
 balance_data <- list(
   balance_proportions = c(0, seq(0.20, 0.4, 0.05)), # seq(0.20, 0.4, 0.05) c(0, 0.2, 0.3, 0.4, 0.5)  0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5),
-  sub_frontier = "1/4"
+  sub_frontier = "1/3"
 ) # 0.5 y 1/5
 
 # balance_data <- list(
@@ -242,7 +242,7 @@ for (i in 1:length(methods)) {
 
 names(list_method) <- names(methods)
 
-#save(list_method, file = "resultados_art_XAI_NN_CV_1_2.RData")
+save(list_method, file = "resultados_art_XAI_NN_CV_1_3.RData")
 #
 library(openxlsx)
 
@@ -283,8 +283,13 @@ data_complete_NN <- cbind(data[, c(x,y)], list_method[["nnet"]][["data_contrafac
 # write.xlsx(list_method[["svmPoly"]][["resume_metrics"]], file = "statistics_metrics_SVM.xlsx")
 # write.xlsx(list_method[["nnet"]][["resume_metrics"]], file = "statistics_metrics_NN.xlsx")
 
-#write.xlsx(list_method[["nnet"]][["train_decision_balance"]], file = "train_decision_balance.xlsx")
-write.xlsx(eff_vector, file = "metrics.xlsx")
+write.xlsx(list_method[["nnet"]][["real_decision_balance"]], file = "real_decision_balance.xlsx")
+write.xlsx(list_method[["nnet"]][["train_decision_balance"]], file = "train_decision_balance.xlsx") 
+write.xlsx(list_method[["nnet"]][["result_SA"]], file = "SA.xlsx")
+write.xlsx(list_method[["nnet"]][["eff_vector"]], file = "eff.xlsx") 
+write.xlsx(list_method[["nnet"]][["ranking_order"]], file = "rank.xlsx")
+write.xlsx(list_method[["nnet"]][["data_scenario_list"]], file = "data_sce.xlsx")
+write.xlsx(list_method[["nnet"]][["metrics_list"]], file = "metrics.xlsx")
 
 # 
 list_method[["nnet"]][["peer_list"]][["0.75"]] == list_method[["nnet"]][["peer_weight_list"]][["0.75"]]
