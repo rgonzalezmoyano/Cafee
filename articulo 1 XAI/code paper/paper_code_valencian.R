@@ -291,6 +291,14 @@ write.xlsx(list_method[["nnet"]][["ranking_order"]], file = "rank.xlsx")
 write.xlsx(list_method[["nnet"]][["data_scenario_list"]], file = "data_sce.xlsx")
 write.xlsx(list_method[["nnet"]][["metrics_list"]], file = "metrics.xlsx")
 
+write.xlsx(as.data.frame(list_method[["nnet"]][["peer_list"]][["0.75"]]), file = "peer75.xlsx")
+write.xlsx(as.data.frame(list_method[["nnet"]][["peer_list"]][["0.85"]]), file = "peer85.xlsx")
+write.xlsx(as.data.frame(list_method[["nnet"]][["peer_list"]][["0.95"]]), file = "peer95.xlsx")
+
+write.xlsx(as.data.frame(list_method[["nnet"]][["peer_weight_list"]][["0.75"]]), file = "peer_w75.xlsx")
+write.xlsx(as.data.frame(list_method[["nnet"]][["peer_weight_list"]][["0.85"]]), file = "peer_w85.xlsx")
+write.xlsx(as.data.frame(list_method[["nnet"]][["peer_weight_list"]][["0.95"]]), file = "peer_w95.xlsx")
+
 # 
 list_method[["nnet"]][["peer_list"]][["0.75"]] == list_method[["nnet"]][["peer_weight_list"]][["0.75"]]
 list_method[["nnet"]][["peer_list"]][["0.85"]] == list_method[["nnet"]][["peer_weight_list"]][["0.85"]]
