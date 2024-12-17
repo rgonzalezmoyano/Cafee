@@ -22,7 +22,7 @@ set.seed(1997)
 data <- reffcy (
   DGP = "cobb_douglas_XnY1",
   parms = list (
-    N = 30,
+    N = 50,
     nX = 1
   )
 )
