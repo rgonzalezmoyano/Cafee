@@ -792,7 +792,9 @@ SMOTE_convex_balance_data <- function (
   count_batch <- 0
   
   save_idx_eff <- NULL
-  
+  browser()
+  browser()
+  browser()
   while (nrow(eff_convex) < create_eff) {
     
     count_batch <- count_batch + 1

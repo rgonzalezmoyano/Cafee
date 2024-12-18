@@ -145,7 +145,7 @@ efficiency_estimation <- function (
     )
     
     levels(data$class_efficiency) <- c("efficient", "not_efficient")
-    
+
   }
   
   pre_data <- data
@@ -155,7 +155,7 @@ efficiency_estimation <- function (
   
   # save a copy of the original data
   eval_data <- data
-  
+
   # observed proportion of efficient and inefficient DMUs
   obs_prop <- prop.table(table(data$class_efficiency))
   
@@ -170,7 +170,7 @@ efficiency_estimation <- function (
   
   compare_confusion_matrix <- vector("list", length = length(balance_data$balance_proportions))
   names(compare_confusion_matrix) <- balance_data$balance_proportions
-  
+
   for (balance in 1:length(balance_data$balance_proportions)) {
     
     balance_data_prop <- balance_data[["balance_proportions"]][balance]
@@ -195,7 +195,7 @@ efficiency_estimation <- function (
     } # end balance data
     
     data_after_balance <- data
-    
+
     if (hold_out != 0) {
       
       # Create train and validation data

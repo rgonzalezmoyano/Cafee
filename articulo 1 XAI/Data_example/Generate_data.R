@@ -33,6 +33,8 @@ ggplot() +
   # exes
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0) +
+  scale_x_continuous(limits = c(0, 10)) +  # Límites para x
+  scale_y_continuous(limits = c(0, 10)) +  # Límites para y
   theme_bw() +
   theme(legend.position = "bottom")
 
