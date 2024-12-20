@@ -91,7 +91,7 @@ compute_target <- function (
         
         found_cut_off <- FALSE
         iter_count <- 0
-        
+
         while (!found_cut_off) {
           
           iter_count <- iter_count + 1
@@ -117,7 +117,7 @@ compute_target <- function (
           matrix_eff[, y] <- sweep(change_y, 1, range_beta, "*") + matrix_eff[, y]
           
           # know if there are not posible values
-          min_x <- apply(data[,x], 2, min)
+          min_x <- apply(as.matrix(data[,x]), 2, min)
 
           min_x_matrix <- matrix(rep(min_x, each = length(range_beta)), ncol = length(min_x), byrow = FALSE)
           

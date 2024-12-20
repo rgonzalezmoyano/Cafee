@@ -493,7 +493,7 @@ efficiency_estimation <- function (
 
   selected_real_balance <- selected_real_balance %>% 
     arrange(desc(Balanced_Accuracy), desc(F1), desc(Precision), desc(Sensitivity), Balance)
-  
+
   # select best balance hyperparameter
   first <- selected_real_balance[1, 3:ncol(selected_real_balance)]
   

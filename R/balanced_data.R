@@ -792,9 +792,7 @@ SMOTE_convex_balance_data <- function (
   count_batch <- 0
   
   save_idx_eff <- NULL
-  browser()
-  browser()
-  browser()
+
   while (nrow(eff_convex) < create_eff) {
     
     count_batch <- count_batch + 1
@@ -824,7 +822,7 @@ SMOTE_convex_balance_data <- function (
     test_add <- compute_scores_additive(test_eff, x = x, y = y)
 
     # leave original eff units, get index 
-    new_results_convx <- results_convx[(nrow(data_eff) + 1):nrow(test_eff),]
+    new_results_convx <- test_eff[(nrow(data_eff) + 1):nrow(test_eff),]
     idx_eff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] < 0.0001)
     
     # save idx_eff
@@ -907,7 +905,14 @@ SMOTE_convex_balance_data <- function (
       # join eff_data
       eff_convex <- rbind(eff_convex, save_lambda_eff)
       
-    } # end case need more efficient units
+    } else {  # end case need more efficient units
+      
+      delete_eff <- true_eff - create_eff
+      idx_delete <- sample(1:true_eff, size = delete_eff, replace = FALSE)
+      
+      eff_convex <- eff_convex[-idx_delete,]
+      
+    }
     
     if (count_batch == n_total_batch & true_eff == create_eff) {break}
     
@@ -1022,7 +1027,7 @@ SMOTE_convex_balance_data <- function (
     final_data <- rbind(data, eff_convex)
     
   }
-  
+  browser()
   if (any(is.na(final_data))) {browser()}
 
   return(final_data)
