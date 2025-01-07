@@ -905,16 +905,16 @@ SMOTE_convex_balance_data <- function (
       # join eff_data
       eff_convex <- rbind(eff_convex, save_lambda_eff)
       
-    } else {  # end case need more efficient units
+    }# end case need more efficient units
+    
+    if (count_batch == n_total_batch & true_eff > create_eff) {
       
       delete_eff <- true_eff - create_eff
       idx_delete <- sample(1:true_eff, size = delete_eff, replace = FALSE)
       
       eff_convex <- eff_convex[-idx_delete,]
-      
+       
     }
-    
-    if (count_batch == n_total_batch & true_eff == create_eff) {break}
     
   } # end while
 
@@ -1027,7 +1027,7 @@ SMOTE_convex_balance_data <- function (
     final_data <- rbind(data, eff_convex)
     
   }
-  browser()
+
   if (any(is.na(final_data))) {browser()}
 
   return(final_data)

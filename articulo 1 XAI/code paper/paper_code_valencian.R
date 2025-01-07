@@ -86,8 +86,8 @@ library(rminer)
 # Valencian Comunity 2018 #
 # ======================= #
 
-load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
-#load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+# load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
+load("C:/Users/Ricardo/Documents/Doctorado EOMA/Cafee/articulo 1 XAI/data_valencia_comunity/firms.RData")
 data <- firms
 
 # save a copy
@@ -123,7 +123,7 @@ methods <- list (
   "nnet" = list(
     hyparams = list(
       "size" = c(1, 5, 10, 15, 20, 30),
-      "decay" = c(0, 0.1, 0.01, 0.001, 0,0001)
+      "decay" = c(0.1, 0.01, 0.001, 0,0001)
     ),
     options = list (
       maxit = 1000,
@@ -248,7 +248,9 @@ library(openxlsx)
 
 # write.xlsx(list_method$nnet$metrics, file = "metrics_NN.xlsx")
 # write.xlsx(list_method$svmPoly$metrics, file = "metrics_SVM.xlsx")
-# 
+#write.xlsx(summary(data[, c(9:12, 8)]), file = "summary.xlsx")
+
+list_method[["nnet"]][["final_model"]][["trainingData"]][1:97,]
 # 
 plot(density(list_method[["nnet"]][["ranking_order"]][["eff_vector"]]), 
      main = "Gráfico de Densidad Probability", 

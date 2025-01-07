@@ -18,9 +18,10 @@ library(rminer)
 
 # Configuración
 seed <- 0
+seed <- 2
 set.seed(seed)
 n <- 30
-
+n<-40
 # Generación de inputs x1 e x2
 x1 <- runif(n, 1, 10)
 x2 <- runif(n, 1, 10)
@@ -96,7 +97,7 @@ balance_data <- list(
 metric = "F"
 
 # scenarios to peer
-scenarios <- 0.75 # seq(0.75, 0.95, 0.1)
+scenarios <- c(0.5, seq(0.75, 0.95, 0.1)) # seq(0.75, 0.95, 0.1)
 
 # metrics for model evaluation
 MySummary <- function (data, lev = NULL, model = NULL) {
@@ -197,6 +198,46 @@ plot1
 
 #ggsave(plot = plot1, dpi = 600, filename = "DEA_label_efficient.png")
 
+### plot 2 training dataset
+
+new_dmu <- data[41:50,]
+rownames(new_dmu) <- c(41:50)
+
+plot2 <- ggplot() +
+  
+  scale_x_continuous(limits = c(0, 10)) +
+  scale_y_continuous(limits = c(0, 10)) +
+  
+  # # name DMUs
+  # geom_text(data = eval_data[eval_data$class_efficiency == "efficient", ],
+  #           aes(x = x, y = y, label = row.names(eval_data[eval_data$class_efficiency == "efficient", ])),
+  #           vjust = -1, hjust = 1) +
+
+  # # name DMUs
+  # geom_text(data = new_dmu[new_dmu$class_efficiency == "efficient", ],
+  #           aes(x = x, y = y, label = row.names(new_dmu[new_dmu$class_efficiency == "efficient", ])),
+  #           vjust = -1, hjust = 1) +
+  
+  geom_point(data = data, aes(x = x, y = y, color = class_efficiency)) +
+  geom_point(data = eval_data, aes(x = x, y = y)) +
+  scale_color_manual(values = c("green4", "red"), name = "Class", labels = c("efficient", "inefficient")) +
+  labs(x = "input", y = "output") +
+  
+  # exes
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  
+  xlim(0, 10) +
+  ylim(0, 10) +
+  
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+plot2
+
+#ggsave(plot = plot2, dpi = 600, filename = "DEA_new_efficient.png")
+
+
 # ============= #
 # Generate plot #
 # ============= #
@@ -219,59 +260,119 @@ plot5 <- ggplot(data = eval_data) +
   xlim(0, 10) +
   ylim(0, 10) +
   
-  geom_point(data = grid, aes(x = x, y = y, color = label), size = 0.6, alpha = 0.3) +
+  geom_point(data = grid, aes(x = x, y = y, color = label), size = 0.6, alpha = 0.5) + #  size = 0.6, alpha = 0.3
   geom_point(aes(x = x, y = y)) +
-  # scale_color_manual(values = c("not_efficient" = "pink", "efficient" = "lightgreen")) +
   scale_color_manual(values = c("olivedrab2", "pink"), name = "Class", labels = c("efficient", "inefficient")) +
   
   labs(x = "input", y = "output") +
-  
-  # # name DMUs
-  # geom_text(data = data[n,],
-  #           aes(x = x1, y = y, label = row.names(data[n,])),
-  #           vjust = -1, hjust = 1.5) +
-  # 
-  # # name projection
-  # geom_text(data = data[31,],
-  #           aes(x = x1, y = y, label = "3'"),
-  #           vjust = -1, hjust = 1.5) +
-  # 
-  # # projection segment
-  # geom_segment(x = data[n,1], y = data[n,2], xend = data[31,1], yend = data[31,2], linetype = "dashed") +
-  # 
-  # # color of projection
-  # geom_point(data = data[31,], aes(x = x1, y = y), color = "yellow4", size = 2) +
-  # 
  
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  theme_bw() +
+  theme(legend.position = "bottom") +
+  guides(color = guide_legend(override.aes = list(size = 5)))
+
+plot5
+
+
+#ggsave(plot = plot5, dpi = 600, filename = "balance_class.png")
+
+# draw a directional vector
+# Coordenadas de los puntos
+DMU <- 22
+point <- data[DMU,1:2]
+projection <- list_method[["nnet"]][["data_scenario_list"]][["0.75"]][["data_scenario"]][DMU,]
+
+# Crear un data frame para el vector
+vector_data <- data.frame(
+  x = point[,1],         # Coordenada x inicial
+  y = point[,2],         # Coordenada y inicial
+  xend = projection[,1],      # Coordenada x final
+  yend = projection[,2]       # Coordenada y final
+)
+list_method[["nnet"]][["data_scenario_list"]][["0.95"]][["betas"]][DMU,]
+
+plot7 <- ggplot(data = eval_data) +
+  
+  # exes
+  xlim(0, 10) +
+  ylim(0, 10) +
+  
+  geom_point(data = grid, aes(x = x, y = y, color = label), size = 0.6, alpha = 0.2) + 
+  scale_color_manual(values = c("olivedrab2", "pink"), name = "Class", labels = c("efficient", "inefficient")) +
+  
+  geom_point(aes(x = x, y = y), alpha = 0.4) +
+  geom_point(data = projection, aes(x = x, y = y)) +
+  geom_point(data = point, aes(x = x, y = y)) +
+  
+  geom_segment(
+    data = vector_data, aes(x = x, y = y, xend = xend, yend = yend),
+    arrow = arrow(length = unit(0.2, "cm")), # Flecha al final del segmento
+    size = 0.7,
+    color = "blue") +
+  
+  # name DMUs
+  geom_text(data = eval_data[DMU, ],
+            aes(x = x, y = y, label = DMU),
+            vjust = +1, hjust = 1.2) +
+  
+  # name DMUs
+  geom_text(data = projection,
+            aes(x = x, y = y, label = "22'"),
+            vjust = -0.6, hjust = 1.2) +
+
+  labs(x = "input", y = "output") +
+  
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  theme_bw() +
+  theme(legend.position = "bottom") +
+  guides(color = guide_legend(override.aes = list(size = 5)))
+
+plot7
+
+ggsave(plot = plot7, dpi = 600, filename = "projection.png")
+
+# degradado
+# make a grid of the predictors
+grid <- expand.grid (
+  x = seq(0, 10, length = 700),
+  y = seq(0, 10, length = 700)
+)
+
+model <- list_method[["nnet"]][["final_model"]]
+grid$label <- unlist(predict(model, grid, type = "prob")[1]) #"raw"
+
+#grid$label <- factor(grid$label)
+
+plot6 <- ggplot() +
+  
+  # exes
+  xlim(0, 10) +
+  ylim(0, 10) +
+  
+  geom_point(data = grid, aes(x = x, y = y, color = label), size = 1, alpha = 1) +
+
+  labs(x = "input", y = "output") +
+  
+  scale_color_gradientn(
+    colors = c("white", "black", "black", "white"), # Azul para 0, blanco para 0.5, rojo para 1 olivedrab2 pink
+    values = c(0, 0.25,0.75, 1), # Especifica las posiciones relativas de los colores
+    limits = c(0, 1)) + # Límites de la variable
+  
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0) +
   theme_bw() +
   theme(legend.position = "bottom")
 
-plot5
-
-
-#ggsave(plot = plot5, dpi = 600, filename = "SVM_balance_pro.png")
-
-result_scores <- as.data.frame(
-  matrix(
-    data = NA,
-    ncol = 3,
-    nrow = nrow(data)
-  )
-)
-
-names(result_scores) <- c("DMU", "DEA score", "SVM score")
-
-result_scores$DMU <- 1:nrow(data)
-
-result_scores$`DEA score` <- round(bcc_scores_out, 3)
-result_scores$`SVM score` <- scores
-
-cor(x= result_scores$`DEA score`, y = result_scores$`SVM score`, method = "pearson")
-
+#ggsave(plot = plot6, dpi = 600, filename = "SVM_balance_proba.png")
 library(openxlsx)
-write.xlsx(result_scores, "result_example.xlsx")
-devtools::load_all(
-  
-)
+# write.xlsx(list_method[["nnet"]][["real_decision_balance"]], file = "real_decision_balance_example.xlsx")
+# write.xlsx(list_method[["nnet"]][["train_decision_balance"]], file = "train_decision_balance_example.xlsx")  
+#write.xlsx(list_method[["nnet"]][["ranking_order"]], file = "ranking_example.xlsx")
+
+
+
+
+
+
