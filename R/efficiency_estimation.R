@@ -710,7 +710,7 @@ efficiency_estimation <- function (
           which.min(abs(row))
           
         })
-        
+
         peer_restult <- matrix(
           data = NA,
           ncol = 1,
