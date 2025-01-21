@@ -306,7 +306,6 @@ list_method[["nnet"]][["peer_list"]][["0.75"]] == list_method[["nnet"]][["peer_w
 list_method[["nnet"]][["peer_list"]][["0.85"]] == list_method[["nnet"]][["peer_weight_list"]][["0.85"]]
 list_method[["nnet"]][["peer_list"]][["0.95"]] == list_method[["nnet"]][["peer_weight_list"]][["0.95"]]
 
-
 model <- list_method[["nnet"]][["final_model"]]
 data_train <- list_method[["nnet"]][["final_model"]][["trainingData"]][,-1]
 
