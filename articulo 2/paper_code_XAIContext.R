@@ -89,34 +89,6 @@ methods <- list (
       softmax = TRUE
     )
   )
-  # # svm
-  # "svmPoly" = list(
-  #   hyparams = list(
-  #     "degree" = c(1, 2, 3, 4, 5),
-  #     "scale" = c(0.001, 0.1, 1, 10, 100),
-  #     "C" = c(0.001, 0.1, 1, 10, 100)
-  #   )
-  # )
-  
-  # # svm
-  # "svmPoly" = list(
-  #     hyparams = list(
-  #       "degree" = c(5), # 5
-  #       "scale" = c(0.1),# 0.1
-  #       "C" = c(10) # 10
-  #     )
-  # ),
-  # # neuronal network
-  # "nnet" = list(
-  #   hyparams = list(
-  #     "size" = c(20),
-  #     "decay" = c(1)
-  #     ),
-  #   options = list (
-  #     maxit = 1000,
-  #     softmax = TRUE
-  #   )
-  # )
   
 )
 
@@ -130,10 +102,10 @@ balance_data <- list(
   #sub_frontier = "1/3"
 ) # 0.5 y 1/5
 
-# balance_data <- list(
-#   balance_proportions = c(0),  #0.2, c(0.2, 0.4),
-#   sub_frontier = "1/4"
-# )
+balance_data <- list(
+  balance_proportions = 0 #c(0.4, 0.5)  #0.2, c(0.2, 0.4),
+  # sub_frontier = "1/4"
+)
 
 # ML metric
 metric = "F"
@@ -166,13 +138,13 @@ trControl <- trainControl (
   savePredictions = "all"
 )
 
-hold_out <- 0.00 # https://topepo.github.io/caret/train-models-by-tag.html
+hold_out <- 0.10 # https://topepo.github.io/caret/train-models-by-tag.html
 
 # save model information
 list_method <- list()  
 
 set.seed(314)
-
+data <- data[1:100,]
 # loop method
 for (i in 1:length(methods)) {
 
@@ -185,7 +157,7 @@ for (i in 1:length(methods)) {
     data = data,
     x = x,
     y = y,
-    # z = z,
+    z = z,
     balance_data = balance_data,
     trControl = trControl,
     method = methods[i],

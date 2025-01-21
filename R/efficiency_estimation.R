@@ -17,8 +17,9 @@
 #' @param scenarios Level of efficiency to peer.
 #'
 #' @importFrom caret trainControl train createDataPartition defaultSummary prSummary
-#' @importFrom dplyr select_if %>% arrange top_n sample_n
-#' @importFrom Benchmarking dea.boot
+#' @importFrom dplyr select_if %>% arrange top_n sample_n group_split
+#' @importFrom Benchmarking dea.boot fastDummies
+#' @importFrom fastDummies dummy_cols
 #'
 #' @return A \code{"cafee"} object.
 #'
@@ -54,107 +55,174 @@ efficiency_estimation <- function (
   nX <- length(x)
   nY <- length(y)
   nZ <- length(z)
-  
-  if (target_method == "bootstrapping_dea") {
-    
-    # ========================== #
-    # Label by bootstrapping_dea #
-    # ========================== #
-    
-    bootstrapping_dea <- dea.boot (
-      X = as.matrix(data[, x]),
-      Y = as.matrix(data[, y]),
-      NREP = 200,
-      ORIENTATION = "out",
-      alpha = 0.01
-      # CONTROL = list(scaling = c("curtisreid", "equilibrate"))
-    )
 
-    data <- as.data.frame(data)
+  if (nZ != 0) {
     
-    # 3 labelling as not efficient
-    data$class_efficiency <- rep("not_efficient", nrow(data))
+    data_to_divide <- cbind(data, data_factor)
+    data_save <- data_to_divide
     
-    # labelling as efficient
-    data_opt <- as.data.frame(cbind(data[, x], y = bootstrapping_dea[["eff.bc"]] * data[, y]))
-    data_opt$class_efficiency <- "efficient"
-    names(data_opt) <- names(data)
-
-    # join data
-    data <- rbind(data, data_opt)
-    data$class_efficiency <- as.factor(data$class_efficiency)
-
-    # class_efficiency as factor
-    levels(data$class_efficiency) <- c("efficient", "not_efficient")
-
-  } else if (target_method == "BCC") {
+    dfs <- data_to_divide %>%
+      group_split(Region, SCHLTYPE, .keep = TRUE)
     
-    # ======================= #
-    # Label by BCC model DEA  #
-    # ======================= #
-     
-    # compute DEA scores through a BCC model
-     add_scores <-  rad_out (
-       tech_xmat = as.matrix(data[, x]),
-       tech_ymat = as.matrix(data[, y]),
-       eval_xmat = as.matrix(data[, x]),
-       eval_ymat = as.matrix(data[, y]),
-       convexity = convexity,
-       returns = returns
-     ) 
-    
-    # determine efficient and inefficient DMUs
-    class_efficiency <- ifelse(add_scores[, 1] <= 1.0001, 1, 0)
-
-    data <- as.data.frame (
-      cbind(data, class_efficiency)
+    grid_sub_groups <- expand.grid(
+      Region = c(unique(data_to_divide$Region)),
+      tipo = c(unique(data_to_divide$SCHLTYPE))
     )
     
-    data$class_efficiency <- factor(data$class_efficiency)
-    data$class_efficiency <- factor (
-      data$class_efficiency,
-      levels = rev(levels(data$class_efficiency))
-    )
-
-    levels(data$class_efficiency) <- c("efficient", "not_efficient")
+    data_labeled <- as.data.frame(matrix(
+      data = NA,
+      ncol = ncol(data_to_divide) + 1,
+      nrow = 0
+    ))
     
-  } else if (target_method == "additive") {
+    names(data_labeled) <- c(names(data_to_divide), "class_efficiency")
+      
+    for (sub_group in 1:length(dfs)) {
+      
+      data <- dfs[[sub_group]]
+      
+      context <- data[1,z]
+      
+      # ============================ #
+      # Label by additive model DEA  #
+      # ============================ #
+      
+      # compute DEA scores through a additive model
+      add_scores <-  compute_scores_additive (
+        data = data,
+        x = x,
+        y = y
+      ) 
+      
+      # determine efficient and inefficient DMUs
+      class_efficiency <- ifelse(add_scores[, 1] <= 0.0001, 1, 0)
+      
+      data <- as.data.frame (
+        cbind(data, class_efficiency)
+      )
+      
+      data$class_efficiency <- factor(data$class_efficiency)
+      data$class_efficiency <- factor (
+        data$class_efficiency,
+        levels = rev(levels(data$class_efficiency))
+      )
+      
+      levels(data$class_efficiency) <- c("efficient", "not_efficient")
+      
+      data_labeled <- rbind(data_labeled, data)
+    }
     
-    # ============================ #
-    # Label by additive model DEA  #
-    # ============================ #
+    data <- data_labeled
     
-    # compute DEA scores through a BCC model
-    add_scores <-  compute_scores_additive (
-      data = data,
-      x = x,
-      y = y
-    ) 
+    pre_data <- data
     
-    # determine efficient and inefficient DMUs
-    class_efficiency <- ifelse(add_scores[, 1] <= 0.0001, 1, 0)
+    # save a copy of the original data
+    eval_data <- data
     
-    data <- as.data.frame (
-      cbind(data, class_efficiency)
-    )
+  } else {
     
-    data$class_efficiency <- factor(data$class_efficiency)
-    data$class_efficiency <- factor (
-      data$class_efficiency,
-      levels = rev(levels(data$class_efficiency))
-    )
+    if (target_method == "bootstrapping_dea") {
+      
+      # ========================== #
+      # Label by bootstrapping_dea #
+      # ========================== #
+      
+      bootstrapping_dea <- dea.boot (
+        X = as.matrix(data[, x]),
+        Y = as.matrix(data[, y]),
+        NREP = 200,
+        ORIENTATION = "out",
+        alpha = 0.01
+        # CONTROL = list(scaling = c("curtisreid", "equilibrate"))
+      )
+      
+      data <- as.data.frame(data)
+      
+      # 3 labelling as not efficient
+      data$class_efficiency <- rep("not_efficient", nrow(data))
+      
+      # labelling as efficient
+      data_opt <- as.data.frame(cbind(data[, x], y = bootstrapping_dea[["eff.bc"]] * data[, y]))
+      data_opt$class_efficiency <- "efficient"
+      names(data_opt) <- names(data)
+      
+      # join data
+      data <- rbind(data, data_opt)
+      data$class_efficiency <- as.factor(data$class_efficiency)
+      
+      # class_efficiency as factor
+      levels(data$class_efficiency) <- c("efficient", "not_efficient")
+      
+    } else if (target_method == "BCC") {
+      
+      # ======================= #
+      # Label by BCC model DEA  #
+      # ======================= #
+      
+      # compute DEA scores through a BCC model
+      add_scores <-  rad_out (
+        tech_xmat = as.matrix(data[, x]),
+        tech_ymat = as.matrix(data[, y]),
+        eval_xmat = as.matrix(data[, x]),
+        eval_ymat = as.matrix(data[, y]),
+        convexity = convexity,
+        returns = returns
+      ) 
+      
+      # determine efficient and inefficient DMUs
+      class_efficiency <- ifelse(add_scores[, 1] <= 1.0001, 1, 0)
+      
+      data <- as.data.frame (
+        cbind(data, class_efficiency)
+      )
+      
+      data$class_efficiency <- factor(data$class_efficiency)
+      data$class_efficiency <- factor (
+        data$class_efficiency,
+        levels = rev(levels(data$class_efficiency))
+      )
+      
+      levels(data$class_efficiency) <- c("efficient", "not_efficient")
+      
+    } else if (target_method == "additive") {
+      
+      # ============================ #
+      # Label by additive model DEA  #
+      # ============================ #
+      
+      # compute DEA scores through a additive model
+      add_scores <-  compute_scores_additive (
+        data = data,
+        x = x,
+        y = y
+      ) 
+      
+      # determine efficient and inefficient DMUs
+      class_efficiency <- ifelse(add_scores[, 1] <= 0.0001, 1, 0)
+      
+      data <- as.data.frame (
+        cbind(data, class_efficiency)
+      )
+      
+      data$class_efficiency <- factor(data$class_efficiency)
+      data$class_efficiency <- factor (
+        data$class_efficiency,
+        levels = rev(levels(data$class_efficiency))
+      )
+      
+      levels(data$class_efficiency) <- c("efficient", "not_efficient")
+      
+    }
     
-    levels(data$class_efficiency) <- c("efficient", "not_efficient")
-
+    pre_data <- data
+    
+    # add factor variables
+    data <- cbind(data, data_factor)
+    
+    # save a copy of the original data
+    eval_data <- data
+    
   }
-  
-  pre_data <- data
-  
-  # add factor variables
-  data <- cbind(data, data_factor)
-  
-  # save a copy of the original data
-  eval_data <- data
 
   # observed proportion of efficient and inefficient DMUs
   obs_prop <- prop.table(table(data$class_efficiency))
@@ -177,9 +245,9 @@ efficiency_estimation <- function (
     data <- eval_data
     
     # check presence of imbalanced data
-    if (max(obs_prop[1], obs_prop[2]) > 0.50) {
+    if (max(obs_prop[1], obs_prop[2]) > 0.50 ) {
 
-      if (balance_data[["balance_proportions"]][balance] != 0) {
+      if (balance_data[["balance_proportions"]][balance] != 0 & balance_data[["balance_proportions"]][balance] > obs_prop[1]) {
         data <- SMOTE_convex_balance_data(
           data = data,
           data_factor = data_factor,
@@ -208,14 +276,14 @@ efficiency_estimation <- function (
       # divide dataset
       valid_data <- data[valid_index, ]
       train_data <- data[- valid_index, ]
-      
+
     } else {
       
       valid_data <- data
       train_data <- data
       
     }
-    
+
     # ====================== #
     # SELECT HYPERPARAMETERS #
     # ====================== #
@@ -465,11 +533,11 @@ efficiency_estimation <- function (
   
   # test confusion matrix
   test_confmatrix <- list()
-  y_obs_test <- eval_data$class_efficiency
+  y_obs_test <- valid_data$class_efficiency # o eval_data??
   
   for (m in 1:length(save_models_balance)) {
     
-    y_pre_test <- predict(save_models_balance[m], eval_data)[[1]]
+    y_pre_test <- predict(save_models_balance[m], valid_data)[[1]] # o eval_data??
     
     test_confmatrix[[m]] <- confusionMatrix (
       data = y_pre_test,
@@ -520,13 +588,15 @@ efficiency_estimation <- function (
   # ============================== #
   # detecting importance variables #
   # ============================== #
-  
+  browser()
   # necesary data to calculate importance in rminer
   train_data <- final_model[["trainingData"]]
   names(train_data)[1] <- "ClassEfficiency"
   
-  dataset_dummy <- model.matrix(ClassEfficiency~ . - 1, data = train_data)
-  train_data <- cbind(train_data[1], dataset_dummy)
+  dataset_dummy <- dummy_cols(train_data,  select_columns = c(names(train_data))[z+1]) %>% 
+    select(-c(names(train_data))[z+1])
+  
+  train_data <- dataset_dummy
   
   train_data <- train_data[,c(2:length(train_data),1)]
   
@@ -592,22 +662,33 @@ efficiency_estimation <- function (
   
   print(paste("Inputs importance: ", sum(result_SA[1:length(x)])))
   print(paste("Outputs importance: ", sum(result_SA[(length(x)+1):(length(x)+length(y))])))
+  print(paste("Environment importance: ", sum(result_SA[((length(x) + length(y))+1):length(result_SA)])))
   #print(paste("Seed: ", seed))
-  
+
   # =========== #
   # get ranking #
   # =========== #
   
-  eff_vector <- apply(eval_data[, c(x,y)], 1, function(row) {
-    
+  if (nZ != 0) {
+    data_rank <- eval_data[, c(x,y,z)]
+    } else {
+    data_rank <- eval_data[, c(x,y)]
+    }
+
+  eff_vector <- apply(data_rank, 1, function(row) {
+
     row_df <- as.data.frame(t(row))
-    colnames(row_df) <- names(data[, c(x,y)])
-    
+    colnames(row_df) <- names(data_rank)
+
     pred <- unlist(predict(final_model_p, row_df, type = "prob")[1])
-    
+
     return(pred)
   })
-  
+  for(w in 1:nrow(data_rank)){
+    print(predict(final_model_p, data_rank[w,], type = "prob")[1])
+  }
+  predict(final_model_p, data_rank[49,], type = "prob")[1]
+  browser()
   eff_vector <- as.data.frame(eff_vector)
   
   id <- as.data.frame(c(1:nrow(eval_data)))
