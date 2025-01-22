@@ -58,16 +58,18 @@ efficiency_estimation <- function (
 
   if (nZ != 0) {
     
+    contx_name <- names(data_factor)
+    
     data_to_divide <- cbind(data, data_factor)
     data_save <- data_to_divide
-    
+  
     dfs <- data_to_divide %>%
-      group_split(Region, SCHLTYPE, .keep = TRUE)
+      group_split(across(all_of(contx_name)), .keep = TRUE)
     
-    grid_sub_groups <- expand.grid(
-      Region = c(unique(data_to_divide$Region)),
-      tipo = c(unique(data_to_divide$SCHLTYPE))
-    )
+    # grid_sub_groups <- expand.grid(
+    #   Region = c(unique(data_to_divide$Region)),
+    #   tipo = c(unique(data_to_divide$SCHLTYPE))
+    # )
     
     data_labeled <- as.data.frame(matrix(
       data = NA,
@@ -110,6 +112,35 @@ efficiency_estimation <- function (
       levels(data$class_efficiency) <- c("efficient", "not_efficient")
       
       data_labeled <- rbind(data_labeled, data)
+      
+      # observed proportion of efficient and inefficient DMUs
+      obs_prop <- prop.table(table(data$class_efficiency))
+      
+      # set sub frontier
+      sub_frontier <- balance_data[["sub_frontier"]]
+      
+      # set a balance proportion
+      balance_data_prop <- balance_data[["balance_proportions"]][1] # [balance] 
+      
+      # check presence of imbalanced data
+      if (max(obs_prop[1], obs_prop[2]) > 0.50) {
+      
+        if (balance_data[["balance_proportions"]][1] != 0) { # balance_data[["balance_proportions"]][balance] 
+          data <- SMOTE_convex_balance_data(
+            data = data,
+            data_factor = context,
+            x = x,
+            y = y,
+            z = z,
+            balance_data = balance_data_prop,
+            sub_frontier = sub_frontier
+          )
+          
+        }
+        
+      } # end balance data
+  
+      
     }
     
     data <- data_labeled
@@ -119,6 +150,8 @@ efficiency_estimation <- function (
     # save a copy of the original data
     eval_data <- data
     
+    
+
   } else {
     
     if (target_method == "bootstrapping_dea") {
@@ -247,7 +280,7 @@ efficiency_estimation <- function (
     # check presence of imbalanced data
     if (max(obs_prop[1], obs_prop[2]) > 0.50 ) {
 
-      if (balance_data[["balance_proportions"]][balance] != 0 & balance_data[["balance_proportions"]][balance] > obs_prop[1]) {
+      if (balance_data[["balance_proportions"]][balance] != 0) {
         data <- SMOTE_convex_balance_data(
           data = data,
           data_factor = data_factor,

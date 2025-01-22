@@ -103,7 +103,7 @@ balance_data <- list(
 ) # 0.5 y 1/5
 
 balance_data <- list(
-  balance_proportions = 0 #c(0.4, 0.5)  #0.2, c(0.2, 0.4),
+  balance_proportions = 0.2 #c(0.4, 0.5)  #0.2, c(0.2, 0.4),
   # sub_frontier = "1/4"
 )
 
@@ -144,7 +144,7 @@ hold_out <- 0.10 # https://topepo.github.io/caret/train-models-by-tag.html
 list_method <- list()  
 
 set.seed(314)
-data <- data[1:100,]
+#data <- data[1:100,]
 # loop method
 for (i in 1:length(methods)) {
 

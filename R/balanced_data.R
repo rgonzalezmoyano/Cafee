@@ -655,7 +655,7 @@ SMOTE_convex_balance_data <- function (
   
   # determinate numbre of efficient and ineeficient units
   n_real_eff <- nrow(data[data$class_efficiency == "efficient",])
-  n_real_ineff <-nrow(data[data$class_efficiency == "not_efficient",])
+  n_real_ineff <- nrow(data[data$class_efficiency == "not_efficient",])
   
   prop_real <- n_real_eff / nrow(data)
   
@@ -723,12 +723,22 @@ SMOTE_convex_balance_data <- function (
   create_eff <- test_n_eff - n_real_eff
   
   # it is necessary to create create_ineff units
+  while (prop > eff_level) {
+    
+      test_n_ineff <- test_n_ineff + 1
+  
+    
+    prop <- test_n_eff / (test_n_eff + test_n_ineff)
+  }
+  
   create_ineff <- test_n_ineff - n_real_ineff
 
   # ====================================================== #
   # create convex combinations to achieve create_eff units #
   # ====================================================== #
-  
+  # if (create_eff != 0) {
+  #   
+  # }
   # determinate 
   data_eff <- data[data$class_efficiency == "efficient", ]
   
@@ -742,7 +752,7 @@ SMOTE_convex_balance_data <- function (
   lambda <- rep(prop_imp, ncol(data_eff[, c(x,y)]))
   
   n_comb <- length(c(x,y))
-
+  browser()
   combinations <- as.data.frame(t(combn(idx_eff, n_comb)))
   
   eff_convex <- as.data.frame(matrix(
@@ -784,7 +794,7 @@ SMOTE_convex_balance_data <- function (
     n_total_batch <- 1
     
   }
-  browser()
+
   # create convex combintaions
   print("calculate combinations points")
   
