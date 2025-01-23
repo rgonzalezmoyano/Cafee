@@ -67,7 +67,8 @@ data <- data[-idx_NA,]
 # x and y indexes
 x <- c(10, 7, 6)
 y <- c(3:5)
-z <- c(2, 8) # environment variables
+z <- c(2) # environment variables z <- c(2, 8) # environment variables
+
 
 # different types to label
 target_method <- "additive"

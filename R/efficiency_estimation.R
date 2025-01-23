@@ -66,11 +66,6 @@ efficiency_estimation <- function (
     dfs <- data_to_divide %>%
       group_split(across(all_of(contx_name)), .keep = TRUE)
     
-    # grid_sub_groups <- expand.grid(
-    #   Region = c(unique(data_to_divide$Region)),
-    #   tipo = c(unique(data_to_divide$SCHLTYPE))
-    # )
-    
     data_labeled <- as.data.frame(matrix(
       data = NA,
       ncol = ncol(data_to_divide) + 1,
@@ -80,7 +75,9 @@ efficiency_estimation <- function (
     names(data_labeled) <- c(names(data_to_divide), "class_efficiency")
       
     for (sub_group in 1:length(dfs)) {
-      
+      #sub_group <- 41
+      print(paste("Sub_group",sub_group))                                                            #### borar
+
       data <- dfs[[sub_group]]
       
       context <- data[1,z]
@@ -111,20 +108,18 @@ efficiency_estimation <- function (
       
       levels(data$class_efficiency) <- c("efficient", "not_efficient")
       
-      data_labeled <- rbind(data_labeled, data)
-      
       # observed proportion of efficient and inefficient DMUs
       obs_prop <- prop.table(table(data$class_efficiency))
       
-      # set sub frontier
-      sub_frontier <- balance_data[["sub_frontier"]]
-      
       # set a balance proportion
       balance_data_prop <- balance_data[["balance_proportions"]][1] # [balance] 
-      
+    
       # check presence of imbalanced data
-      if (max(obs_prop[1], obs_prop[2]) > 0.50) {
-      
+      if (max(obs_prop[1], obs_prop[2]) > 0.50 &
+          nrow(data) > ncol(data[,c(x,y)]) &
+          length(which(data$class_efficiency == "efficient")) > ncol(data[,c(x,y)])
+          ) {
+
         if (balance_data[["balance_proportions"]][1] != 0) { # balance_data[["balance_proportions"]][balance] 
           data <- SMOTE_convex_balance_data(
             data = data,
@@ -132,20 +127,20 @@ efficiency_estimation <- function (
             x = x,
             y = y,
             z = z,
-            balance_data = balance_data_prop,
-            sub_frontier = sub_frontier
+            balance_data = balance_data_prop
           )
           
         }
         
       } # end balance data
-  
+
+      data_labeled <- rbind(data_labeled, data)
       
     }
-    
+    browser()
     data <- data_labeled
     
-    pre_data <- data
+    pre_data <- data_save
     
     # save a copy of the original data
     eval_data <- data
