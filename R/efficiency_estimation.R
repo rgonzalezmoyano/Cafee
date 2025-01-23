@@ -75,7 +75,7 @@ efficiency_estimation <- function (
     names(data_labeled) <- c(names(data_to_divide), "class_efficiency")
       
     for (sub_group in 1:length(dfs)) {
-      #sub_group <- 41
+      #sub_group <- 42
       print(paste("Sub_group",sub_group))                                                            #### borar
 
       data <- dfs[[sub_group]]
@@ -113,14 +113,14 @@ efficiency_estimation <- function (
       
       # set a balance proportion
       balance_data_prop <- balance_data[["balance_proportions"]][1] # [balance] 
-    
+  
       # check presence of imbalanced data
       if (max(obs_prop[1], obs_prop[2]) > 0.50 &
           nrow(data) > ncol(data[,c(x,y)]) &
           length(which(data$class_efficiency == "efficient")) > ncol(data[,c(x,y)])
           ) {
 
-        if (balance_data[["balance_proportions"]][1] != 0) { # balance_data[["balance_proportions"]][balance] 
+        if (balance_data[["balance_proportions"]][1] != 0 & !(obs_prop[1] == balance_data[["balance_proportions"]][1])) { # balance_data[["balance_proportions"]][balance] 
           data <- SMOTE_convex_balance_data(
             data = data,
             data_factor = context,
@@ -145,153 +145,6 @@ efficiency_estimation <- function (
     # save a copy of the original data
     eval_data <- data
     
-    
-
-  } else {
-    
-    if (target_method == "bootstrapping_dea") {
-      
-      # ========================== #
-      # Label by bootstrapping_dea #
-      # ========================== #
-      
-      bootstrapping_dea <- dea.boot (
-        X = as.matrix(data[, x]),
-        Y = as.matrix(data[, y]),
-        NREP = 200,
-        ORIENTATION = "out",
-        alpha = 0.01
-        # CONTROL = list(scaling = c("curtisreid", "equilibrate"))
-      )
-      
-      data <- as.data.frame(data)
-      
-      # 3 labelling as not efficient
-      data$class_efficiency <- rep("not_efficient", nrow(data))
-      
-      # labelling as efficient
-      data_opt <- as.data.frame(cbind(data[, x], y = bootstrapping_dea[["eff.bc"]] * data[, y]))
-      data_opt$class_efficiency <- "efficient"
-      names(data_opt) <- names(data)
-      
-      # join data
-      data <- rbind(data, data_opt)
-      data$class_efficiency <- as.factor(data$class_efficiency)
-      
-      # class_efficiency as factor
-      levels(data$class_efficiency) <- c("efficient", "not_efficient")
-      
-    } else if (target_method == "BCC") {
-      
-      # ======================= #
-      # Label by BCC model DEA  #
-      # ======================= #
-      
-      # compute DEA scores through a BCC model
-      add_scores <-  rad_out (
-        tech_xmat = as.matrix(data[, x]),
-        tech_ymat = as.matrix(data[, y]),
-        eval_xmat = as.matrix(data[, x]),
-        eval_ymat = as.matrix(data[, y]),
-        convexity = convexity,
-        returns = returns
-      ) 
-      
-      # determine efficient and inefficient DMUs
-      class_efficiency <- ifelse(add_scores[, 1] <= 1.0001, 1, 0)
-      
-      data <- as.data.frame (
-        cbind(data, class_efficiency)
-      )
-      
-      data$class_efficiency <- factor(data$class_efficiency)
-      data$class_efficiency <- factor (
-        data$class_efficiency,
-        levels = rev(levels(data$class_efficiency))
-      )
-      
-      levels(data$class_efficiency) <- c("efficient", "not_efficient")
-      
-    } else if (target_method == "additive") {
-      
-      # ============================ #
-      # Label by additive model DEA  #
-      # ============================ #
-      
-      # compute DEA scores through a additive model
-      add_scores <-  compute_scores_additive (
-        data = data,
-        x = x,
-        y = y
-      ) 
-      
-      # determine efficient and inefficient DMUs
-      class_efficiency <- ifelse(add_scores[, 1] <= 0.0001, 1, 0)
-      
-      data <- as.data.frame (
-        cbind(data, class_efficiency)
-      )
-      
-      data$class_efficiency <- factor(data$class_efficiency)
-      data$class_efficiency <- factor (
-        data$class_efficiency,
-        levels = rev(levels(data$class_efficiency))
-      )
-      
-      levels(data$class_efficiency) <- c("efficient", "not_efficient")
-      
-    }
-    
-    pre_data <- data
-    
-    # add factor variables
-    data <- cbind(data, data_factor)
-    
-    # save a copy of the original data
-    eval_data <- data
-    
-  }
-
-  # observed proportion of efficient and inefficient DMUs
-  obs_prop <- prop.table(table(data$class_efficiency))
-  
-  # set sub frontier
-  sub_frontier <- balance_data[["sub_frontier"]]
-  
-  save_models_balance <- vector("list", length = length(balance_data$balance_proportions))
-  names(save_models_balance) <- balance_data$balance_proportions
-  
-  save_confusion_matrix <- vector("list", length = length(balance_data$balance_proportions))
-  names(save_confusion_matrix) <- balance_data$balance_proportions
-  
-  compare_confusion_matrix <- vector("list", length = length(balance_data$balance_proportions))
-  names(compare_confusion_matrix) <- balance_data$balance_proportions
-
-  for (balance in 1:length(balance_data$balance_proportions)) {
-    
-    balance_data_prop <- balance_data[["balance_proportions"]][balance]
-    data <- eval_data
-    
-    # check presence of imbalanced data
-    if (max(obs_prop[1], obs_prop[2]) > 0.50 ) {
-
-      if (balance_data[["balance_proportions"]][balance] != 0) {
-        data <- SMOTE_convex_balance_data(
-          data = data,
-          data_factor = data_factor,
-          x = x,
-          y = y,
-          z = z,
-          balance_data = balance_data_prop,
-          sub_frontier = sub_frontier
-        )
-    
-      }
-      
-    } # end balance data
-    
-    data_after_balance <- data
-
     if (hold_out != 0) {
       
       # Create train and validation data
@@ -304,13 +157,176 @@ efficiency_estimation <- function (
       # divide dataset
       valid_data <- data[valid_index, ]
       train_data <- data[- valid_index, ]
-
+      
     } else {
       
       valid_data <- data
       train_data <- data
       
     }
+    browser()
+
+  } else {
+    
+    # if (target_method == "bootstrapping_dea") {
+    #   
+    #   # ========================== #
+    #   # Label by bootstrapping_dea #
+    #   # ========================== #
+    #   
+    #   bootstrapping_dea <- dea.boot (
+    #     X = as.matrix(data[, x]),
+    #     Y = as.matrix(data[, y]),
+    #     NREP = 200,
+    #     ORIENTATION = "out",
+    #     alpha = 0.01
+    #     # CONTROL = list(scaling = c("curtisreid", "equilibrate"))
+    #   )
+    #   
+    #   data <- as.data.frame(data)
+    #   
+    #   # 3 labelling as not efficient
+    #   data$class_efficiency <- rep("not_efficient", nrow(data))
+    #   
+    #   # labelling as efficient
+    #   data_opt <- as.data.frame(cbind(data[, x], y = bootstrapping_dea[["eff.bc"]] * data[, y]))
+    #   data_opt$class_efficiency <- "efficient"
+    #   names(data_opt) <- names(data)
+    #   
+    #   # join data
+    #   data <- rbind(data, data_opt)
+    #   data$class_efficiency <- as.factor(data$class_efficiency)
+    #   
+    #   # class_efficiency as factor
+    #   levels(data$class_efficiency) <- c("efficient", "not_efficient")
+    #   
+    # } else if (target_method == "BCC") {
+    #   
+    #   # ======================= #
+    #   # Label by BCC model DEA  #
+    #   # ======================= #
+    #   
+    #   # compute DEA scores through a BCC model
+    #   add_scores <-  rad_out (
+    #     tech_xmat = as.matrix(data[, x]),
+    #     tech_ymat = as.matrix(data[, y]),
+    #     eval_xmat = as.matrix(data[, x]),
+    #     eval_ymat = as.matrix(data[, y]),
+    #     convexity = convexity,
+    #     returns = returns
+    #   ) 
+    #   
+    #   # determine efficient and inefficient DMUs
+    #   class_efficiency <- ifelse(add_scores[, 1] <= 1.0001, 1, 0)
+    #   
+    #   data <- as.data.frame (
+    #     cbind(data, class_efficiency)
+    #   )
+    #   
+    #   data$class_efficiency <- factor(data$class_efficiency)
+    #   data$class_efficiency <- factor (
+    #     data$class_efficiency,
+    #     levels = rev(levels(data$class_efficiency))
+    #   )
+    #   
+    #   levels(data$class_efficiency) <- c("efficient", "not_efficient")
+    #   
+    # } else if (target_method == "additive") {
+    #   
+    #   # ============================ #
+    #   # Label by additive model DEA  #
+    #   # ============================ #
+    #   
+    #   # compute DEA scores through a additive model
+    #   add_scores <-  compute_scores_additive (
+    #     data = data,
+    #     x = x,
+    #     y = y
+    #   ) 
+    #   
+    #   # determine efficient and inefficient DMUs
+    #   class_efficiency <- ifelse(add_scores[, 1] <= 0.0001, 1, 0)
+    #   
+    #   data <- as.data.frame (
+    #     cbind(data, class_efficiency)
+    #   )
+    #   
+    #   data$class_efficiency <- factor(data$class_efficiency)
+    #   data$class_efficiency <- factor (
+    #     data$class_efficiency,
+    #     levels = rev(levels(data$class_efficiency))
+    #   )
+    #   
+    #   levels(data$class_efficiency) <- c("efficient", "not_efficient")
+    #   
+    # }
+    # 
+    # pre_data <- data
+    # 
+    # # add factor variables
+    # data <- cbind(data, data_factor)
+    # 
+    # # save a copy of the original data
+    # eval_data <- data
+    
+  }
+
+  # # observed proportion of efficient and inefficient DMUs
+  # obs_prop <- prop.table(table(data$class_efficiency))
+  # 
+  # save_models_balance <- vector("list", length = length(balance_data$balance_proportions))
+  # names(save_models_balance) <- balance_data$balance_proportions
+  # 
+  # save_confusion_matrix <- vector("list", length = length(balance_data$balance_proportions))
+  # names(save_confusion_matrix) <- balance_data$balance_proportions
+  # 
+  # compare_confusion_matrix <- vector("list", length = length(balance_data$balance_proportions))
+  # names(compare_confusion_matrix) <- balance_data$balance_proportions
+  # 
+  # for (balance in 1:length(balance_data$balance_proportions)) {
+  #   
+  #   balance_data_prop <- balance_data[["balance_proportions"]][balance]
+  #   data <- eval_data
+  #   
+  #   # check presence of imbalanced data
+  #   if (max(obs_prop[1], obs_prop[2]) > 0.50 ) {
+  # 
+  #     if (balance_data[["balance_proportions"]][balance] != 0) {
+  #       data <- SMOTE_convex_balance_data(
+  #         data = data,
+  #         data_factor = data_factor,
+  #         x = x,
+  #         y = y,
+  #         z = z,
+  #         balance_data = balance_data_prop,
+  #         sub_frontier = sub_frontier
+  #       )
+  #   
+  #     }
+  #     
+  #   } # end balance data
+  #   
+  #   data_after_balance <- data
+  # 
+  #   if (hold_out != 0) {
+  #     
+  #     # Create train and validation data
+  #     valid_index <- createDataPartition (
+  #       data$class_efficiency,
+  #       p = hold_out,
+  #       list = FALSE
+  #     )
+  #     
+  #     # divide dataset
+  #     valid_data <- data[valid_index, ]
+  #     train_data <- data[- valid_index, ]
+  # 
+  #   } else {
+  #     
+  #     valid_data <- data
+  #     train_data <- data
+  #     
+  #   }
 
     # ====================== #
     # SELECT HYPERPARAMETERS #

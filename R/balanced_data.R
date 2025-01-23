@@ -165,7 +165,7 @@ SMOTE_convex_balance_data <- function (
     # ================================= #
     # create efficient units to balance #
     # ================================= #
-   
+    
     while (nrow(eff_convex) < create_eff) {
       
       count_batch <- count_batch + 1
