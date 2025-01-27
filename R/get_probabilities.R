@@ -18,7 +18,7 @@
 compute_target <- function (
     data, x, y, z = NULL, final_model, orientation, cut_off, imp_vector
 ) {
-
+  browser()
     # environment variable 
     if (is.null(z)) {
       z <- 0
@@ -28,7 +28,7 @@ compute_target <- function (
     data_scenario <- as.data.frame(
       matrix(
         data = NA,
-        ncol = length(c(x,y)),
+        ncol = length(c(x,y,z)),
         nrow = nrow(data)
       )
     )

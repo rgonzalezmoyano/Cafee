@@ -19,7 +19,7 @@ SMOTE_balance_data <- function (
   # =========================================================== #
   # determinate number of efficient and not efficient to create #
   # =========================================================== #
-  
+
   # determinate numbre of efficient and ineeficient units
   n_real_eff <- nrow(data[data$class_efficiency == "efficient",])
   n_real_ineff <- nrow(data[data$class_efficiency == "not_efficient",])
@@ -90,7 +90,7 @@ SMOTE_balance_data <- function (
   
   # it is necessary to create create_ineff units
   create_ineff <- test_n_ineff - n_real_ineff
-  
+
   # ============================================= #
   # create convex combinations to achieve balance #
   # ============================================= #
@@ -129,7 +129,7 @@ SMOTE_balance_data <- function (
     ))
     
     names(ineff_convex) <- names(data_eff[, c(x,y)])
-    
+  
     if(nrow(combinations) > 5000) {
       
       # Partition size
@@ -163,17 +163,16 @@ SMOTE_balance_data <- function (
     save_idx_eff <- NULL
     save_idx_ineff <- NULL
     
-    
     # ================================= #
     # create efficient units to balance #
     # ================================= #
-    
+    browser()
     while (nrow(eff_convex) < create_eff) {
-      
+ 
       count_batch <- count_batch + 1
       iter <- iter + 1
       print(iter)
-      
+     
       # units to classify
       results_convx <- t(apply(batch_all[[iter]][,c(x,y)], 1, function(indices) {
         
@@ -200,9 +199,9 @@ SMOTE_balance_data <- function (
       # leave original eff units, get index
       new_results_convx <- test_eff[(nrow(data_eff) + 1):nrow(test_eff),]
       idx_eff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] < 0.0001)
-      
+  
       if (length(idx_eff) == 0) {
-        break
+        next
       }
       
       # save idx_eff
@@ -229,9 +228,9 @@ SMOTE_balance_data <- function (
       print(paste("There are:", nrow(eff_convex)))
       print(paste("It must be created:", create_eff))
       print(paste(nrow(eff_convex)/create_eff * 100, "%"))
-      
+  
       true_eff <- nrow(eff_convex)
-      
+
       # if there are not enough efficient units, use
       if(count_batch == n_total_batch & true_eff < create_eff) {
         
@@ -295,21 +294,27 @@ SMOTE_balance_data <- function (
         eff_convex <- eff_convex[-idx_delete,]
         
       }
-      
+     
     } # end while
     
     if (nrow(eff_convex) != 0) {
+      
       # add class efficiency
       eff_convex[,z] <- data[1,z]
       eff_convex$class_efficiency <- "efficient"
       
+      names(eff_convex) <- names(data)
+      
       final_data <- rbind(data, eff_convex)
+      
     } else {
+      
       final_data <- data
+      
     }
       
   } else {
-    
+
     # first, create set combinations 
     # determinate 
     idx <- 1:nrow(data)
@@ -341,7 +346,7 @@ SMOTE_balance_data <- function (
     # ===================================== #
     # create not efficient units to balance #
     # ===================================== #
-    
+
     batch_all <- list()
     batch_all[[1]] <- combinations
     
@@ -469,7 +474,10 @@ SMOTE_balance_data <- function (
     
     # add class efficiency
     ineff_convex[,z] <- data[1,z]
+
     ineff_convex$class_efficiency <- "not_efficient"
+    
+    names(ineff_convex) <- names(data)
 
     final_data <- rbind(data, ineff_convex)
     
