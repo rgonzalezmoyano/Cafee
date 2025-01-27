@@ -104,7 +104,7 @@ train_ml <- function (
         selected_model <- round(model_nnet[["results"]], 2) %>%
           mutate(Balance_accuracy = (Sens + Spec) / 2) %>%  # Añadir la nueva métrica
           arrange(desc(Balance_accuracy), desc(F), desc(AUC), desc(Kappa))
-   
+        
         # selected_model$balance <- round(prop.table(table(data$class_efficiency))[1], 1)
         
         # add names

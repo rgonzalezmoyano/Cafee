@@ -12,8 +12,8 @@
 
 #' @return It returns a \code{data.frame} with the newly created set of DMUs incorporated.
 
-SMOTE_convex_balance_data <- function (
-    data, data_factor, x, y, z = NULL, balance_data
+SMOTE_balance_data <- function (
+    data, data_factor = NULL, x, y, z = NULL, balance_data
 ) {
 
   # =========================================================== #
@@ -90,77 +90,79 @@ SMOTE_convex_balance_data <- function (
   
   # it is necessary to create create_ineff units
   create_ineff <- test_n_ineff - n_real_ineff
-
+  
   # ============================================= #
   # create convex combinations to achieve balance #
   # ============================================= #
-
-  # determinate 
-  data_eff <- data[data$class_efficiency == "efficient", ]
   
-  idx_eff <- 1:nrow(data_eff)
-  
-  # proportion importance
-  len <- length(c(x,y))
-  
-  prop_imp <- 1/len
-  
-  lambda <- rep(prop_imp, ncol(data_eff[, c(x,y)]))
-  
-  n_comb <- length(c(x,y))
-
-  combinations <- as.data.frame(t(combn(idx_eff, n_comb)))
-  
-  eff_convex <- as.data.frame(matrix(
-    data = NA,
-    ncol = ncol(data_eff[, c(x,y)]),
-    nrow = 0
-  ))
-  
-  names(eff_convex) <- names(data_eff[, c(x,y)])
-  
-  ineff_convex <- as.data.frame(matrix(
-    data = NA,
-    ncol = ncol(data_eff[, c(x,y)]),
-    nrow = 0
-  ))
-  
-  names(ineff_convex) <- names(data_eff[, c(x,y)])
-  
-  if(nrow(combinations) > 5000) {
-    
-    # Partition size
-    n_batch <- 5000
-    
-    # shuffle the data
-    shuffle_data <- sample(1:nrow(combinations))
-    
-    # Create an index for each partition
-    combinations$particion <- ceiling(seq_along(shuffle_data) / n_batch)
-    
-    batch_all <- split(combinations[shuffle_data, ], combinations$particion)
-    
-    n_total_batch <- ceiling(nrow(combinations) / 5000)
-    
-  } else {
-    
-    batch_all <- list()
-    batch_all[[1]] <- combinations
-    
-    n_total_batch <- 1
-    
-  }
-
-  # create convex combintaions
-  print("calculate combinations points")
-  
-  iter <- 0
-  count_batch <- 0
-  
-  save_idx_eff <- NULL
-  save_idx_ineff <- NULL
-
   if (sense_balance == "efficient") {
+    
+    # first, create set combinations 
+    # determinate 
+    data_eff <- data[data$class_efficiency == "efficient", ]
+    
+    idx_eff <- 1:nrow(data_eff)
+    
+    # proportion importance
+    len <- length(c(x,y))
+    
+    prop_imp <- 1/len
+    
+    lambda <- rep(prop_imp, ncol(data_eff[, c(x,y)]))
+    
+    n_comb <- length(c(x,y))
+    
+    combinations <- as.data.frame(t(combn(idx_eff, n_comb)))
+    
+    eff_convex <- as.data.frame(matrix(
+      data = NA,
+      ncol = ncol(data_eff[, c(x,y)]),
+      nrow = 0
+    ))
+    
+    names(eff_convex) <- names(data_eff[, c(x,y)])
+    
+    ineff_convex <- as.data.frame(matrix(
+      data = NA,
+      ncol = ncol(data_eff[, c(x,y)]),
+      nrow = 0
+    ))
+    
+    names(ineff_convex) <- names(data_eff[, c(x,y)])
+    
+    if(nrow(combinations) > 5000) {
+      
+      # Partition size
+      n_batch <- 5000
+      
+      # shuffle the data
+      shuffle_data <- sample(1:nrow(combinations))
+      
+      # Create an index for each partition
+      combinations$particion <- ceiling(seq_along(shuffle_data) / n_batch)
+      
+      batch_all <- split(combinations[shuffle_data, ], combinations$particion)
+      
+      n_total_batch <- ceiling(nrow(combinations) / 5000)
+      
+    } else {
+      
+      batch_all <- list()
+      batch_all[[1]] <- combinations
+      
+      n_total_batch <- 1
+      
+    }
+    
+    # create convex combintaions
+    print("calculate combinations points")
+    
+    iter <- 0
+    count_batch <- 0
+    
+    save_idx_eff <- NULL
+    save_idx_ineff <- NULL
+    
     
     # ================================= #
     # create efficient units to balance #
@@ -183,7 +185,7 @@ SMOTE_convex_balance_data <- function (
         
       }))
       
-      # change to dataframe 
+      # change to dataframe
       results_convx <- as.data.frame(results_convx)
       
       # change name
@@ -195,7 +197,7 @@ SMOTE_convex_balance_data <- function (
       # test additive
       test_add <- compute_scores_additive(test_eff, x = x, y = y)
       
-      # leave original eff units, get index 
+      # leave original eff units, get index
       new_results_convx <- test_eff[(nrow(data_eff) + 1):nrow(test_eff),]
       idx_eff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] < 0.0001)
       
@@ -230,10 +232,10 @@ SMOTE_convex_balance_data <- function (
       
       true_eff <- nrow(eff_convex)
       
-      # if there are not enough efficient units, use 
+      # if there are not enough efficient units, use
       if(count_batch == n_total_batch & true_eff < create_eff) {
         
-        # need to create 
+        # need to create
         need_eff <- create_eff - true_eff
         
         eff_combinations <- combinations[save_idx_eff,]
@@ -247,7 +249,7 @@ SMOTE_convex_balance_data <- function (
         while (nrow(save_lambda_eff) < need_eff) {
           
           # process to generate lambda
-          generate_lambda <- runif(length(c(x, y)), min = 0.05, max = 0.95) 
+          generate_lambda <- runif(length(c(x, y)), min = 0.05, max = 0.95)
           
           normalize_lambda <- generate_lambda/sum(generate_lambda)
           
@@ -264,7 +266,7 @@ SMOTE_convex_balance_data <- function (
           # calculate
           new_unit <- colSums(seleccion * lambda_eff)
           
-          # check 
+          # check
           check_data <- rbind(data_eff[, c(x,y)], new_unit)
           
           check_test <- compute_scores_additive(check_data, x = x, y = y)
@@ -305,187 +307,164 @@ SMOTE_convex_balance_data <- function (
     } else {
       final_data <- data
     }
-    
-    
+      
   } else {
+    
+    # first, create set combinations 
+    # determinate 
+    idx <- 1:nrow(data)
+    
+    # proportion importance
+    len <- length(c(x,y))
+    
+    prop_imp <- 1/len
+    
+    lambda <- rep(prop_imp, ncol(data[, c(x,y)]))
+    
+    n_comb <- length(c(x,y))
+
+    combinations <- as.data.frame(t(combn(idx, n_comb)))
+    
+    if (nrow(combinations) > (create_ineff * 3)) {
+      idx_combinations <- sample(x = 1:nrow(combinations), size = (create_ineff * 3), replace = FALSE)
+      combinations <- combinations[idx_combinations,]
+    }
+    
+    ineff_convex <- as.data.frame(matrix(
+      data = NA,
+      ncol = ncol(data[, c(x,y)]),
+      nrow = 0
+    ))
+    
+    names(ineff_convex) <- names(data[, c(x,y)])
     
     # ===================================== #
     # create not efficient units to balance #
     # ===================================== #
     
-    # ===
-    # add quartile not efficient
-    # ===
+    batch_all <- list()
+    batch_all[[1]] <- combinations
     
+    n_total_batch <- 1
+    
+    print("calculate combinations points")
+    
+    save_idx_ineff <- NULL
+    
+    count_batch <- 1
+    iter <- 1
+    print(iter)
+    
+    # units to classify
+    results_convx <- t(apply(batch_all[[iter]][,c(x,y)], 1, function(indices) {
+      
+      # select row
+      seleccion <- data[unlist(as.vector(indices)), c(x,y)]
+      
+      # calculate
+      colSums(seleccion * lambda)
+      
+    }))
+    
+    # change to dataframe
+    results_convx <- as.data.frame(results_convx)
+    
+    # change name
+    names(results_convx) <- names(data[, c(x,y)])
+   
     while (nrow(ineff_convex) < create_ineff) {
       
-      count_batch <- count_batch + 1
-      iter <- iter + 1
-      print(iter)
-      
-      # units to classify
-      results_convx <- t(apply(batch_all[[iter]][,c(x,y)], 1, function(indices) {
+      idx_convx <- 1:nrow(results_convx)
+    
+      # if there are less ineficient untis, use all
+      if(length(idx_convx) < create_ineff) {
         
-        # select row
-        seleccion <- data_eff[unlist(as.vector(indices)), c(x,y)]
+        random_DMU <- idx_convx
         
-        # calculate
-        colSums(seleccion * lambda)
+      } else {
         
-      }))
-      
-      # change to dataframe 
-      results_convx <- as.data.frame(results_convx)
-      
-      # change name
-      names(results_convx) <- names(data_eff[, c(x,y)])
+        random_DMU <- sample(x = idx_convx, size = create_ineff, replace = FALSE)
+        
+      }
       
       # create test dataset additive
-      test_eff <- rbind(data_eff[, c(x,y)], results_convx)
-      
+      test_eff <- rbind(data[data$class_efficiency == "efficient", c(x,y)], results_convx[random_DMU,])
+
       # test additive
       test_add <- compute_scores_additive(test_eff, x = x, y = y)
+
+      n_eff <- nrow(data[data$class_efficiency == "efficient",])
       
-      # leave original eff units, get index 
-      new_results_convx <- test_eff[(nrow(data_eff) + 1):nrow(test_eff),]
-      idx_ineff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] > 0.0001)
+      # leave original eff units, get index
+      new_results_convx <- test_eff[(n_eff + 1):nrow(test_eff),]
+      idx_ineff <- which(test_add[(n_eff + 1):nrow(test_add),] > 0.0001)
       
-      # save idx_ineff
-      save_idx_ineff <- c(save_idx_ineff, idx_ineff)
-      
-      new_ineff_conx_unit <- new_results_convx[idx_ineff, ]
-      
-      # save unit inefficient
-      ineff_convex <- rbind(ineff_convex, new_ineff_conx_unit)
- 
-      # get prop information
-      print(paste("There are:", nrow(ineff_convex)))
-      print(paste("It must be created:", create_ineff))
+      ineff_convex <- rbind(ineff_convex, new_results_convx[idx_ineff,])
       
       true_ineff <- nrow(ineff_convex)
- 
-      # if there are not enough efficient units, use 
+     
+      # if there are not enough inefficient units, use
       if(count_batch == n_total_batch & true_ineff < create_ineff) {
-        
-        # need to create 
-        need_ineff <- create_ineff - true_ineff
-        
-        ineff_combinations <- combinations[save_idx_ineff,]
-        
+
+        # need to create
+        need <- create_ineff - true_ineff
+
+        ineff_combinations <- combinations[idx_ineff,]
+
         save_lambda_ineff <- as.data.frame(matrix(
           data = NA,
           ncol = length(c(x,y)),
           nrow = 0
         ))
         
-        while (nrow(save_lambda_ineff) < need_ineff) {
+        while (nrow(save_lambda_ineff) < need) {
           
           # process to generate lambda
-          generate_lambda <- runif(length(c(x, y)), min = 0.05, max = 0.95) 
-          
+          generate_lambda <- runif(length(c(x, y)), min = 0.05, max = 0.95)
+            
           normalize_lambda <- generate_lambda/sum(generate_lambda)
-          
+              
           # set lambda
           lambda_ineff <- normalize_lambda
-          
+
           # set combnation to make new unit
-          idx_new_ineff <- sample(1:nrow(ineff_combinations), size = 1)
-          selec_comb <- ineff_combinations[idx_new_ineff,]
-          
+          idx_new_ineff <- sample(1:nrow(combinations), size = 1)
+          selec_comb <- combinations[idx_new_ineff,]
+
           # units to classify
-          seleccion <- data_eff[unlist(as.vector(selec_comb)), c(x,y)]
-          
+          seleccion <- data[unlist(as.vector(selec_comb)), c(x,y)]
+
           # calculate
           new_unit <- colSums(seleccion * lambda_ineff)
-         
-          # check 
-          check_data <- rbind(data_eff[, c(x,y)], new_unit)
-          
+
+          # check
+          check_data <- rbind(data[data$class_efficiency == "efficient", c(x,y)], new_unit)
+
           check_test <- compute_scores_additive(check_data, x = x, y = y)
-          
+
           # save if is correct
-          if (check_test[nrow(data_eff) + 1,] > 0.0001) {
-            
+          if (check_test[n_eff + 1,] > 0.0001) {
+
             save_lambda_ineff <- rbind(save_lambda_ineff, new_unit)
-            
+
           }
-          
+
         } # end loop while
-        
-        names(save_lambda_ineff) <- names(data_eff[, c(x,y)])
-        
+
+        names(save_lambda_ineff) <- names(data[, c(x,y)])
+
         # join eff_data
         ineff_convex <- rbind(ineff_convex, save_lambda_ineff)
-        
-      } else if (count_batch == n_total_batch & true_ineff > create_ineff) {
-        
-        if (create_ineff * 20 < true_ineff) {
-          random_ineff_idx <- sample(nrow(ineff_convex), size = (create_ineff * 20), replace = FALSE)
-        } else {
-          random_ineff_idx <- sample(nrow(ineff_convex), size = (create_ineff), replace = FALSE)
-        }
+      
+      } # end case need more inefficient units
+      
+    }
     
-        data_ineff_test <- rbind(data_eff[, c(x,y)], ineff_convex[random_ineff_idx,])
-        
-        slack_value <- compute_scores_additive(data = data_ineff_test, x = x, y = y)
-        
-        idx_delete <- which(slack_value < 0.00001)
-        
-        slack_value <- slack_value[-idx_delete]
-        
-        quantile_break <- quantile(slack_value, probs = c(0, 0.25, 0.5, 0.75, 1))
-        
-        quartiles <- cut(
-          slack_value,
-          breaks = quantile_break,
-          labels = c("Q1", "Q2", "Q3", "Q4"),
-          include.lowest = TRUE
-        )
-        
-        # same proportion to each quartile
-        n_qutl <- create_ineff/4
-        
-        # units to each quartile
-        units_quartil <- floor(n_qutl)
-        aditional_units <-  create_ineff - sum(units_quartil * 4)
-        
-        save_ineff_convex <- as.data.frame(matrix(data = NA, ncol = length(c(x,y)), nrow = 0))
-        names(save_ineff_convex) <- names(ineff_convex)
-        
-        for(qrtl in seq_along(levels(quartiles))) {
-          
-          quartile <- levels(quartiles)[qrtl]
-          
-          idx <- which(quartiles == quartile)
-         
-          if(quartile == "Q4") {
-            
-            units_quartil <- units_quartil + aditional_units
-            
-            if (length(idx) < units_quartil) {
-              
-              delete_unit <- units_quartil - length(idx)
-              
-              units_quartil <- length(idx)
-              
-              
-              create_ineff <- create_ineff - delete_unit
-              
-            }
-            
-          }
-          
-          selected_idx <- sample(idx, units_quartil, replace = FALSE)
-         
-          save_ineff_convex <- rbind(save_ineff_convex, ineff_convex[selected_idx,])
-          
-        }
-        
-        ineff_convex <- save_ineff_convex
-        
-        
-      } # end case need more efficient units
-    
+    if (nrow(ineff_convex) > create_ineff) {
+      
+      idx_save <- 1:create_ineff
+      
+      ineff_convex <- ineff_convex[idx_save,]
     }
     
     # add class efficiency
@@ -495,6 +474,406 @@ SMOTE_convex_balance_data <- function (
     final_data <- rbind(data, ineff_convex)
     
   }
+  # # determinate 
+  # data_eff <- data[data$class_efficiency == "efficient", ]
+  # 
+  # idx_eff <- 1:nrow(data_eff)
+  # 
+  # # proportion importance
+  # len <- length(c(x,y))
+  # 
+  # prop_imp <- 1/len
+  # 
+  # lambda <- rep(prop_imp, ncol(data_eff[, c(x,y)]))
+  # 
+  # n_comb <- length(c(x,y))
+  # 
+  # combinations <- as.data.frame(t(combn(idx_eff, n_comb)))
+  # 
+  # eff_convex <- as.data.frame(matrix(
+  #   data = NA,
+  #   ncol = ncol(data_eff[, c(x,y)]),
+  #   nrow = 0
+  # ))
+  # 
+  # names(eff_convex) <- names(data_eff[, c(x,y)])
+  # 
+  # ineff_convex <- as.data.frame(matrix(
+  #   data = NA,
+  #   ncol = ncol(data_eff[, c(x,y)]),
+  #   nrow = 0
+  # ))
+  # 
+  # names(ineff_convex) <- names(data_eff[, c(x,y)])
+  # 
+  # if(nrow(combinations) > 5000) {
+  #   
+  #   # Partition size
+  #   n_batch <- 5000
+  #   
+  #   # shuffle the data
+  #   shuffle_data <- sample(1:nrow(combinations))
+  #   
+  #   # Create an index for each partition
+  #   combinations$particion <- ceiling(seq_along(shuffle_data) / n_batch)
+  #   
+  #   batch_all <- split(combinations[shuffle_data, ], combinations$particion)
+  #   
+  #   n_total_batch <- ceiling(nrow(combinations) / 5000)
+  #   
+  # } else {
+  #   
+  #   batch_all <- list()
+  #   batch_all[[1]] <- combinations
+  #   
+  #   n_total_batch <- 1
+  #   
+  # }
+  # 
+  # # create convex combintaions
+  # print("calculate combinations points")
+  # 
+  # iter <- 0
+  # count_batch <- 0
+  # 
+  # save_idx_eff <- NULL
+  # save_idx_ineff <- NULL
+  # 
+  # if (sense_balance == "efficient") {
+  #   
+  #   # ================================= #
+  #   # create efficient units to balance #
+  #   # ================================= #
+  #   
+  #   while (nrow(eff_convex) < create_eff) {
+  #     
+  #     count_batch <- count_batch + 1
+  #     iter <- iter + 1
+  #     print(iter)
+  #     
+  #     # units to classify
+  #     results_convx <- t(apply(batch_all[[iter]][,c(x,y)], 1, function(indices) {
+  #       
+  #       # select row
+  #       seleccion <- data_eff[unlist(as.vector(indices)), c(x,y)]
+  #       
+  #       # calculate
+  #       colSums(seleccion * lambda)
+  #       
+  #     }))
+  #     
+  #     # change to dataframe 
+  #     results_convx <- as.data.frame(results_convx)
+  #     
+  #     # change name
+  #     names(results_convx) <- names(data_eff[, c(x,y)])
+  #     
+  #     # create test dataset additive
+  #     test_eff <- rbind(data_eff[, c(x,y)], results_convx)
+  #     
+  #     # test additive
+  #     test_add <- compute_scores_additive(test_eff, x = x, y = y)
+  #     
+  #     # leave original eff units, get index 
+  #     new_results_convx <- test_eff[(nrow(data_eff) + 1):nrow(test_eff),]
+  #     idx_eff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] < 0.0001)
+  #     
+  #     if (length(idx_eff) == 0) {
+  #       break
+  #     }
+  #     
+  #     # save idx_eff
+  #     save_idx_eff <- c(save_idx_eff, idx_eff)
+  #     
+  #     new_eff_conx_unit <- new_results_convx[idx_eff, ]
+  #     
+  #     # save unit efficient
+  #     eff_convex <- rbind(eff_convex, new_eff_conx_unit)
+  #     
+  #     # save not efficient
+  #     ineff_to_save <- new_results_convx
+  #     
+  #     if(nrow(new_eff_conx_unit) != 0) {
+  #       
+  #       ineff_to_save <- ineff_to_save[-idx_eff,]
+  #       ineff_to_save <- na.omit(ineff_to_save)
+  #       
+  #     }
+  #     
+  #     ineff_convex <- rbind(ineff_convex, ineff_to_save)
+  #     
+  #     # get prop information
+  #     print(paste("There are:", nrow(eff_convex)))
+  #     print(paste("It must be created:", create_eff))
+  #     print(paste(nrow(eff_convex)/create_eff * 100, "%"))
+  #     
+  #     true_eff <- nrow(eff_convex)
+  #     
+  #     # if there are not enough efficient units, use 
+  #     if(count_batch == n_total_batch & true_eff < create_eff) {
+  #       
+  #       # need to create 
+  #       need_eff <- create_eff - true_eff
+  #       
+  #       eff_combinations <- combinations[save_idx_eff,]
+  #       
+  #       save_lambda_eff <- as.data.frame(matrix(
+  #         data = NA,
+  #         ncol = length(c(x,y)),
+  #         nrow = 0
+  #       ))
+  #       
+  #       while (nrow(save_lambda_eff) < need_eff) {
+  #         
+  #         # process to generate lambda
+  #         generate_lambda <- runif(length(c(x, y)), min = 0.05, max = 0.95) 
+  #         
+  #         normalize_lambda <- generate_lambda/sum(generate_lambda)
+  #         
+  #         # set lambda
+  #         lambda_eff <- normalize_lambda
+  #         
+  #         # set combnation to make new unit
+  #         idx_new_eff <- sample(1:nrow(eff_combinations), size = 1)
+  #         selec_comb <- eff_combinations[idx_new_eff,]
+  #         
+  #         # units to classify
+  #         seleccion <- data_eff[unlist(as.vector(selec_comb)), c(x,y)]
+  #         
+  #         # calculate
+  #         new_unit <- colSums(seleccion * lambda_eff)
+  #         
+  #         # check 
+  #         check_data <- rbind(data_eff[, c(x,y)], new_unit)
+  #         
+  #         check_test <- compute_scores_additive(check_data, x = x, y = y)
+  #         
+  #         # save if is correct
+  #         if (check_test[nrow(data_eff) + 1,] < 0.0001) {
+  #           
+  #           save_lambda_eff <- rbind(save_lambda_eff, new_unit)
+  #           
+  #         }
+  #         
+  #       } # end loop while
+  #       
+  #       names(save_lambda_eff) <- names(data_eff[, c(x,y)])
+  #       
+  #       # join eff_data
+  #       eff_convex <- rbind(eff_convex, save_lambda_eff)
+  #       
+  #     } # end case need more efficient units
+  #     
+  #     if (count_batch == n_total_batch & true_eff > create_eff) {
+  #       
+  #       delete_eff <- true_eff - create_eff
+  #       idx_delete <- sample(1:true_eff, size = delete_eff, replace = FALSE)
+  #       
+  #       eff_convex <- eff_convex[-idx_delete,]
+  #       
+  #     }
+  #     
+  #   } # end while
+  #   
+  #   if (nrow(eff_convex) != 0) {
+  #     # add class efficiency
+  #     eff_convex[,z] <- data[1,z]
+  #     eff_convex$class_efficiency <- "efficient"
+  #     
+  #     final_data <- rbind(data, eff_convex)
+  #   } else {
+  #     final_data <- data
+  #   }
+  #   
+  #   
+  # } else {
+  #   
+  #   # ===================================== #
+  #   # create not efficient units to balance #
+  #   # ===================================== #
+  #   
+  #   # ===
+  #   # add quartile not efficient
+  #   # ===
+  #   
+  #   while (nrow(ineff_convex) < create_ineff) {
+  #     
+  #     count_batch <- count_batch + 1
+  #     iter <- iter + 1
+  #     print(iter)
+  #     
+  #     # units to classify
+  #     results_convx <- t(apply(batch_all[[iter]][,c(x,y)], 1, function(indices) {
+  #       
+  #       # select row
+  #       seleccion <- data_eff[unlist(as.vector(indices)), c(x,y)]
+  #       
+  #       # calculate
+  #       colSums(seleccion * lambda)
+  #       
+  #     }))
+  #     
+  #     # change to dataframe 
+  #     results_convx <- as.data.frame(results_convx)
+  #     
+  #     # change name
+  #     names(results_convx) <- names(data_eff[, c(x,y)])
+  #     
+  #     # create test dataset additive
+  #     test_eff <- rbind(data_eff[, c(x,y)], results_convx)
+  #     
+  #     # test additive
+  #     test_add <- compute_scores_additive(test_eff, x = x, y = y)
+  #     
+  #     # leave original eff units, get index 
+  #     new_results_convx <- test_eff[(nrow(data_eff) + 1):nrow(test_eff),]
+  #     idx_ineff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] > 0.0001)
+  #     
+  #     # save idx_ineff
+  #     save_idx_ineff <- c(save_idx_ineff, idx_ineff)
+  #     
+  #     new_ineff_conx_unit <- new_results_convx[idx_ineff, ]
+  #     
+  #     # save unit inefficient
+  #     ineff_convex <- rbind(ineff_convex, new_ineff_conx_unit)
+  # 
+  #     # get prop information
+  #     print(paste("There are:", nrow(ineff_convex)))
+  #     print(paste("It must be created:", create_ineff))
+  #     
+  #     true_ineff <- nrow(ineff_convex)
+  # 
+  #     # if there are not enough efficient units, use 
+  #     if(count_batch == n_total_batch & true_ineff < create_ineff) {
+  #       
+  #       # need to create 
+  #       need_ineff <- create_ineff - true_ineff
+  #       
+  #       ineff_combinations <- combinations[save_idx_ineff,]
+  #       
+  #       save_lambda_ineff <- as.data.frame(matrix(
+  #         data = NA,
+  #         ncol = length(c(x,y)),
+  #         nrow = 0
+  #       ))
+  #       
+  #       while (nrow(save_lambda_ineff) < need_ineff) {
+  #         
+  #         # process to generate lambda
+  #         generate_lambda <- runif(length(c(x, y)), min = 0.05, max = 0.95) 
+  #         
+  #         normalize_lambda <- generate_lambda/sum(generate_lambda)
+  #         
+  #         # set lambda
+  #         lambda_ineff <- normalize_lambda
+  #         
+  #         # set combnation to make new unit
+  #         idx_new_ineff <- sample(1:nrow(ineff_combinations), size = 1)
+  #         selec_comb <- ineff_combinations[idx_new_ineff,]
+  #         
+  #         # units to classify
+  #         seleccion <- data_eff[unlist(as.vector(selec_comb)), c(x,y)]
+  #         
+  #         # calculate
+  #         new_unit <- colSums(seleccion * lambda_ineff)
+  #        
+  #         # check 
+  #         check_data <- rbind(data_eff[, c(x,y)], new_unit)
+  #         
+  #         check_test <- compute_scores_additive(check_data, x = x, y = y)
+  #         
+  #         # save if is correct
+  #         if (check_test[nrow(data_eff) + 1,] > 0.0001) {
+  #           
+  #           save_lambda_ineff <- rbind(save_lambda_ineff, new_unit)
+  #           
+  #         }
+  #         
+  #       } # end loop while
+  #       
+  #       names(save_lambda_ineff) <- names(data_eff[, c(x,y)])
+  #       
+  #       # join eff_data
+  #       ineff_convex <- rbind(ineff_convex, save_lambda_ineff)
+  #       
+  #     } else if (count_batch == n_total_batch & true_ineff > create_ineff) {
+  #       
+  #       if (create_ineff * 20 < true_ineff) {
+  #         random_ineff_idx <- sample(nrow(ineff_convex), size = (create_ineff * 20), replace = FALSE)
+  #       } else {
+  #         random_ineff_idx <- sample(nrow(ineff_convex), size = (create_ineff), replace = FALSE)
+  #       }
+  #   
+  #       data_ineff_test <- rbind(data_eff[, c(x,y)], ineff_convex[random_ineff_idx,])
+  #       
+  #       slack_value <- compute_scores_additive(data = data_ineff_test, x = x, y = y)
+  #       
+  #       idx_delete <- which(slack_value < 0.00001)
+  #       
+  #       slack_value <- slack_value[-idx_delete]
+  #       
+  #       quantile_break <- quantile(slack_value, probs = c(0, 0.25, 0.5, 0.75, 1))
+  #       
+  #       quartiles <- cut(
+  #         slack_value,
+  #         breaks = quantile_break,
+  #         labels = c("Q1", "Q2", "Q3", "Q4"),
+  #         include.lowest = TRUE
+  #       )
+  #       
+  #       # same proportion to each quartile
+  #       n_qutl <- create_ineff/4
+  #       
+  #       # units to each quartile
+  #       units_quartil <- floor(n_qutl)
+  #       aditional_units <-  create_ineff - sum(units_quartil * 4)
+  #       
+  #       save_ineff_convex <- as.data.frame(matrix(data = NA, ncol = length(c(x,y)), nrow = 0))
+  #       names(save_ineff_convex) <- names(ineff_convex)
+  #       
+  #       for(qrtl in seq_along(levels(quartiles))) {
+  #         
+  #         quartile <- levels(quartiles)[qrtl]
+  #         
+  #         idx <- which(quartiles == quartile)
+  #        
+  #         if(quartile == "Q4") {
+  #           
+  #           units_quartil <- units_quartil + aditional_units
+  #           
+  #           if (length(idx) < units_quartil) {
+  #             
+  #             delete_unit <- units_quartil - length(idx)
+  #             
+  #             units_quartil <- length(idx)
+  #             
+  #             
+  #             create_ineff <- create_ineff - delete_unit
+  #             
+  #           }
+  #           
+  #         }
+  #         
+  #         selected_idx <- sample(idx, units_quartil, replace = FALSE)
+  #        
+  #         save_ineff_convex <- rbind(save_ineff_convex, ineff_convex[selected_idx,])
+  #         
+  #       }
+  #       
+  #       ineff_convex <- save_ineff_convex
+  #       
+  #       
+  #     } # end case need more efficient units
+  #   
+  #   }
+  #   
+  #   # add class efficiency
+  #   ineff_convex[,z] <- data[1,z]
+  #   ineff_convex$class_efficiency <- "not_efficient"
+  # 
+  #   final_data <- rbind(data, ineff_convex)
+  # 
+  #}
 
   if (any(is.na(final_data))) {browser()}
 
