@@ -166,7 +166,7 @@ SMOTE_balance_data <- function (
     # ================================= #
     # create efficient units to balance #
     # ================================= #
-    browser()
+
     while (nrow(eff_convex) < create_eff) {
  
       count_batch <- count_batch + 1
@@ -199,10 +199,6 @@ SMOTE_balance_data <- function (
       # leave original eff units, get index
       new_results_convx <- test_eff[(nrow(data_eff) + 1):nrow(test_eff),]
       idx_eff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] < 0.0001)
-  
-      if (length(idx_eff) == 0) {
-        next
-      }
       
       # save idx_eff
       save_idx_eff <- c(save_idx_eff, idx_eff)
@@ -214,7 +210,7 @@ SMOTE_balance_data <- function (
       
       # save not efficient
       ineff_to_save <- new_results_convx
-      
+    
       if(nrow(new_eff_conx_unit) != 0) {
         
         ineff_to_save <- ineff_to_save[-idx_eff,]
@@ -231,6 +227,116 @@ SMOTE_balance_data <- function (
   
       true_eff <- nrow(eff_convex)
 
+      # if (length(idx_eff) == 0) {
+      #   next
+      # }
+      
+      # extreme casa: there are not full-dimensional faces
+      if (length(idx_eff) == 0 & count_batch == n_total_batch) {
+        
+        idx_eff <- 1:nrow(data_eff)
+        
+        # proportion importance
+        len <- length(c(x,y)) - 1
+        
+        prop_imp <- 1/len
+        
+        lambda <- rep(prop_imp, ncol(data_eff[, c(x,y)]))
+        
+        n_comb <- length(c(x,y))
+        
+        combinations <- as.data.frame(t(combn(idx_eff, n_comb-1)))
+        
+        if(nrow(combinations) > 5000) {
+          
+          # Partition size
+          n_batch <- 5000
+          
+          # shuffle the data
+          shuffle_data <- sample(1:nrow(combinations))
+          
+          # Create an index for each partition
+          combinations$particion <- ceiling(seq_along(shuffle_data) / n_batch)
+          
+          batch_all <- split(combinations[shuffle_data, ], combinations$particion)
+          
+          n_total_batch <- ceiling(nrow(combinations) / 5000)
+          
+        } else {
+          
+          batch_all <- list()
+          batch_all[[1]] <- combinations
+          
+          n_total_batch <- 1
+          
+        }
+        
+       
+        
+        while (nrow(eff_convex) < create_eff) {
+          
+          # count_batch <- count_batch + 1
+          # iter <- iter + 1
+          # print(iter)
+          browser()
+          # units to classify
+          results_convx <- t(apply(batch_all[[iter]][,c(x,y)], 1, function(indices) {
+         
+            # select row
+            seleccion <- data_eff[unlist(as.vector(indices)), c(x,y)]
+            
+            # calculate
+            colSums(seleccion * lambda)
+            
+          }))
+          
+          # change to dataframe
+          results_convx <- as.data.frame(results_convx)
+          
+          # change name
+          names(results_convx) <- names(data_eff[, c(x,y)])
+          
+          # create test dataset additive
+          test_eff <- rbind(data_eff[, c(x,y)], results_convx)
+          
+          # test additive
+          test_add <- compute_scores_additive(test_eff, x = x, y = y)
+          
+          # leave original eff units, get index
+          new_results_convx <- test_eff[(nrow(data_eff) + 1):nrow(test_eff),]
+          idx_eff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] < 0.0001)
+          
+          # save idx_eff
+          save_idx_eff <- c(save_idx_eff, idx_eff)
+          
+          new_eff_conx_unit <- new_results_convx[idx_eff, ]
+          
+          # save unit efficient
+          eff_convex <- rbind(eff_convex, new_eff_conx_unit)
+          
+          # save not efficient
+          ineff_to_save <- new_results_convx
+          
+          if(nrow(new_eff_conx_unit) != 0) {
+            
+            ineff_to_save <- ineff_to_save[-idx_eff,]
+            ineff_to_save <- na.omit(ineff_to_save)
+            
+          }
+          
+          ineff_convex <- rbind(ineff_convex, ineff_to_save)
+          
+          # get prop information
+          print(paste("There are:", nrow(eff_convex)))
+          print(paste("It must be created:", create_eff))
+          print(paste(nrow(eff_convex)/create_eff * 100, "%"))
+          
+          true_eff <- nrow(eff_convex)
+        }
+       
+        
+      }
+      
       # if there are not enough efficient units, use
       if(count_batch == n_total_batch & true_eff < create_eff) {
         
@@ -294,7 +400,7 @@ SMOTE_balance_data <- function (
         eff_convex <- eff_convex[-idx_delete,]
         
       }
-     
+      
     } # end while
     
     if (nrow(eff_convex) != 0) {

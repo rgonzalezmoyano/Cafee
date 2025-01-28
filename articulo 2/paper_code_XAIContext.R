@@ -98,7 +98,7 @@ methods <- list (
 # =========== #    
 
 # SMOTE proportions
-balance_data <- c(seq(0.20, 0.5, 0.1)) # c(0, seq(0.20, 0.5, 0.05))
+balance_data <- c(0.2) # c(0, seq(0.20, 0.5, 0.05))
 
 # ML metric
 metric = "F"

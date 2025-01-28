@@ -124,7 +124,7 @@ efficiency_estimation <- function (
         x = x,
         y = y
       )
-      
+    
       # determine efficient and inefficient DMUs
       class_efficiency <- ifelse(add_scores[, 1] <= 0.0001, 1, 0)
       
@@ -150,7 +150,7 @@ efficiency_estimation <- function (
       ) {
         
         if (balance_data[balance] != 0 & !(obs_prop[1] == balance_data[balance])) { 
-      
+  
           data <- SMOTE_balance_data(
             data = data,
             #data_factor = context,
