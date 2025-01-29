@@ -109,7 +109,7 @@ efficiency_estimation <- function (
     names(data_labeled_obs) <- c(names(data_to_divide), "class_efficiency")
     
     for (sub_group in 1:length(dfs)) {
-      sub_group <- 41
+      #sub_group <- 41
       print(paste("Sub_group",sub_group))                                                            #### borar
       
       data <- dfs[[sub_group]]
@@ -1222,7 +1222,7 @@ efficiency_estimation <- function (
           ncol = length(idx_eff),
           nrow = nrow(eval_data)
         )
-
+       
         # calculate distances
         for (unit_eff in idx_eff) {
           # set reference

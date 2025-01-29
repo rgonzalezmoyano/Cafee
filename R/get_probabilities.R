@@ -18,7 +18,7 @@
 compute_target <- function (
     data, x, y, z = NULL, final_model, orientation, cut_off, imp_vector
 ) {
-  browser()
+
     # environment variable 
     if (is.null(z)) {
       z <- 0
@@ -52,7 +52,7 @@ compute_target <- function (
 
     # loop for each observation
     for (i in 1:nrow(data)) {
-      # if (i == 4) {browser()}
+      # if (i == 26) {browser()}
       print(paste("DMU: ", i))
       print(paste("En curso:", (round(i/nrow(data), 4) * 100)))
 
@@ -70,7 +70,7 @@ compute_target <- function (
         # Crear la matriz para aplicar predict()
         matrix_eff <- as.data.frame(matrix(
           data = NA,
-          ncol = length(c(x, y)),
+          ncol = length(c(x, y, z)),
           nrow = length(range_beta)
         ))
         
@@ -91,16 +91,16 @@ compute_target <- function (
         
         found_cut_off <- FALSE
         iter_count <- 0
-
+        
         while (!found_cut_off) {
-          
+         
           iter_count <- iter_count + 1
           # print(iter_count)
           
           # Crear la matriz para aplicar predict()
           matrix_eff <- as.data.frame(matrix(
             data = NA,
-            ncol = length(c(x, y)),
+            ncol = length(c(x, y, z)),
             nrow = length(range_beta)
           ))
           
@@ -115,6 +115,8 @@ compute_target <- function (
           matrix_eff[, y] <- data[i, y] 
           
           matrix_eff[, y] <- sweep(change_y, 1, range_beta, "*") + matrix_eff[, y]
+          
+          matrix_eff[, z] <- data[i, z] 
           
           # know if there are not posible values
           min_x <- apply(as.matrix(data[,x]), 2, min)
@@ -148,10 +150,12 @@ compute_target <- function (
           
           # Calcular probabilidad de eficiencia para cada fila
           eff_vector <- apply(matrix_eff, 1, function(row) {
-            
+           
             row_df <- as.data.frame(t(row))
             colnames(row_df) <- names(data)
             
+            row_df <- change_class(data = row_df, to_numeric = c(x,y), to_factor = z)
+         
             pred <- unlist(predict(final_model, row_df, type = "prob")[1])
             
             return(pred)
@@ -179,7 +183,7 @@ compute_target <- function (
               # Guardar los valores de 'x' y 'y' que coinciden con el cut_off
               data_scenario[i, x] <- matrix_eff[idx, x]
               data_scenario[i, y] <- matrix_eff[idx, y]
-              
+             
               betas[i, 1] <- range_beta[idx]
               betas[i, 2] <- cut_off
               # print("end while")
@@ -189,7 +193,7 @@ compute_target <- function (
               
               # Encontrar el intervalo donde se encuentra el cut_off
               pos <- which(eff_vector < cut_off & c(eff_vector[-1], Inf) > cut_off) # [1] 
-              
+             
               if (length(pos) == 2) {
                 pos <- pos[1]
               } else if (length(pos) == 3) {
@@ -205,16 +209,22 @@ compute_target <- function (
                 # range_beta <- seq(from = range_beta[pos], to = range_beta[pos + 1], length.out = length(range_beta))
                 break
               } else {
-                
+                # if (i == 26) {browser()}
                 if (pos == length(eff_vector)) {
                   # if (i == 28) {browser()}
                   # no more probability to be efficient
                   # save best results
                   data_scenario[i, x] <- matrix_eff[pos, x]
                   data_scenario[i, y] <- matrix_eff[pos, y]
+                  data_scenario[i, z] <- matrix_eff[pos, z]
+                  
+                  # if (!(is.null(z))) {
+                  #   data_scenario <- change_class(data = data_scenario, to_numeric = c(x,y), to_factor = z)
+                  # }
                   
                   betas[i, 1] <- range_beta[pos]
-                  pred_max <- unlist(predict(final_model, data_scenario[i,], type = "prob")[1])
+                  pred <- change_class(data_scenario[i,], to_factor = z)
+                  pred_max <- unlist(predict(final_model, pred, type = "prob")[1])
                   betas[i, 2] <- pred_max
                   break
                 }

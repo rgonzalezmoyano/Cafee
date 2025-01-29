@@ -172,10 +172,10 @@ SMOTE_balance_data <- function (
       count_batch <- count_batch + 1
       iter <- iter + 1
       print(iter)
-     
+   
       # units to classify
-      results_convx <- t(apply(batch_all[[iter]][,c(x,y)], 1, function(indices) {
-        
+      results_convx <- t(apply(batch_all[[iter]], 1, function(indices) { #[,c(x,y)]
+       
         # select row
         seleccion <- data_eff[unlist(as.vector(indices)), c(x,y)]
         
@@ -241,11 +241,11 @@ SMOTE_balance_data <- function (
         
         prop_imp <- 1/len
         
-        lambda <- rep(prop_imp, ncol(data_eff[, c(x,y)]))
+        lambda <- rep(prop_imp, ncol(data_eff[, c(x,y)])-1)
         
-        n_comb <- length(c(x,y))
+        n_comb <- length(c(x,y)) - 1
         
-        combinations <- as.data.frame(t(combn(idx_eff, n_comb-1)))
+        combinations <- as.data.frame(t(combn(idx_eff, n_comb)))
         
         if(nrow(combinations) > 5000) {
           
@@ -278,18 +278,18 @@ SMOTE_balance_data <- function (
           # count_batch <- count_batch + 1
           # iter <- iter + 1
           # print(iter)
-          browser()
+          
           # units to classify
-          results_convx <- t(apply(batch_all[[iter]][,c(x,y)], 1, function(indices) {
-         
+          results_convx <- t(apply(batch_all[[iter]], 1, function(indices) {
+           
             # select row
             seleccion <- data_eff[unlist(as.vector(indices)), c(x,y)]
-            
+           
             # calculate
             colSums(seleccion * lambda)
             
           }))
-          
+       
           # change to dataframe
           results_convx <- as.data.frame(results_convx)
           
@@ -335,7 +335,7 @@ SMOTE_balance_data <- function (
         }
        
         
-      }
+      } # end exreme cases
       
       # if there are not enough efficient units, use
       if(count_batch == n_total_batch & true_eff < create_eff) {
@@ -402,7 +402,7 @@ SMOTE_balance_data <- function (
       }
       
     } # end while
-    
+
     if (nrow(eff_convex) != 0) {
       
       # add class efficiency

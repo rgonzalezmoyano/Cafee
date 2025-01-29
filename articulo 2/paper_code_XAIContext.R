@@ -137,7 +137,7 @@ hold_out <- 0.1 # https://topepo.github.io/caret/train-models-by-tag.html
 list_method <- list()  
 
 set.seed(314)
-#data <- data[1:100,]
+data <- data[1:100,]
 # loop method
 for (i in 1:length(methods)) {
 
