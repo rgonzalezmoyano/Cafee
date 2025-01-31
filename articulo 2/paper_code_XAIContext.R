@@ -68,7 +68,7 @@ data <- data[-idx_NA,]
 # x and y indexes
 x <- c(10, 7, 6)
 y <- c(3:5)
-z <- c(2, 8) # environment variables   
+z <- c(2) # environment variables    , 8
 
 # different types to label
 target_method <- "additive"
@@ -82,7 +82,7 @@ methods <- list (
   # neuronal network
   "nnet" = list(
     hyparams = list(
-      "size" = c(1, 5, 10, 15, 20, 30),
+      "size" = 20, # c(1, 5, 10, 15, 20)
       "decay" = c(0.1, 0.01, 0.001, 0,0001)
     ),
     options = list (
@@ -98,7 +98,7 @@ methods <- list (
 # =========== #    
 
 # SMOTE proportions
-balance_data <- c(0.2) # c(0, seq(0.20, 0.5, 0.05))
+balance_data <- c(0, seq(0.2, 0.5, 0.05)) # c(0, seq(0.20, 0.5, 0.05))
 
 # ML metric
 metric = "F"
@@ -137,7 +137,7 @@ hold_out <- 0.1 # https://topepo.github.io/caret/train-models-by-tag.html
 list_method <- list()  
 
 set.seed(314)
-data <- data[1:100,]
+#data <- data[1:100,]
 # loop method
 for (i in 1:length(methods)) {
 
@@ -166,8 +166,8 @@ for (i in 1:length(methods)) {
 
 names(list_method) <- names(methods)
 
-#save(list_method, file = "resultados_art_XAI_NN_CV_1_3.RData")
-#
+save(list_method, file = "results_XAI2.RData")
+
 library(openxlsx)
 
 # write.xlsx(list_method$nnet$metrics, file = "metrics_NN.xlsx")

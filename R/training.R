@@ -100,10 +100,10 @@ train_ml <- function (
         #   maxit = 200,      # Máximo de iteraciones
         #   trace = FALSE     # No mostrar el progreso
         # )
-   
+
         selected_model <- round(model_nnet[["results"]], 2) %>%
           mutate(Balance_accuracy = (Sens + Spec) / 2) %>%  # Añadir la nueva métrica
-          arrange(desc(Balance_accuracy), desc(F), desc(AUC), desc(Kappa))
+          arrange(desc(F), desc(Balance_accuracy), desc(Precision), desc(AUC), desc(Kappa))
         
         # selected_model$balance <- round(prop.table(table(data$class_efficiency))[1], 1)
         

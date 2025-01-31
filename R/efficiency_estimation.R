@@ -438,7 +438,7 @@ efficiency_estimation <- function (
   names(train_decision_balance)[13] <- "Balanced_Accuracy"
 
   train_decision_balance <- train_decision_balance %>%
-    arrange(desc(Balanced_Accuracy), desc(F1), desc(Precision), desc(Specificity))
+    arrange(desc(F1), desc(Balanced_Accuracy), desc(Precision), desc(Specificity))
 
   # ###
   # # test with real data
@@ -1049,6 +1049,9 @@ efficiency_estimation <- function (
   train_data <- dataset_dummy
 
   train_data <- train_data[,c(2:length(train_data),1)]
+ 
+  to_factor <- c((x+y+1):ncol(train_data))
+  train_data <- change_class(train_data, to_factor = to_factor)
 
   # importance with our model of Caret
   mypred <- function(M, data) {
@@ -1083,6 +1086,7 @@ efficiency_estimation <- function (
       measure = measures_SA,
       baseline = "mean", # mean, median, with the baseline example (should have the same attribute names as data).
       responses = TRUE
+      
     )
 
   } else {
@@ -1169,7 +1173,7 @@ efficiency_estimation <- function (
       cut_off = scenarios[e],
       imp_vector = result_SA
     )
-
+    
     if(all(is.na(data_scenario$data_scenario))) {
       print("all na")
       browser()
@@ -1189,7 +1193,7 @@ efficiency_estimation <- function (
       print("pause")
 
     } else {
-
+      
       if(any(data_scenario$data_scenario[, c(x,y)] < 0)) {
 
         data_scenario$data_scenario[apply(data_scenario$data_scenario, 1, function(row) any(row < 0) || any(is.na(row))), ] <- NA
@@ -1206,32 +1210,34 @@ efficiency_estimation <- function (
 
       # first, determinate efficient units
       idx_eff <- which(eff_vector$eff_vector > scenarios[e])
-
+     
       if (!length(idx_eff) == 0) {
 
         # save distances structure
         save_dist <- matrix(
           data = NA,
           ncol = length(idx_eff),
-          nrow = nrow(eval_data)
+          nrow = nrow(data_save)
         )
 
         # save weighted distances structure
         save_dist_weight <- matrix(
           data = NA,
           ncol = length(idx_eff),
-          nrow = nrow(eval_data)
+          nrow = nrow(data_save)
         )
        
         # calculate distances
         for (unit_eff in idx_eff) {
+         
           # set reference
-          reference <- eval_data[unit_eff, c(x,y)]
+          reference <- data_save[unit_eff, c(x,y)]
 
-          distance <- unname(apply(eval_data[, c(x,y)], 1, function(x) sqrt(sum((x - reference)^2))))
+          distance <- unname(apply(data_save[, c(x,y)], 1, function(x) sqrt(sum((x - reference)^2))))
 
           # get position in save results
           idx_dis <- which(idx_eff == unit_eff)
+          
           save_dist[,idx_dis] <- as.matrix(distance)
         }
 
@@ -1240,11 +1246,11 @@ efficiency_estimation <- function (
           which.min(abs(row))
 
         })
-
+        
         peer_restult <- matrix(
           data = NA,
           ncol = 1,
-          nrow = nrow(eval_data)
+          nrow = nrow(data_save)
         )
 
         peer_restult[, 1] <- idx_eff[near_idx_eff]
@@ -1264,32 +1270,32 @@ efficiency_estimation <- function (
         # sum(result_SA * ((eval_data[1, c(x, y)] - eval_data[3, c(x, y)])^2))
         #
         # sqrt( sum(result_SA * ((eval_data[1, c(x, y)] - eval_data[3, c(x, y)])^2)))
-
+        
         # calculate weighted distances
         result_SA_matrix <- as.data.frame(matrix(
-          data = rep(unlist(result_SA), each = nrow(eval_data)),
-          nrow = nrow(eval_data),
-          ncol = ncol(eval_data[,c(x,y)]),
+          data = rep(unlist(result_SA[c(x,y)]), each = nrow(data_save)),
+          nrow = nrow(data_save),
+          ncol = ncol(data_save[,c(x,y)]),
           byrow = FALSE
         ))
-        names(result_SA_matrix) <- names(eval_data)[c(x,y)]
+        names(result_SA_matrix) <- names(data_save)[c(x,y)]
 
-        w_eval_data <- eval_data[, c(x, y)] * result_SA_matrix
+        w_eval_data <- data_save[, c(x, y)] * result_SA_matrix
 
         for (unit_eff in idx_eff) {
 
           # set reference
-          reference <- eval_data[unit_eff, c(x,y)]
-
-          distance <- unname(apply(eval_data[, c(x, y)], 1, function(row) {
-             sqrt((sum(result_SA * ((row - reference)^2))))
+          reference <- data_save[unit_eff, c(x,y)]
+      
+          distance <- unname(apply(data_save[, c(x, y)], 1, function(row) {
+             sqrt((sum(result_SA[c(x,y)] * ((row - reference)^2))))
           }))
 
           # get position in save results
           idx_dis <- which(idx_eff == unit_eff)
           save_dist_weight[,idx_dis] <- as.matrix(distance)
         }
-
+       
         near_idx_eff_weight <- apply(save_dist_weight, 1, function(row) {
 
           which.min(abs(row))
@@ -1342,11 +1348,11 @@ efficiency_estimation <- function (
         na_count_list[[e]] <- nrow(eval_data)
         metrics_list[[e]] <- NULL
       }
-
+     
     }
 
   } # end loop scenarios
-browser()
+
   # names(data_scenario_list) <- scenarios
   # 
   # names(na_count_list) <- scenarios
@@ -1375,26 +1381,26 @@ browser()
   #   positive = "efficient"
   # )[["byClass"]]
   # 
-  # final_model <- list(
-  #   train_decision_balance = train_decision_balance,
-  #   real_decision_balance = selected_real_balance,
-  #   best_balance = best_balance,
-  #   final_model = final_model,
-  #   performance_train_dataset = selected_model,
-  #   performance_real_data = performance_real_data,
-  #   importance = importance,
-  #   result_SA = result_SA,
-  #   eff_vector = eff_vector,
-  #   ranking_order = ranking_order,
-  #   peer_list = peer_list,
-  #   peer_weight_list = peer_weight_list,
-  #   data_scenario_list = data_scenario_list,
-  #   metrics_list = metrics_list,
-  #   count_na = na_count_list,
-  #   n_not_prob_list = n_not_prob_list
-  # )
-  # 
-  # return(final_model)
+  final_model <- list(
+    train_decision_balance = train_decision_balance,
+    # real_decision_balance = selected_real_balance,
+    best_balance = best_balance,
+    final_model = final_model,
+    performance_train_dataset = selected_model,
+    # performance_real_data = performance_real_data,
+    importance = importance,
+    result_SA = result_SA,
+    eff_vector = eff_vector,
+    ranking_order = ranking_order,
+    peer_list = peer_list,
+    peer_weight_list = peer_weight_list,
+    data_scenario_list = data_scenario_list,
+    metrics_list = metrics_list,
+    count_na = na_count_list,
+    n_not_prob_list = n_not_prob_list
+  )
+  
+  return(final_model)
   
 }
 

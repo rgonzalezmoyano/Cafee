@@ -226,59 +226,54 @@ SMOTE_balance_data <- function (
       print(paste(nrow(eff_convex)/create_eff * 100, "%"))
   
       true_eff <- nrow(eff_convex)
-
-      # if (length(idx_eff) == 0) {
-      #   next
-      # }
       
       # extreme casa: there are not full-dimensional faces
+  
       if (length(idx_eff) == 0 & count_batch == n_total_batch) {
         
-        idx_eff <- 1:nrow(data_eff)
-        
-        # proportion importance
-        len <- length(c(x,y)) - 1
-        
-        prop_imp <- 1/len
-        
-        lambda <- rep(prop_imp, ncol(data_eff[, c(x,y)])-1)
-        
-        n_comb <- length(c(x,y)) - 1
-        
-        combinations <- as.data.frame(t(combn(idx_eff, n_comb)))
-        
-        if(nrow(combinations) > 5000) {
-          
-          # Partition size
-          n_batch <- 5000
-          
-          # shuffle the data
-          shuffle_data <- sample(1:nrow(combinations))
-          
-          # Create an index for each partition
-          combinations$particion <- ceiling(seq_along(shuffle_data) / n_batch)
-          
-          batch_all <- split(combinations[shuffle_data, ], combinations$particion)
-          
-          n_total_batch <- ceiling(nrow(combinations) / 5000)
-          
-        } else {
-          
-          batch_all <- list()
-          batch_all[[1]] <- combinations
-          
-          n_total_batch <- 1
-          
-        }
-        
-       
+        iter_extreme <- 0
         
         while (nrow(eff_convex) < create_eff) {
           
-          # count_batch <- count_batch + 1
-          # iter <- iter + 1
-          # print(iter)
+          idx_eff <- 1:nrow(data_eff)
           
+          # proportion importance
+          len <- len - 1
+          
+          prop_imp <- 1/len
+          
+          lambda <- rep(prop_imp, len)
+          
+          n_comb <- len
+          
+          combinations <- as.data.frame(t(combn(idx_eff, n_comb)))
+          
+          if(nrow(combinations) > 5000) {
+            
+            # Partition size
+            n_batch <- 5000
+            
+            # shuffle the data
+            shuffle_data <- sample(1:nrow(combinations))
+            
+            # Create an index for each partition
+            combinations$particion <- ceiling(seq_along(shuffle_data) / n_batch)
+            
+            batch_all <- split(combinations[shuffle_data, ], combinations$particion)
+            
+            n_total_batch <- ceiling(nrow(combinations) / 5000)
+            
+          } else {
+            
+            batch_all <- list()
+            batch_all[[1]] <- combinations
+            
+            n_total_batch <- 1
+            
+          }
+        
+          iter_extreme <- iter_extreme + 1
+
           # units to classify
           results_convx <- t(apply(batch_all[[iter]], 1, function(indices) {
            
@@ -332,9 +327,10 @@ SMOTE_balance_data <- function (
           print(paste(nrow(eff_convex)/create_eff * 100, "%"))
           
           true_eff <- nrow(eff_convex)
+          
+          if (iter_extreme == length(data[,c(x,y)])) {browser()} 
         }
        
-        
       } # end exreme cases
       
       # if there are not enough efficient units, use
@@ -350,6 +346,7 @@ SMOTE_balance_data <- function (
           ncol = length(c(x,y)),
           nrow = 0
         ))
+        
         
         while (nrow(save_lambda_eff) < need_eff) {
           
@@ -400,7 +397,7 @@ SMOTE_balance_data <- function (
         eff_convex <- eff_convex[-idx_delete,]
         
       }
-      
+      iter
     } # end while
 
     if (nrow(eff_convex) != 0) {
