@@ -82,7 +82,7 @@ methods <- list (
   # neuronal network
   "nnet" = list(
     hyparams = list(
-      "size" = c(1, 5, 10), # c(1, 5, 10, 15, 20)
+      "size" = c(1, 5, 10, 20), # c(1, 5, 10, 15, 20)
       "decay" = c(0.1, 0.01, 0.001, 0.0001)
     ),
     options = list (
