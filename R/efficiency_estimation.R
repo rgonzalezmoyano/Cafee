@@ -72,7 +72,7 @@ efficiency_estimation <- function (
   for (balance in 1:length(balance_data)) {
     # if(balance == 2) {browser()}
     data  <- copy_data_no_label
-    
+  
     # label data without 
     if (nZ != 0) {
       
@@ -87,9 +87,11 @@ efficiency_estimation <- function (
     } else {
       
       dfs <- list(data)
+      data_to_divide <- data
+      data_save <- data_to_divide
       
     }
-    
+
     # save all data labeled
     data_labeled <- as.data.frame(matrix(
       data = NA,
@@ -107,13 +109,13 @@ efficiency_estimation <- function (
     ))
     
     names(data_labeled_obs) <- c(names(data_to_divide), "class_efficiency")
-    
+  
     for (sub_group in 1:length(dfs)) {
       #sub_group <- 41
       print(paste("Sub_group",sub_group))                                                            #### borar
       
       data <- dfs[[sub_group]]
-      
+ 
       # ============================ #
       # Label by additive model DEA  #
       # ============================ #
@@ -1038,20 +1040,27 @@ efficiency_estimation <- function (
   # ============================== #
   # detecting importance variables #
   # ============================== #
-browser()
+
   # necesary data to calculate importance in rminer
   train_data <- final_model[["trainingData"]]
   names(train_data)[1] <- "ClassEfficiency"
 
-  dataset_dummy <- dummy_cols(train_data,  select_columns = c(names(train_data))[z+1]) %>%
-    select(-c(names(train_data))[z+1])
-
-  train_data <- dataset_dummy
-
-  train_data <- train_data[,c(2:length(train_data),1)]
- 
-  to_factor <- c((x+y+1):ncol(train_data))
-  train_data <- change_class(train_data, to_factor = to_factor)
+  if(!(is.null(z))) {
+    
+    dataset_dummy <- dummy_cols(train_data,  select_columns = c(names(train_data))[z+1]) %>%
+      select(-c(names(train_data))[z+1])
+    
+    train_data <- dataset_dummy
+    
+    
+    to_factor <- c((x+y+1):ncol(train_data))
+    train_data <- change_class(train_data, to_factor = to_factor)
+    
+  } else {
+    
+    train_data <- train_data[,c(2:length(train_data),1)]
+    
+  }
 
   # importance with our model of Caret
   mypred <- function(M, data) {
@@ -1116,7 +1125,7 @@ browser()
 
   print(paste("Inputs importance: ", sum(result_SA[1:length(x)])))
   print(paste("Outputs importance: ", sum(result_SA[(length(x)+1):(length(x)+length(y))])))
-  print(paste("Environment importance: ", sum(result_SA[((length(x) + length(y))+1):length(result_SA)])))
+  #print(paste("Environment importance: ", sum(result_SA[((length(x) + length(y))+1):length(result_SA)])))
   #print(paste("Seed: ", seed))
 
   # =========== #
@@ -1125,16 +1134,19 @@ browser()
 
   if (nZ != 0) {
     data_rank <- data_save[, c(x,y,z)]
+    data_rank <- as.data.frame(data_rank)
     } else {
     data_rank <- data_save[, c(x,y)]
+    data_rank <- as.data.frame(data_rank)
     }
 
   eff_vector <- apply(data_rank, 1, function(row) {
 
     row_df <- as.data.frame(t(row))
+  
     colnames(row_df) <- names(data_rank)
     
-    row_df <- change_class(data = row_df, to_numeric = c(x,y), to_factor = z)
+    if (!(is.null(z))) {row_df <- change_class(data = row_df, to_numeric = c(x,y), to_factor = z)}
 
     pred <- unlist(predict(final_model_p, row_df, type = "prob")[1])
 

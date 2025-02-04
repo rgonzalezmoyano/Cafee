@@ -28,7 +28,7 @@ compute_target <- function (
     data_scenario <- as.data.frame(
       matrix(
         data = NA,
-        ncol = length(c(x,y,z)),
+        ncol = length(c(x,y)), # length(c(x,y,z))
         nrow = nrow(data)
       )
     )
@@ -41,7 +41,7 @@ compute_target <- function (
     
     score_imp_x <- as.numeric(imp_vector[x])
     score_imp_y <- as.numeric(imp_vector[y])
-    
+  
     betas <- as.data.frame(matrix(
       data = NA,
       ncol = 2,
@@ -50,13 +50,22 @@ compute_target <- function (
     
     length_betas <- 200
 
+    variables <- NULL
+    if (z == 0) {
+      variables <- c(x, y)
+    } else {
+      variables <- c(x, y, z)
+    }
+    
+    data <- as.data.frame(data)
+    
     # loop for each observation
     for (i in 1:nrow(data)) {
-      # if (i == 26) {browser()}
+      # if (i == 4) {browser()}
       print(paste("DMU: ", i))
       print(paste("En curso:", (round(i/nrow(data), 4) * 100)))
 
-      if (predict(final_model, data[i,], type = "prob")[1] > cut_off) {
+      if (predict(final_model, data[i,variables], type = "prob")[1] > cut_off) {
         betas[i, 1] <- 0
         betas[i, 2] <- cut_off
         
@@ -97,12 +106,25 @@ compute_target <- function (
           iter_count <- iter_count + 1
           # print(iter_count)
           
-          # Crear la matriz para aplicar predict()
-          matrix_eff <- as.data.frame(matrix(
-            data = NA,
-            ncol = length(c(x, y, z)),
-            nrow = length(range_beta)
-          ))
+          if (z == 0) {
+            
+            # Crear la matriz para aplicar predict()
+            matrix_eff <- as.data.frame(matrix(
+              data = NA,
+              ncol = length(c(x, y)),
+              nrow = length(range_beta)
+            ))
+            
+          } else {
+            
+            # Crear la matriz para aplicar predict()
+            matrix_eff <- as.data.frame(matrix(
+              data = NA,
+              ncol = length(c(x, y, z)),
+              nrow = length(range_beta)
+            ))
+            
+          }
           
           # Nombrar las columnas como en data original
           names(matrix_eff) <- names(data)
@@ -116,7 +138,7 @@ compute_target <- function (
           
           matrix_eff[, y] <- sweep(change_y, 1, range_beta, "*") + matrix_eff[, y]
           
-          matrix_eff[, z] <- data[i, z] 
+          if (!(z == 0)) {matrix_eff[, z] <- data[i, z]}
           
           # know if there are not posible values
           min_x <- apply(as.matrix(data[,x]), 2, min)
@@ -124,7 +146,7 @@ compute_target <- function (
           min_x_matrix <- matrix(rep(min_x, each = length(range_beta)), ncol = length(min_x), byrow = FALSE)
           
           colnames(min_x_matrix) <- colnames(data[, x])
-          
+   
           if (any(which(matrix_eff[,x] < min_x_matrix))) {
             
             select_idx <- matrix(
@@ -148,21 +170,22 @@ compute_target <- function (
             
           }
           
+          #matrix_eff <- as.data.frame(matrix_eff)
+          
           # Calcular probabilidad de eficiencia para cada fila
           eff_vector <- apply(matrix_eff, 1, function(row) {
            
             row_df <- as.data.frame(t(row))
             colnames(row_df) <- names(data)
+           
+            if (!(z == 0)) {row_df <- change_class(data = row_df, to_numeric = c(x,y), to_factor = z)}
             
-            row_df <- change_class(data = row_df, to_numeric = c(x,y), to_factor = z)
-         
             pred <- unlist(predict(final_model, row_df, type = "prob")[1])
             
             return(pred)
           })
-          
-          # min_interval <- min(eff_vector)
-          # max_interval <- max(eff_vector)
+          #if (i == 64) {browser()}
+
           
           if (length(eff_vector) == 0 | is.null(eff_vector)) {
             
@@ -211,19 +234,18 @@ compute_target <- function (
               } else {
                 # if (i == 26) {browser()}
                 if (pos == length(eff_vector)) {
-                  # if (i == 28) {browser()}
+                  if (i == 64) {browser()}
                   # no more probability to be efficient
                   # save best results
                   data_scenario[i, x] <- matrix_eff[pos, x]
                   data_scenario[i, y] <- matrix_eff[pos, y]
-                  data_scenario[i, z] <- matrix_eff[pos, z]
-                  
-                  # if (!(is.null(z))) {
-                  #   data_scenario <- change_class(data = data_scenario, to_numeric = c(x,y), to_factor = z)
-                  # }
+                  #data_scenario[i, z] <- matrix_eff[pos, z]
                   
                   betas[i, 1] <- range_beta[pos]
-                  pred <- change_class(data_scenario[i,], to_factor = z)
+                  
+                  #pred <- change_class(data_scenario[i,], to_factor = z)
+                  pred <- as.data.frame(data_scenario[i,c(x,y)]) # borrar por la de arriba
+                  
                   pred_max <- unlist(predict(final_model, pred, type = "prob")[1])
                   betas[i, 2] <- pred_max
                   break
