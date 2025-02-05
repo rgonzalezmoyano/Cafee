@@ -83,21 +83,13 @@ methods <- list (
 # =========== #    
 
 # SMOTE proportions
-balance_data <- list(
-  balance_proportions = c(seq(0.20, 0.4, 0.05)) #c(0, seq(0.20, 0.5, 0.05)) # seq(0.20, 0.4, 0.05) c(0, 0.2, 0.3, 0.4, 0.5)  0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5),
-  #sub_frontier = "1/3"
-) # 0.5 y 1/5
-
-# balance_data <- list(
-#   balance_proportions = c(0.5)  #0.2, c(0.2, 0.4),
-#   #sub_frontier = "1/4"
-# )
+balance_data <- c(seq(0.20, 0.4, 0.05))
 
 # ML metric
 metric = "F"
 
 # scenarios to peer
-scenarios <- c(0.5, seq(0.75, 0.95, 0.1)) # seq(0.75, 0.95, 0.1)
+scenarios <- c(seq(0.75, 0.95, 0.1)) # seq(0.75, 0.95, 0.1)
 
 # metrics for model evaluation
 MySummary <- function (data, lev = NULL, model = NULL) {
@@ -331,7 +323,7 @@ plot7 <- ggplot(data = eval_data) +
 
 plot7
 
-ggsave(plot = plot7, dpi = 600, filename = "projection.png")
+#ggsave(plot = plot7, dpi = 600, filename = "projection.png")
 
 # degradado
 # make a grid of the predictors
@@ -353,7 +345,7 @@ plot6 <- ggplot() +
   
   geom_point(data = grid, aes(x = x, y = y, color = label), size = 1, alpha = 1) +
 
-  labs(x = "input", y = "output") +
+  labs(x = "input", y = "output", color = "Prob.") +
   
   scale_color_gradientn(
     colors = c("white", "black", "black", "white"), # Azul para 0, blanco para 0.5, rojo para 1 olivedrab2 pink
@@ -365,7 +357,9 @@ plot6 <- ggplot() +
   theme_bw() +
   theme(legend.position = "bottom")
 
-#ggsave(plot = plot6, dpi = 600, filename = "SVM_balance_proba.png")
+plot6
+
+ggsave(plot = plot6, dpi = 600, filename = "NN_uncertenty.png")
 library(openxlsx)
 # write.xlsx(list_method[["nnet"]][["real_decision_balance"]], file = "real_decision_balance_example.xlsx")
 # write.xlsx(list_method[["nnet"]][["train_decision_balance"]], file = "train_decision_balance_example.xlsx")  

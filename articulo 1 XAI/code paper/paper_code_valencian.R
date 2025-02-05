@@ -130,35 +130,6 @@ methods <- list (
       softmax = TRUE
     )
   )
-  # # svm
-  # "svmPoly" = list(
-  #   hyparams = list(
-  #     "degree" = c(1, 2, 3, 4, 5),
-  #     "scale" = c(0.001, 0.1, 1, 10, 100),
-  #     "C" = c(0.001, 0.1, 1, 10, 100)
-  #   )
-  # )
-  
-  # # svm
-  # "svmPoly" = list(
-  #     hyparams = list(
-  #       "degree" = c(5), # 5
-  #       "scale" = c(0.1),# 0.1
-  #       "C" = c(10) # 10
-  #     )
-  # ),
-  # # neuronal network
-  # "nnet" = list(
-  #   hyparams = list(
-  #     "size" = c(20),
-  #     "decay" = c(1)
-  #     ),
-  #   options = list (
-  #     maxit = 1000,
-  #     softmax = TRUE
-  #   )
-  # )
-  
 )
 
 # =========== #

@@ -48,7 +48,7 @@ compute_target <- function (
       nrow = nrow(data)
     ))
     
-    length_betas <- 200
+    length_betas <- 300
 
     variables <- NULL
     if (z == 0) {
@@ -139,7 +139,7 @@ compute_target <- function (
           matrix_eff[, y] <- sweep(change_y, 1, range_beta, "*") + matrix_eff[, y]
           
           if (!(z == 0)) {matrix_eff[, z] <- data[i, z]}
-          
+      
           # know if there are not posible values
           min_x <- apply(as.matrix(data[,x]), 2, min)
 
@@ -234,7 +234,7 @@ compute_target <- function (
               } else {
                 # if (i == 26) {browser()}
                 if (pos == length(eff_vector)) {
-                  if (i == 64) {browser()}
+                  # if (i == 64) {browser()}
                   # no more probability to be efficient
                   # save best results
                   data_scenario[i, x] <- matrix_eff[pos, x]
@@ -245,6 +245,7 @@ compute_target <- function (
                   
                   #pred <- change_class(data_scenario[i,], to_factor = z)
                   pred <- as.data.frame(data_scenario[i,c(x,y)]) # borrar por la de arriba
+                  names(pred) <- names(data)
                   
                   pred_max <- unlist(predict(final_model, pred, type = "prob")[1])
                   betas[i, 2] <- pred_max
