@@ -52,7 +52,6 @@ data_class <- cbind(data,class)
 # train ML
 # Cargar librerías necesarias
 library(caret)
-#library(nnet)
 
 # Configurar el control del entrenamiento
 train_control <- trainControl(
@@ -98,15 +97,18 @@ mypred <- function(M, data) {
 test_preds <- mypred(final_model, data)
 print(test_preds)
 
+task = rminer::defaultask(task, model = "default", data[1, outindex])
+
 # Calculate the importance for the current method and measure
 importance <- Importance(
   M = final_model,
   RealL = levels, # Levels
-  data = data, # data
+  data = data_class, # data
   method = methods_SA,
   measure = measures_SA,
   baseline = "mean", # mean, median, with the baseline example (should have the same attribute names as data).
   responses = TRUE,
   PRED = mypred,
-  outindex = length(data) # length(train_data)
+  outindex = ncol(data_class), # length(train_data)
+  task = "prob"
 )
