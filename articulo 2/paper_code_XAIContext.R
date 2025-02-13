@@ -98,7 +98,7 @@ methods <- list (
 # =========== #    
 
 # SMOTE proportions
-balance_data <- c(0, seq(0.2, 0.5, 0.05)) # c(0, seq(0.20, 0.5, 0.05))
+balance_data <- c(seq(0.2, 0.5, 0.05)) # c(0, seq(0.20, 0.5, 0.05))
 
 # ML metric
 metric = "F"
@@ -137,7 +137,7 @@ hold_out <- 0.1 # https://topepo.github.io/caret/train-models-by-tag.html
 list_method <- list()  
 
 set.seed(314)
-#data <- data[1:100,]
+data <- data[1:100,]
 # loop method
 for (i in 1:length(methods)) {
 
