@@ -71,7 +71,17 @@ y <- c(3:5)
 z <- c(2) # environment variables    , 8
 
 # different types to label
-target_method <- "additive"
+# target_method <- "additive"
+# convexity = TRUE
+# returns = "variable"
+
+# Step 1: label data
+data <- label_efficiency(
+  data = data,
+  x = x,
+  y = y,
+  z = z
+)
 
 seed <- 0
 
@@ -138,35 +148,35 @@ list_method <- list()
 
 set.seed(314)
 data <- data[1:100,]
-# loop method
-for (i in 1:length(methods)) {
-
-  # console information
-  print(paste("METODO:", i,  names(methods)[i]))
-  print("")
-  
-  # model result
-  final_model <- efficiency_estimation (
-    data = data,
-    x = x,
-    y = y,
-    z = z,
-    balance_data = balance_data,
-    trControl = trControl,
-    method = methods[i],
-    target_method = target_method,
-    metric = metric,
-    hold_out = hold_out,
-    scenarios = scenarios
-  )
-  
-  list_method[[i]] <- final_model
-  
-} # end bucle for (methods)  
+# # loop method
+# for (i in 1:length(methods)) {
+# 
+#   # console information
+#   print(paste("METODO:", i,  names(methods)[i]))
+#   print("")
+# 
+#   # model result
+#   final_model <- efficiency_estimation (
+#     data = data,
+#     x = x,
+#     y = y,
+#     z = z,
+#     balance_data = balance_data,
+#     trControl = trControl,
+#     method = methods[i],
+#     target_method = target_method,
+#     metric = metric,
+#     hold_out = hold_out,
+#     scenarios = scenarios
+#   )
+#   
+#   list_method[[i]] <- final_model
+#   
+# } # end bucle for (methods)  
 
 names(list_method) <- names(methods)
 
-save(list_method, file = "results_XAI2.RData")
+#save(list_method, file = "results_XAI2.RData")
 
 library(openxlsx)
 
