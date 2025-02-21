@@ -76,15 +76,29 @@ z <- c(2) # environment variables    , 8
 # returns = "variable"
 
 # Step 1: label data
-data <- label_efficiency(
+label_efficiency <- label_efficiency(
   data = data,
   x = x,
   y = y,
   z = z
 )
 
-n_imbalance <- table(data$class_efficiency)
+label_efficiency_NoZ <- label_efficiency(
+  data = data,
+  x = x,
+  y = y
+)
+
+sum(label_efficiency$data_proportions$n_efficient)
+
+
+
+n_imbalance <- table(label_efficiency_NoZ[["data_labeled"]]$class_efficiency)
 prop.table(n_imbalance)
+
+x <- label_efficiency[["index"]][["x"]]
+y <- label_efficiency[["index"]][["y"]]
+z <- label_efficiency[["index"]][["z"]]
 
 # address imbalance
 
