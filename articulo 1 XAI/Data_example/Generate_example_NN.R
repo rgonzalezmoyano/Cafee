@@ -50,9 +50,12 @@ plot <- ggplot(data, aes(x = x1, y = x2)) +
   theme_minimal() +
   labs(x = "Feature 1",
        y = "Feature 2") +
-  theme(legend.position = "right")
+  theme(legend.position = "bottom") +
+  guides(fill = guide_legend(nrow = 1, byrow = TRUE)) 
+
 
 plot
 
 
 ggsave(plot = plot, dpi = 600, filename = "nonlinear decision boundary NN.png")
+ggsave(file = "img1.png", plot = plot, dpi = 600, width = 10, heigh = 6)

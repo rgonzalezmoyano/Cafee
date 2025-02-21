@@ -83,6 +83,21 @@ data <- label_efficiency(
   z = z
 )
 
+n_imbalance <- table(data$class_efficiency)
+prop.table(n_imbalance)
+
+# address imbalance
+
+
+
+
+
+
+
+
+
+
+
 seed <- 0
 
 print(seed)

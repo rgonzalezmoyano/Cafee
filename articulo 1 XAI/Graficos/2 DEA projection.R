@@ -52,7 +52,7 @@ projection <- as.data.frame(
 )
 
 projection[1, ] <- data.frame(x1 = data[3,1], y = data[3,2])
-projection[2, ] <- data.frame(x1 = data[3,1], y = (data[3,2] * scores[3]))
+projection[2, ] <- data.frame(x1 = 5, y = 6.6)
 
 names(projection) <- c("x1", "y")
 
@@ -62,9 +62,18 @@ plot <- ggplot() +
 
   geom_line(data = grph_data, aes(x = x1, y = y)) +
   
-  geom_line(data = projection, aes(x = x1, y = y), linetype = "dashed") +
+  #geom_line(data = projection, aes(x = x1, y = y)) +
   
-  geom_point(data = projection[2, ], aes(x = x1, y = y), color = "yellow4", size = 3) +
+  geom_segment(
+    aes(
+      x = projection$x1[1],
+      y = projection$y[1], 
+      xend = 5.07,
+      yend = 6.5), 
+    arrow = arrow(length = unit(0.2, "cm")), 
+    color = "black", size = 0.5) +
+  
+  geom_point(data = projection[2, ], aes(x = x1, y = y), color = "yellow4", size = 3, ) +
   
   # names exes
   xlab("Input") +
@@ -79,4 +88,5 @@ plot <- ggplot() +
 
 plot
 
-ggsave(plot = plot, dpi = 600, filename = "DEA projection.png")
+# ggsave(plot = plot, dpi = 600, filename = "DEA projection.png")
+ggsave(file = "img1.png", plot = plot, dpi = 600, width = 10, heigh = 6)

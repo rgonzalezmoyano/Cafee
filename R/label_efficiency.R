@@ -20,7 +20,7 @@ label_efficiency <- function (
   
   # original data with all variables
   data_original <- data
-  browser()
+ 
   # Select only the variables set as x, y, and z in the dataframe
   # save factor variables
   data_factor <- data[, z]

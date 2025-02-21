@@ -189,6 +189,7 @@ plot1 <- ggplot() +
 plot1
 
 #ggsave(plot = plot1, dpi = 600, filename = "DEA_label_efficient.png")
+ggsave(file = "DEA_label_efficient.png", plot = plot1, dpi = 600, width = 10, heigh = 6)
 
 ### plot 2 training dataset
 
@@ -211,7 +212,8 @@ plot2 <- ggplot() +
   #           vjust = -1, hjust = 1) +
   
   geom_point(data = data, aes(x = x, y = y, color = class_efficiency)) +
-  geom_point(data = eval_data, aes(x = x, y = y)) +
+  
+  #geom_point(data = eval_data, aes(x = x, y = y)) +
   scale_color_manual(values = c("green4", "red"), name = "Class", labels = c("efficient", "inefficient")) +
   labs(x = "input", y = "output") +
   
@@ -228,6 +230,7 @@ plot2 <- ggplot() +
 plot2
 
 #ggsave(plot = plot2, dpi = 600, filename = "DEA_new_efficient.png")
+ggsave(file = "DEA_new_efficient2.png", plot = plot2, dpi = 600, width = 10, heigh = 6)
 
 
 # ============= #
