@@ -11,6 +11,8 @@ library(haven)
 library(e1071)
 library(rminer)
 library(fastDummies)
+library(keras)
+
 
 # ===
 # load data
@@ -91,28 +93,57 @@ label_efficiency_NoZ <- label_efficiency(
 
 sum(label_efficiency$data_proportions$n_efficient)
 
+# training phase
+# create a validation dataset
+# Create train and validation data
 
+hold_out <- 0.15 # https://topepo.github.io/caret/train-models-by-tag.html
 
-n_imbalance <- table(label_efficiency_NoZ[["data_labeled"]]$class_efficiency)
-prop.table(n_imbalance)
-
-x <- label_efficiency[["index"]][["x"]]
-y <- label_efficiency[["index"]][["y"]]
-z <- label_efficiency[["index"]][["z"]]
-
-# address imbalance
-
-
-
-
-
-
-
-
-
-
-
+# set seed 
 seed <- 0
+
+# set valid index
+valid_index <- createDataPartition (
+  label_efficiency[["data_labeled"]]$class_efficiency,
+  p = hold_out,
+  list = FALSE
+)
+
+# divide dataset
+valid_data <- label_efficiency[["data_labeled"]][valid_index, ]
+train_data <- label_efficiency[["data_labeled"]][- valid_index, ]
+
+# prepare k-folds to cross validation
+# create folds
+folds <- createFolds(
+  train_data$class_efficiency,
+  k = 5,
+  list = TRUE,
+  returnTrain = FALSE)
+
+# preproces folds and valid data
+if(!(is.null(z))) {
+  
+  data_fold <- train_data[folds[["Fold1"]], -(label_efficiency$index$z + 1)]
+  
+  dataset_dummy <- dummy_cols(
+    data = data_fold,
+    select_columns = label_efficiency$index$z,
+    remove_selected_columns = TRUE
+  )
+  
+  
+  to_factor <- c((x+y+1):ncol(dataset_dummy))
+  train_data <- change_class(train_data, to_factor = to_factor)
+  
+}
+
+# loop to create the CV
+
+
+
+
+
 
 print(seed)
 set.seed(seed)
@@ -169,8 +200,6 @@ trControl <- trainControl (
   classProbs = TRUE,
   savePredictions = "all"
 )
-
-hold_out <- 0.1 # https://topepo.github.io/caret/train-models-by-tag.html
 
 # save model information
 list_method <- list()  
