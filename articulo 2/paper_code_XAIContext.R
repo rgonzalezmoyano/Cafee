@@ -85,11 +85,11 @@ label_efficiency <- label_efficiency(
   z = z
 )
 
-label_efficiency_NoZ <- label_efficiency(
-  data = data,
-  x = x,
-  y = y
-)
+# label_efficiency_NoZ <- label_efficiency(
+#   data = data,
+#   x = x,
+#   y = y
+# )
 
 sum(label_efficiency$data_proportions$n_efficient)
 
@@ -111,6 +111,19 @@ valid_index <- createDataPartition(
 # Dividir dataset en entrenamiento y validación
 valid_data <- label_efficiency[["data_labeled"]][valid_index, ]
 train_data <- label_efficiency[["data_labeled"]][-valid_index, ]
+
+prop.table(table(train_data$class_efficiency))
+
+# addresing imbalance
+balance <- c(0.3, 0.5) # c(NA, 0.2, 0.3, 0.4, 0.5)
+
+train_data_SMOTE <- SMOTE_data(
+  data = train_data,
+  x = label_efficiency[["index"]][["x"]],
+  y = label_efficiency[["index"]][["y"]],
+  z = label_efficiency[["index"]][["z"]],
+  balance_data = balance
+)
 
 copy_train_data <- train_data
 copy_valid_data <- valid_data
@@ -159,17 +172,17 @@ learning_rates <- c(0.01, 0.001, 0.0001)
 neurons_list <- c(16, 32, 64, 128)
 dropout_rates <- c(0, 0.1, 0.2, 0.3, 0.5)
 batch_sizes <- c(1, 8, 16, 32)
-epochs_list <- c(50, 100, 200)
+epochs_list <- c(100)
 activations <- c("relu", "tanh", "leaky_relu")  # Agregamos la función de activación
-#activations <- c("relu")  # Agregamos la función de activación
+activations <- c("relu")  # Agregamos la función de activación
 
 # Definir hiperparámetros a explorar
-learning_rates <- c(0.001)
-hidden_layers <- c(1,5,10)
-neurons_list <- c(32)
-dropout_rates <- c(0, 0.2)
+learning_rates <- c(0.0001)
+hidden_layers <- c(5,10)
+neurons_list <- c(32, 64)
+dropout_rates <- c(0, 0.5)
 batch_sizes <- c(1, 8)
-epochs_list <- c(20)
+epochs_list <- c(50)
 activations <- c("relu")  # Agregamos la función de activación
 
 # save results
