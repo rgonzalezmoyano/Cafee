@@ -96,49 +96,239 @@ sum(label_efficiency$data_proportions$n_efficient)
 # training phase
 # create a validation dataset
 # Create train and validation data
-
 hold_out <- 0.15 # https://topepo.github.io/caret/train-models-by-tag.html
 
 # set seed 
 seed <- 0
 
-# set valid index
-valid_index <- createDataPartition (
+# Crear índice de validación
+valid_index <- createDataPartition(
   label_efficiency[["data_labeled"]]$class_efficiency,
   p = hold_out,
   list = FALSE
 )
 
-# divide dataset
+# Dividir dataset en entrenamiento y validación
 valid_data <- label_efficiency[["data_labeled"]][valid_index, ]
-train_data <- label_efficiency[["data_labeled"]][- valid_index, ]
+train_data <- label_efficiency[["data_labeled"]][-valid_index, ]
 
-# prepare k-folds to cross validation
-# create folds
-folds <- createFolds(
-  train_data$class_efficiency,
-  k = 5,
-  list = TRUE,
-  returnTrain = FALSE)
+copy_train_data <- train_data
+copy_valid_data <- valid_data
 
-# preproces folds and valid data
-if(!(is.null(z))) {
+# Crear folds para validación cruzada
+k_folds <- 5
+validation_split <- 1 / k_folds
+
+# Procesar folds y validación
+if (!is.null(z)) {
   
-  data_fold <- train_data[folds[["Fold1"]], -(label_efficiency$index$z + 1)]
+  # change train_data
+  # Convertir los índices de z a nombres de columnas antes de pasarlos a dummy_cols()
+  z_column_names <- colnames(label_efficiency[["data_labeled"]])[label_efficiency$index$z]
   
+  # Aplicar dummy encoding a las columnas correctas
   dataset_dummy <- dummy_cols(
-    data = data_fold,
-    select_columns = label_efficiency$index$z,
+    .data = train_data,
+    select_columns = z_column_names,  # Ahora pasa nombres en vez de índices
     remove_selected_columns = TRUE
   )
   
+  to_factor <- c((length(c(x, y)) + 1):ncol(dataset_dummy))
+  dataset_dummy <- change_class(dataset_dummy, to_factor = to_factor)
   
-  to_factor <- c((x+y+1):ncol(dataset_dummy))
-  train_data <- change_class(train_data, to_factor = to_factor)
+  train_data <- cbind(dataset_dummy, train_data[,"class_efficiency"])
+  names(train_data)[ncol(train_data)] <- names(copy_train_data["class_efficiency"])
   
+  # change valid_data
+  # Aplicar dummy encoding a las columnas correctas
+  dataset_dummy <- dummy_cols(
+    .data = valid_data,
+    select_columns = z_column_names,  # Ahora pasa nombres en vez de índices
+    remove_selected_columns = TRUE
+  )
+  
+  to_factor <- c((length(c(x, y)) + 1):ncol(dataset_dummy))
+  dataset_dummy <- change_class(dataset_dummy, to_factor = to_factor)
+  
+  valid_data <- cbind(dataset_dummy, valid_data[,"class_efficiency"])
+  names(valid_data)[ncol(valid_data)] <- names(copy_valid_data["class_efficiency"])
 }
 
-# loop to create the CV
+# Definir hiperparámetros a explorar
+learning_rates <- c(0.01, 0.001, 0.0001)
+neurons_list <- c(16, 32, 64, 128)
+dropout_rates <- c(0, 0.1, 0.2, 0.3, 0.5)
+batch_sizes <- c(1, 8, 16, 32)
+epochs_list <- c(50, 100, 200)
+activations <- c("relu", "tanh", "leaky_relu")  # Agregamos la función de activación
+#activations <- c("relu")  # Agregamos la función de activación
+
+# Definir hiperparámetros a explorar
+learning_rates <- c(0.001)
+hidden_layers <- c(1,5,10)
+neurons_list <- c(32)
+dropout_rates <- c(0, 0.2)
+batch_sizes <- c(1, 8)
+epochs_list <- c(20)
+activations <- c("relu")  # Agregamos la función de activación
+
+# save results
+# Definir los nombres de las columnas
+column_names <- c("hidden_layers", "neurons", "learning_rate", "activation",
+                  "epochs", "dropout_rate", "batch_size")
+
+overall_names <- c("Accuracy", "Kappa", "AccuracyLower", "AccuracyUpper",
+                   "AccuracyNull", "AccuracyPValue", "McnemarPValue")
+
+byClass_names <- c("Sensitivity", "Specificity", "Pos Pred Value", "Neg Pred Value",
+                   "Precision", "Recall", "F1", "Prevalence", "Detection Rate",
+                   "Detection Prevalence", "Balanced Accuracy")
+
+result_names <- c(column_names, overall_names, byClass_names) 
+
+# Crear un dataframe vacío con esas columnas
+df_hyperparams <- data.frame(matrix(ncol = length(result_names), nrow = 0))
+colnames(df_hyperparams) <- result_names
+
+# Almacenar resultados
+results <- data.frame(
+  learning_rate = numeric(),
+  neurons = integer(),
+  dropout_rate = numeric(),
+  batch_size = integer(),
+  epochs = integer(),
+  activation = character(),
+  mean_accuracy = numeric(),
+  sd_accuracy = numeric()
+)
+
+# Loop sobre todas las combinaciones de hiperparámetros
+for (lr in learning_rates) {
+  for (hidden_layer in hidden_layers) {
+    for (neurons in neurons_list) {
+      for (dropout in dropout_rates) {
+        for (batch in batch_sizes) {
+          for (epoch in epochs_list) {
+            for (activation in activations) {
+              
+              cat("\n🔹 Probando configuración: LR =", lr, 
+                  ", Hidden Layers =", hidden_layer,
+                  ", Neurons =", neurons, 
+                  ", Dropout =", dropout, 
+                  ", Batch =", batch, 
+                  ", Epochs =", epoch, "\n")
+              
+              # Almacenar los scores de los folds
+              cv_scores <- c()
+              
+              # Separar variables predictoras y etiquetas
+              x_train <- as.matrix(train_data[, !colnames(train_data) %in% "class_efficiency"])
+              x_train <- apply(x_train, 2, as.numeric)
+              y_train <- ifelse(train_data$class_efficiency == "efficient", 1, 0)
+              
+              x_val <- as.matrix(valid_data[, !colnames(valid_data) %in% "class_efficiency"])
+              x_val <- apply(x_val, 2, as.numeric)
+              y_val <- ifelse(valid_data$class_efficiency == "efficient", 1, 0)
+             
+              create_model <- function(X){
+                
+                # ncol(X) es el numero de neuronas de entrada 
+                # Utilizamos la funcion de activacion ReLu en la capa oculta
+                # Tenemos un problema de clasificacion binaria 0/1 -> neurona de salida sigmoid
+                
+                # model <- keras_model_sequential() %>% 
+                #   layer_dense(units = neurons, activation = 'relu', input_shape = ncol(X)) %>% 
+                #   layer_dense(units = 1, activation = 'sigmoid')
+                
+                # Inicializar el modelo
+                model <- keras_model_sequential()
+                
+                # Agregar la primera capa oculta con la entrada
+                model %>% layer_dense(units = neurons, activation = 'relu', input_shape = ncol(X))
+                
+                # Agregar capas ocultas adicionales según el número de elementos en hidden_layers
+                if (hidden_layer > 1) {
+                  
+                  for (i in 2:hidden_layer) {
+                    model %>% layer_dense(units = neurons, activation = activation)
+                  }
+                  
+                }
+                
+                # Agregar la capa de salida (sigmoide para clasificación binaria)
+                model %>% layer_dense(units = 1, activation = 'sigmoid')
+                
+                # Devolvemos el modelo creado 
+                return(model)
+              }
+              
+              model1 <- create_model(x_train) 
+              summary(model1)
+             
+              model1 %>% compile(
+                loss = "binary_crossentropy",
+                optimizer = "adam",    # sgd
+                metric = c("F1Score") # accuracy
+              ) 
+              
+              # training
+              history1 <- model1 %>% fit(x_train, y_train,
+                                         epochs = epoch,
+                                         batch_size = batch,
+                                         validation_split = validation_split)
+              
+              # Evaluacion 
+              history1
+              
+              metrics1 <- model1 %>% evaluate(x_val, y_val)
+              metrics1
+              
+              # Prediccion
+              pred1 <- model1 %>% predict(x_val) 
+              pred1 
+              # si es mayor que 0.5, pasa a 1 y si no a 0
+              pred1  <- round(pred1) # 0.5 but can it change? 0.75, 0.85, 0.95
+              pred1 
+              
+              y_obs <- factor(y_val, levels = c(0, 1))
+              y_hat <- factor(pred1, levels = c(0, 1)) 
+              
+              #create confusion matrix and calculate metrics related to confusion matrix
+              confusion_matrix <- confusionMatrix(
+                data = y_hat,
+                reference = y_obs,
+                mode = "everything",
+                positive = "1"
+              )#[["byClass"]]
+              
+              # Guardar resultados
+              mean_acc <- mean(cv_scores)
+              sd_acc <- sd(cv_scores)
+              
+              results <- rbind(results, data.frame(
+                learning_rate = lr,
+                neurons = neurons,
+                dropout_rate = dropout,
+                batch_size = batch,
+                epochs = epoch,
+                mean_accuracy = mean_acc,
+                sd_accuracy = sd_acc
+              ))
+              
+              cat("✅ Accuracy promedio:", mean_acc, "Desviación estándar:", sd_acc, "\n\n")
+              
+            }
+          }  
+        } 
+      }
+    }
+  }
+}
+
+# Mostrar los mejores hiperparámetros
+best_model <- results[which.max(results$mean_accuracy), ]
+print("\n🏆 Mejor configuración encontrada:")
+print(best_model)
 
 
 
