@@ -117,13 +117,13 @@ prop.table(table(train_data$class_efficiency))
 # addresing imbalance
 balance <- c(0.3, 0.5) # c(NA, 0.2, 0.3, 0.4, 0.5)
 
-train_data_SMOTE <- SMOTE_data(
-  data = train_data,
-  x = label_efficiency[["index"]][["x"]],
-  y = label_efficiency[["index"]][["y"]],
-  z = label_efficiency[["index"]][["z"]],
-  balance_data = balance
-)
+# train_data_SMOTE <- SMOTE_data(
+#   data = train_data,
+#   x = label_efficiency[["index"]][["x"]],
+#   y = label_efficiency[["index"]][["y"]],
+#   z = label_efficiency[["index"]][["z"]],
+#   balance_data = balance
+# )
 
 copy_train_data <- train_data
 copy_valid_data <- valid_data
@@ -177,11 +177,11 @@ activations <- c("relu", "tanh", "leaky_relu")  # Agregamos la función de activ
 activations <- c("relu")  # Agregamos la función de activación
 
 # Definir hiperparámetros a explorar
-learning_rates <- c(0.0001)
-hidden_layers <- c(5,10)
-neurons_list <- c(32, 64)
-dropout_rates <- c(0, 0.5)
-batch_sizes <- c(1, 8)
+learning_rates <- c(0.001)
+hidden_layers <- c(10)
+neurons_list <- c(32)
+dropout_rates <- c(0)
+batch_sizes <- c(1)
 epochs_list <- c(50)
 activations <- c("relu")  # Agregamos la función de activación
 
@@ -234,15 +234,22 @@ for (lr in learning_rates) {
               # Almacenar los scores de los folds
               cv_scores <- c()
               
-              # Separar variables predictoras y etiquetas
+              # Separar variables predictoras y etiquetas; normalize
+              normalize_zscore <- function(x) {
+                return((x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE))
+              }
+              
               x_train <- as.matrix(train_data[, !colnames(train_data) %in% "class_efficiency"])
               x_train <- apply(x_train, 2, as.numeric)
+              x_train <- apply(x_train, 2, normalize_zscore)
               y_train <- ifelse(train_data$class_efficiency == "efficient", 1, 0)
               
               x_val <- as.matrix(valid_data[, !colnames(valid_data) %in% "class_efficiency"])
               x_val <- apply(x_val, 2, as.numeric)
+              x_val <- apply(x_val, 2, normalize_zscore)
               y_val <- ifelse(valid_data$class_efficiency == "efficient", 1, 0)
-             
+              
+              
               create_model <- function(X){
                 
                 # ncol(X) es el numero de neuronas de entrada 
@@ -281,7 +288,7 @@ for (lr in learning_rates) {
               model1 %>% compile(
                 loss = "binary_crossentropy",
                 optimizer = "adam",    # sgd
-                metric = c("F1Score") # accuracy
+                metric = c("accuracy") # accuracy; F1Score
               ) 
               
               # training
@@ -315,21 +322,22 @@ for (lr in learning_rates) {
               )#[["byClass"]]
               
               # Guardar resultados
-              mean_acc <- mean(cv_scores)
-              sd_acc <- sd(cv_scores)
+              mean_acc <- confusion_matrix$overall[1]
+              F1 <- confusion_matrix$byClass[7]
               
               results <- rbind(results, data.frame(
                 learning_rate = lr,
+                hidden_layer = hidden_layer,
                 neurons = neurons,
                 dropout_rate = dropout,
                 batch_size = batch,
                 epochs = epoch,
-                mean_accuracy = mean_acc,
-                sd_accuracy = sd_acc
+                accuracy = mean_acc,
+                F1 = F1
               ))
               
-              cat("✅ Accuracy promedio:", mean_acc, "Desviación estándar:", sd_acc, "\n\n")
-              
+              cat("Accuracy promedio:", mean_acc, "F1 Score:", F1, "\n\n")
+
             }
           }  
         } 
@@ -341,7 +349,7 @@ for (lr in learning_rates) {
 # Mostrar los mejores hiperparámetros
 best_model <- results[which.max(results$mean_accuracy), ]
 print("\n🏆 Mejor configuración encontrada:")
-print(best_model)
+print(results)
 
 
 

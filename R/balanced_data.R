@@ -1037,7 +1037,6 @@ SMOTE_data <- function (
     
   }
 
-  
   # save all data labeled
   data_labeled <- as.data.frame(matrix(
     data = NA,
@@ -1047,108 +1046,16 @@ SMOTE_data <- function (
   
   # set names
   names(data_labeled) <- names(data)
-
-  # extra information
-  # Find out the imbalance by z
-  if (is.null(z)) {
-    
-    # no z, only 1 row and 5 columns
-    row_prop <- 1
-    ncol_prop <- 5 
-    
-    # names
-    names_data_proportion <- c("efficient", "inefficient", "n_efficient", "n_inefficient", "n_DMUs")
-    
-  } else {
-    
-    # list to save different z values
-    expan_z <- vector("list", length(z))
-    
-    # save only the different values
-    for (i in seq_along(z)) {
-      
-      expan_z[[i]] <- unique(data[[z[i]]])
-      
-    }
-  
-    expan_z_df <- expand.grid(expan_z)
-    
-    names(expan_z_df) <- names(data)[z]
-   
-    # rows of proportions informations by z groups
-    row_prop <- nrow(expan_z_df)
-    
-    # colnames by z
-    names_data_proportion <- c(names(data_labeled)[z], "efficient", "inefficient", "n_efficient", "n_inefficient", "n_DMUs")
-    
-    # there are z, z rows and 6 columns
-    ncol_prop <- length(names_data_proportion) 
-    
-    
-  }
-  browser()
-  data_proportions <- as.data.frame(matrix(
-    data = NA,
-    nrow = row_prop,
-    ncol = ncol_prop
-  ))
-  
-  # set names
-  if (is.null(z)) {
-    
-    
-    
-  } else {
-    
-    colnames(data_proportions) <- c(names(data_labeled)[z], "efficient", "inefficient", "n_efficient", "n_inefficient", "n_DMUs")
-    
-  }
   
   browser()
   
-  # loop to find out
-  if (nZ != 0) {
-    data_proportions[,1] <- unique(data_labeled[, z])
-    
-    for(i in 1:length(unique(data_labeled[, z]))) {
-      
-      idx_region <- unique(data_labeled[,z])[i]
-      
-      # filter per z
-      sub_data <- data_labeled %>% 
-        filter(Region == idx_region)
-      
-      n_imbalance_sub <- table(sub_data$class_efficiency)
-      data_proportions[i, c(2,3)] <- prop.table(n_imbalance_sub)
-      
-      data_proportions[i, 4] <- length(which(sub_data$class_efficiency == "efficient"))
-      data_proportions[i, 5] <- length(which(sub_data$class_efficiency == "not_efficient"))
-      data_proportions[i, 6] <- nrow(sub_data)
-      
-    }
-    
-  } else {
-    
-    table <- table(data_labeled$class_efficiency)
-    
-    data_proportions[1,c(1,2)] <- prop.table(table)
-    data_proportions[1,c(3,4)] <- table
-    data_proportions[1, 5] <- nrow(data_labeled)
-    
-  }
-  
-  # output: data and index
-  output_label_efficiency <- list(
-    data_labeled = data_labeled,
-    index = list(
-      x = x,
-      y = y,
-      z = z
-    ),
-    data_proportions = data_proportions
-  )
+  # First, we need to know the efficient DMUs for each sub_group
   
   
+  # loop 
+  # number synthetic function
+  
+  # 
   # =========================================================== #
   # determinate number of efficient and not efficient to create #
   # =========================================================== #

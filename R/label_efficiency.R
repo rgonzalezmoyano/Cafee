@@ -94,7 +94,7 @@ label_efficiency <- function (
   
   # set names
   names(data_labeled) <- c(names(data_to_divide), "class_efficiency")
-  
+
   for (sub_group in 1:length(dfs)) {
     #sub_group <- 41
     #print(paste("Sub_group",sub_group))
@@ -135,18 +135,45 @@ label_efficiency <- function (
 
   # extra information
   # Find out the imbalance by z
-  
-  if (nZ == 0) {
+  if (is.null(z)) {
     
+    # no z, only 1 row and 5 columns
     row_prop <- 1
     ncol_prop <- 5 
     
+    # names
+    names_data_proportion <- c("efficient", "inefficient", "n_efficient", "n_inefficient", "n_DMUs")
+    
   } else {
     
-    row_prop <-length(unique(data_labeled[, z]))
-    ncol_prop <- 6 
+    # list to save different z values
+    expan_z <- vector("list", length(z))
+    
+    # save only the different values
+    for (i in seq_along(z)) {
+      
+      expan_z[[i]] <- unique(data_labeled[,z][i])
+     
+    }
+    
+    expan_z <- lapply(expan_z, function(x) as.vector(x[[1]]))
+
+    expan_z_df <- expand.grid(expan_z)
+    
+    names(expan_z_df) <- names(data)[z]
+    
+    # rows of proportions informations by z groups
+    row_prop <- nrow(expan_z_df)
+    
+    # colnames by z
+    names_data_proportion <- c(names(data_labeled)[z], "efficient", "inefficient", "n_efficient", "n_inefficient", "n_DMUs")
+    
+    # there are z, z rows and 6 columns
+    ncol_prop <- length(names_data_proportion) 
+    
+    
   }
-  
+
   data_proportions <- as.data.frame(matrix(
     data = NA,
     nrow = row_prop,
@@ -154,39 +181,43 @@ label_efficiency <- function (
   ))
   
   # set names
-  if (nZ != 0) {
+  if (is.null(z)) {
     
-    colnames(data_proportions) <- c(names(data_labeled)[z], "efficient", "inefficient", "n_efficient", "n_inefficient", "n_DMUs")
+    colnames(data_proportions) <- c("efficient", "inefficient", "n_efficient", "n_inefficient", "n_DMUs")
     
   } else {
-      
-    colnames(data_proportions) <- c("efficient", "inefficient", "n_efficient", "n_inefficient", "n_DMUs")
+    
+    colnames(data_proportions) <- c(names(data_labeled)[z], "efficient", "inefficient", "n_efficient", "n_inefficient", "n_DMUs")
     
   }
   
   # loop to find out
   if (nZ != 0) {
-    data_proportions[,1] <- unique(data_labeled[, z])
     
-    for(i in 1:length(unique(data_labeled[, z]))) {
-      
-      idx_region <- unique(data_labeled[,z])[i]
+    data_proportions[, 1:nZ] <- expan_z_df #unique(data_labeled[, z])
+    
+    for(i in 1:nrow(data_proportions)) {
+   
+      idx_contx <- data_proportions[i,1:nZ]
       
       # filter per z
-      sub_data <- data_labeled %>% 
-        filter(Region == idx_region)
+      sub_data <- data_labeled %>%
+        filter(across(all_of(names(idx_contx)), ~ . == idx_contx[[cur_column()]]))
       
+      # get information and paste
       n_imbalance_sub <- table(sub_data$class_efficiency)
-      data_proportions[i, c(2,3)] <- prop.table(n_imbalance_sub)
+      data_proportions[i, (c(1,2) + nZ)] <- prop.table(n_imbalance_sub)
       
-      data_proportions[i, 4] <- length(which(sub_data$class_efficiency == "efficient"))
-      data_proportions[i, 5] <- length(which(sub_data$class_efficiency == "not_efficient"))
-      data_proportions[i, 6] <- nrow(sub_data)
+      data_proportions[i, (3 + nZ)] <- length(which(sub_data$class_efficiency == "efficient"))
+      data_proportions[i, (4 + nZ)] <- length(which(sub_data$class_efficiency == "not_efficient"))
+      data_proportions[i, (5 + nZ)] <- nrow(sub_data)
       
     }
     
+    data_proportions <- na.omit(data_proportions)
+      
   } else {
- 
+    
     table <- table(data_labeled$class_efficiency)
     
     data_proportions[1,c(1,2)] <- prop.table(table)
@@ -194,7 +225,7 @@ label_efficiency <- function (
     data_proportions[1, 5] <- nrow(data_labeled)
     
   }
-
+ 
   # output: data and index
   output_label_efficiency <- list(
     data_labeled = data_labeled,
