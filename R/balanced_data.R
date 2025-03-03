@@ -1046,12 +1046,16 @@ SMOTE_data <- function (
   
   # set names
   names(data_labeled) <- names(data)
-  
-  browser()
-  
+
   # First, we need to know the efficient DMUs for each sub_group
-  
-  
+  facets <- convex_facets(
+    data = dfs,
+    x = x,
+    y = y,
+    z = z,
+    groups = length(dfs)
+  )
+  browser()
   # loop 
   # number synthetic function
   

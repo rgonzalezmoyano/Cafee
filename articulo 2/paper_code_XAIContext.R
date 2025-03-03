@@ -108,6 +108,8 @@ valid_index <- createDataPartition(
   list = FALSE
 )
 
+set.seed(0)
+
 # Dividir dataset en entrenamiento y validación
 valid_data <- label_efficiency[["data_labeled"]][valid_index, ]
 train_data <- label_efficiency[["data_labeled"]][-valid_index, ]
@@ -117,13 +119,13 @@ prop.table(table(train_data$class_efficiency))
 # addresing imbalance
 balance <- c(0.3, 0.5) # c(NA, 0.2, 0.3, 0.4, 0.5)
 
-# train_data_SMOTE <- SMOTE_data(
-#   data = train_data,
-#   x = label_efficiency[["index"]][["x"]],
-#   y = label_efficiency[["index"]][["y"]],
-#   z = label_efficiency[["index"]][["z"]],
-#   balance_data = balance
-# )
+train_data_SMOTE <- SMOTE_data(
+  data = train_data,
+  x = label_efficiency[["index"]][["x"]],
+  y = label_efficiency[["index"]][["y"]],
+  z = label_efficiency[["index"]][["z"]],
+  balance_data = balance
+)
 
 copy_train_data <- train_data
 copy_valid_data <- valid_data
