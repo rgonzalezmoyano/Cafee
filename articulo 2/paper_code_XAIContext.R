@@ -62,7 +62,7 @@ data <- data_2018
 #data <- data[1:200, ]
 idx_NA <- which(is.na(data$SCHLTYPE))
 data <- data[-idx_NA,]
-
+data <- data[1:200,]
 # ===
 # Information to cafee
 # ===

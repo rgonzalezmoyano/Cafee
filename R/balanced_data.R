@@ -227,8 +227,7 @@ SMOTE_balance_data <- function (
   
       true_eff <- nrow(eff_convex)
       
-      # extreme casa: there are not full-dimensional faces
-  
+      # extreme case: there are not full-dimensional faces
       if (length(idx_eff) == 0 & count_batch == n_total_batch) {
         
         iter_extreme <- 0
@@ -1036,7 +1035,7 @@ SMOTE_data <- function (
       group_split(across(all_of(contx_name)), .keep = TRUE)
     
   }
-
+  #load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 2/dfs.RData")
   # save all data labeled
   data_labeled <- as.data.frame(matrix(
     data = NA,
@@ -1046,20 +1045,27 @@ SMOTE_data <- function (
   
   # set names
   names(data_labeled) <- names(data)
-
+  
   # First, we need to know the efficient DMUs for each sub_group
   facets <- convex_facets(
     data = dfs,
     x = x,
     y = y,
-    z = z,
-    groups = length(dfs)
+    z = z
   )
-  browser()
+  #load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 2/facets_test.RData")
   # loop 
-  # number synthetic function
+  # number synthetic function for each level of dataset
   
-  # 
+  balance_datasets <- get_SMOTE_DMUs(
+    data = dfs,
+    facets = facets,
+    x = x,
+    y = y,
+    z = z,
+    balance = balance_data
+  )
+  
   # =========================================================== #
   # determinate number of efficient and not efficient to create #
   # =========================================================== #
@@ -1080,7 +1086,7 @@ SMOTE_data <- function (
   prop <- prop_real
   
   sense_balance <- NULL
-  browser()
+
   # determinate the way to balance, create efficient or not efficient
   if (prop < balance_data) {
     

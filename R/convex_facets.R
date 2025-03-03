@@ -6,21 +6,20 @@
 #' @param x Column indexes of the input variables in the \code{data}.
 #' @param y Column indexes of the output variables in the \code{data}.
 #' @param z Column indexes of environment variables in \code{data}.
-#' @param groups Number of sub groups in \code{data}.
 #' 
 #' @return It returns a \code{data.frame} with the newly created set of DMUs incorporated.
 
 convex_facets <- function (
-    data, x, y, z = NULL, groups
+    data, x, y, z = NULL
 ) {
- 
+
   copy_data <- data
   
   # create the dataframe to save data
   save_facets <- vector("list", length = length(data))
   
   for (context in 1:length(save_facets)) {
-    
+    print(context)
     # select data
     data_context <- data[[context]]
     
@@ -39,127 +38,265 @@ convex_facets <- function (
     
     n_comb <- length(c(x,y))
     
-    combinations <- as.data.frame(t(combn(n_eff, n_comb)))
-    
-    eff_convex <- as.data.frame(matrix(
-      data = NA,
-      ncol = ncol(data_eff[, c(x,y)]),
-      nrow = 0
-    ))
-    
-    names(eff_convex) <- names(data_eff[, c(x,y)])
-    
-    ineff_convex <- as.data.frame(matrix(
-      data = NA,
-      ncol = ncol(data_eff[, c(x,y)]),
-      nrow = 0
-    ))
-    
-    names(ineff_convex) <- names(data_eff[, c(x,y)])
-    
-    if(nrow(combinations) > 5000) {
+    if(length(n_eff) >= n_comb) {
       
-      # Partition size
-      n_batch <- 5000
+      combinations <- as.data.frame(t(combn(n_eff, n_comb)))
       
-      # shuffle the data
-      shuffle_data <- sample(1:nrow(combinations))
+      # randomly shuffle the rows of combinations
+      combinations <- combinations[sample(nrow(combinations)),]
       
-      # Create an index for each partition
-      combinations$particion <- ceiling(seq_along(shuffle_data) / n_batch)
+      # save efficient combinations
+      eff_convex <- as.data.frame(matrix(
+        data = NA,
+        ncol = ncol(data_eff[, c(x,y)]),
+        nrow = 0
+      ))
       
-      batch_all <- split(combinations[shuffle_data, ], combinations$particion)
+      # names(eff_convex) <- names(data_eff[, c(x,y)])
       
-      n_total_batch <- ceiling(nrow(combinations) / 5000)
+      # save not efficient
+      ineff_convex <- as.data.frame(matrix(
+        data = NA,
+        ncol = ncol(data_eff[, c(x,y)]),
+        nrow = 0
+      ))
+      
+      #names(ineff_convex) <- names(data_eff[, c(x,y)])
+      
+      if(nrow(combinations) > 5000) {
+        
+        # Partition size
+        n_batch <- 5000
+        
+        # shuffle the data
+        shuffle_data <- sample(1:nrow(combinations))
+        
+        # Create an index for each partition
+        combinations$particion <- ceiling(seq_along(shuffle_data) / n_batch)
+        
+        batch_all <- split(combinations[shuffle_data, ], combinations$particion)
+        
+        n_total_batch <- ceiling(nrow(combinations) / 5000)
+        
+      } else {
+        
+        batch_all <- list()
+        batch_all[[1]] <- combinations
+        
+        n_total_batch <- 1
+        
+      }
+      
+      # create convex combintaions
+      print("calculate combinations points:")
+      print(nrow(combinations))
+      
+      print("Number of batches:")
+      print(n_total_batch)
+      
+      
+      save_idx_eff <- NULL
+      save_idx_ineff <- NULL
+      
+      # ================================= #
+      # create efficient units to balance #
+      # ================================= #
+      
+      for (iter in 1:length(batch_all)) {
+        
+        # stop if
+        if(nrow(eff_convex)/nrow(data_context) > 0.95) {
+          
+          print(paste("There are too many convex facets in sub group ", context, " :", nrow(eff_convex), " in a dataset of :", nrow(data_context)))
+          break
+        }
+        
+        print(paste("Context", context))
+        print(paste("Batch:", iter))
+        
+        # units to classify
+        results_convx <- t(apply(batch_all[[iter]], 1, function(indices) { #[,c(x,y)]
+          
+          # select row
+          seleccion <- data_eff[unlist(as.vector(indices)), c(x,y)]
+          
+          # calculate
+          colSums(seleccion * lambda)
+          
+        }))
+        
+        # change to dataframe
+        results_convx <- as.data.frame(results_convx)
+        
+        # change name
+        names(results_convx) <- names(data_eff[, c(x,y)])
+        
+        # create test dataset additive
+        test_eff <- rbind(data_eff[, c(x,y)], results_convx)
+        
+        # test additive
+        test_add <- compute_scores_additive(test_eff, x = x, y = y)
+        
+        # leave original eff units, get index
+        new_results_convx <- test_eff[(nrow(data_eff) + 1):nrow(test_eff),]
+        idx_eff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] < 0.0001)
+        
+        if (length(idx_eff) == 0) {
+          ineff_to_save <- new_results_convx
+          next
+        }
+        
+        idx_dmus_eff <- batch_all[[iter]][idx_eff, c(x,y)]
+        
+        # save efficient convex
+        eff_convex <- rbind(eff_convex, idx_dmus_eff)
+        
+      }
+      
+      # change to dataframe
+      results_convx <- as.data.frame(eff_convex)
       
     } else {
       
-      batch_all <- list()
-      batch_all[[1]] <- combinations
+      # if there are less units than variables, we will reduce the dimensionality
+      # save efficient combinations
+      eff_convex <- as.data.frame(matrix(
+        data = NA,
+        ncol = ncol(data_eff[, c(x,y)]),
+        nrow = 0
+      ))
       
+      # the same output
+      results_convx <- as.data.frame(matrix(
+        data = NA,
+        ncol = ncol(data_eff[, c(x,y)]),
+        nrow = 0
+      ))
+      
+      iter <- 1
       n_total_batch <- 1
-      
     }
     
-    # create convex combintaions
-    print("calculate combinations points:")
-    print(nrow(combinations))
     
-    print("Number of batches:")
-    print(length(batch_all))
-    
-    iter <- 0
-    count_batch <- 0
-    
-    save_idx_eff <- NULL
-    save_idx_ineff <- NULL
-    
-    # ================================= #
-    # create efficient units to balance #
-    # ================================= #
-  
-    for (iter in 1:length(batch_all)) {
+    # ================================================== #
+    # extreme case: there are not full-dimensional faces #
+    # ================================================== #
+    if (nrow(results_convx) == 0 & iter == n_total_batch) {
       
-      print(paste("Batch:", iter))
+      iter_extreme <- 0
       
-      # units to classify
-      results_convx <- t(apply(batch_all[[iter]], 1, function(indices) { #[,c(x,y)]
       
-        # select row
-        seleccion <- data_eff[unlist(as.vector(indices)), c(x,y)]
+      
+      while (nrow(eff_convex) == 0) {
         
-        # calculate
-        colSums(seleccion * lambda)
+        # count progress
+        iter_extreme <- iter_extreme + 1
         
-      }))
-
-      # change to dataframe
-      results_convx <- as.data.frame(results_convx)
-      
-      # change name
-      names(results_convx) <- names(data_eff[, c(x,y)])
-      
-      # create test dataset additive
-      test_eff <- rbind(data_eff[, c(x,y)], results_convx)
-      
-      # test additive
-      test_add <- compute_scores_additive(test_eff, x = x, y = y)
-      
-      # leave original eff units, get index
-      new_results_convx <- test_eff[(nrow(data_eff) + 1):nrow(test_eff),]
-      idx_eff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] < 0.0001)
-      
-      if (length(idx_eff) == 0) {
-        ineff_to_save <- new_results_convx
-        next
-      }
-      
-      idx_dmus_eff <- batch_all[[iter]][idx_eff, c(x,y)]
+        # proportion importance
+        len <- len - 1
+        
+        # save efficient combinations len-1
+        eff_convex <- as.data.frame(matrix(
+          data = NA,
+          ncol = len,
+          nrow = 0
+        ))
+        
+        prop_imp <- 1/len
+        
+        lambda <- rep(prop_imp, len)
+        
+        n_comb <- len
+        
+        if(length(n_eff) < n_comb) {
+         
+          next
+          
+        }
      
-      # # save idx_eff
-      # save_idx_eff <- c(save_idx_eff, idx_eff)
-      # 
-      # new_eff_conx_unit <- new_results_convx[idx_eff, ]
-      # 
-      # save efficient convex
-      eff_convex <- rbind(eff_convex, idx_dmus_eff)
-      # 
-      # # save not efficient
-      # ineff_to_save <- new_results_convx[-idx_eff, ]
-      print(nrow(eff_convex))
+        combinations <- as.data.frame(t(combn(n_eff, n_comb)))
+        
+        # randomly shuffle the rows of combinations
+        combinations <- combinations[sample(nrow(combinations)),]
+        if (len == 1) {
+          
+          # there are no feasible convex combiantions
+          results_convx <- as.data.frame(eff_convex)
+          break
+          
+        } else {
+          
+          if(nrow(combinations) > 5000) {
+            
+            # Partition size
+            n_batch <- 5000
+            
+            # shuffle the data
+            shuffle_data <- sample(1:nrow(combinations))
+            
+            # Create an index for each partition
+            combinations$particion <- ceiling(seq_along(shuffle_data) / n_batch)
+            
+            batch_all <- split(combinations[shuffle_data, ], combinations$particion)
+            
+            n_total_batch <- ceiling(nrow(combinations) / 5000)
+            
+          } else {
+            
+            batch_all <- list()
+            batch_all[[1]] <- combinations
+            
+            n_total_batch <- 1
+            
+          }
+          
+          # units to classify
+          results_convx <- t(apply(batch_all[[iter]], 1, function(indices) {
+            
+            # select row
+            seleccion <- data_eff[unlist(as.vector(indices)), c(x,y)]
+            
+            # calculate
+            colSums(seleccion * lambda)
+            
+          }))
+          
+          # change to dataframe
+          results_convx <- as.data.frame(results_convx)
+          
+          # change name
+          names(results_convx) <- names(data_eff[, c(x,y)])
+          
+          # create test dataset additive
+          test_eff <- rbind(data_eff[, c(x,y)], results_convx)
+          
+          # test additive
+          test_add <- compute_scores_additive(test_eff, x = x, y = y)
+          
+          # leave original eff units, get index
+          new_results_convx <- test_eff[(nrow(data_eff) + 1):nrow(test_eff),]
+          idx_eff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] < 0.0001)
+          
+          # get efficient index
+          idx_dmus_eff <- batch_all[[iter]][idx_eff, ]
+          
+          # save idx_eff
+          eff_convex <- rbind(eff_convex, idx_dmus_eff)
+          
+          results_convx <- as.data.frame(eff_convex)
+          
+          new_eff_conx_unit <- new_results_convx[idx_eff, ]
+          
+        }
+          
+      } # len = 1
       
-    }
-    
-    # change to dataframe
-    results_convx <- as.data.frame(eff_convex)
-    
-    # # change name
-    # names(results_convx) <- names(data[, c(x,y)]) 
+    } # end exreme cases
     
     save_facets[[context]] <- results_convx
+  
   } # end loop save_facets
     
-  browser()
-  return(results_convx)
+  return(save_facets)
   
 }
