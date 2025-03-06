@@ -1053,10 +1053,10 @@ SMOTE_data <- function (
     y = y,
     z = z
   )
-  #load("C:/Users/Ricardo/OneDrive - UMH/Documentos/Cafee/articulo 2/facets_test.RData")
+
   # loop 
   # number synthetic function for each level of dataset
-  
+
   balance_datasets <- get_SMOTE_DMUs(
     data = dfs,
     facets = facets,
@@ -1065,81 +1065,7 @@ SMOTE_data <- function (
     z = z,
     balance = balance_data
   )
-  
-  # =========================================================== #
-  # determinate number of efficient and not efficient to create #
-  # =========================================================== #
-  
-  # determinate numbre of efficient and ineeficient units
-  n_real_eff <- nrow(data[data$class_efficiency == "efficient",])
-  n_real_ineff <- nrow(data[data$class_efficiency == "not_efficient",])
-  
-  prop_real <- n_real_eff / nrow(data)
-  
-  # n_new_eff <- n_real_eff
-  n_new_eff <- 0
-  
-  #n_new_ineff <- n_real_ineff
-  n_new_ineff <- 0
-  
-  # proportion of efficients
-  prop <- prop_real
-  
-  sense_balance <- NULL
-
-  # determinate the way to balance, create efficient or not efficient
-  if (prop < balance_data) {
-    
-    # need to create efficient units
-    sense_balance <- "efficient"
-    
-    # in each itaretion we create these DMUs
-    add_eff <- 1
-    add_not_eff <- 0
-    
-  } else {
-    
-    # need to create not efficient units
-    sense_balance <- "not_efficient"
-    
-    # in each itaretion we create these DMUs
-    add_eff <- 0
-    add_not_eff <- 1
-    
-  }
-  
-  # determinate how many DMUs create PROPORTION
-  eff_level <- balance_data
-  
-  test_n_eff <- n_real_eff
-  test_n_ineff <- n_real_ineff
-  
-  if (sense_balance == "not_efficient") {
-    
-    while (prop > eff_level) {
-      
-      test_n_ineff <- test_n_ineff + add_not_eff
-      
-      prop <- test_n_eff / (test_n_eff + test_n_ineff)
-      
-    }
-    
-  } else {
-    
-    while (prop < eff_level) {
-      
-      test_n_eff <- test_n_eff + add_eff
-      
-      prop <- test_n_eff / (test_n_eff + test_n_ineff)
-    }
-    
-  }
-  
-  # it is necessary to create create_eff units
-  create_eff <- test_n_eff - n_real_eff
-  
-  # it is necessary to create create_ineff units
-  create_ineff <- test_n_ineff - n_real_ineff
+  browser()
   
   # ============================================= #
   # create convex combinations to achieve balance #
