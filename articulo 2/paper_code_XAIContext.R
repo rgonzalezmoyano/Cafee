@@ -62,7 +62,7 @@ data <- data_2018
 #data <- data[1:200, ]
 idx_NA <- which(is.na(data$SCHLTYPE))
 data <- data[-idx_NA,]
-data <- data[1:200,]
+data <- data
 # ===
 # Information to cafee
 # ===
@@ -70,7 +70,7 @@ data <- data[1:200,]
 # x and y indexes
 x <- c(10, 7, 6)
 y <- c(3:5)
-z <- c(2) # environment variables    , 8
+z <- c(2, 8) # environment variables    , 8
 
 # different types to label
 # target_method <- "additive"

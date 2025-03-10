@@ -12,26 +12,45 @@
 #' @param z Column indexes of environment variables in \code{data} (optional).
 #' @param balance A numeric vector indicating the different levels of balance required (e.g., c(0.1, 0.45, 0.6)).
 #' 
+#' @importFrom dplyr anti_join
+#' 
 #' @return A \code{list} where each element corresponds to a balance level, containing a single \code{data.frame} 
 #' with the real and synthetic DMUs, correctly labeled.
 
 get_SMOTE_DMUs <- function (
     data, facets, x, y, z = NULL, balance_levels = NULL
 ) {
-  
+
   copy_data <- data
   
   save_dataset_balanced <- vector("list", length = length(balance_levels))
   
+  names(save_dataset_balanced) <- as.character(balance_levels)
+
   # we need to determine, for each balance level, the number of synthetic DMUs to create
   for (balance in balance_levels) {
+    
+    save_dataset <- as.data.frame(matrix(
+      data = NA,
+      ncol = ncol(copy_data[[1]]),
+      nrow = 0
+    ))
+    
     for(sub_group in 1:length(copy_data)) {
-      
+    
       data <- copy_data
       # =========================================================== #
       # determinate number of efficient and not efficient to create #
       # =========================================================== #
       data <- data[[sub_group]]
+      
+      if(nrow(facets[[sub_group]]) == 0) {
+        print("nrow(facets[[sub_group]]) == 0")
+        
+        save_dataset <- rbind(data, save_dataset)
+        next
+        
+      }
 
       # determinate numbre of efficient and ineeficient units
       n_real_eff <- nrow(data[data$class_efficiency == "efficient",])
@@ -61,7 +80,7 @@ get_SMOTE_DMUs <- function (
         add_not_eff <- 0
         
       } else {
-        
+       
         # need to create not efficient units
         sense_balance <- "not_efficient"
         
@@ -106,14 +125,20 @@ get_SMOTE_DMUs <- function (
       # ============================================ #
       # get index to create efficient synthetic DMUs #
       # ============================================ #
-      idx <- facets[[sub_group]]
       
+      # total combinations 
       # eff data
       data_eff <- data[data$class_efficiency == "efficient", ]
       
+      # real efficient combination
+      idx <- facets[[sub_group]]
+      n_idx <- 1:nrow(idx)
+      
+      # number of efficient DMUs
+      n_eff <- nrow(data_eff)
+      
       # create units
       # lambda
-      n_idx <- 1:nrow(idx)
       
       # proportion importance
       len <- ncol(facets[[sub_group]])
@@ -121,6 +146,37 @@ get_SMOTE_DMUs <- function (
       prop_imp <- 1/len
       
       lambda <- rep(prop_imp, ncol(facets[[sub_group]]))
+      
+      n_comb <- nrow(data_eff)
+      
+      combinations <- as.data.frame(t(combn(n_comb, len)))
+      
+      if (sense_balance == "not_efficient") {
+        
+        # delete combinations efficient
+        #combinations <- anti_join(combinations, idx, by = names(idx))
+        
+        # select  k-create_ineff
+        if (nrow(combinations) > (create_ineff * 3)) {
+          idx_combinations <- sample(x = 1:nrow(combinations), size = (create_ineff * 3), replace = FALSE)
+          
+          idx_ineff <- combinations[idx_combinations,]
+          
+          idx <- anti_join(idx_ineff, idx, by = names(idx))
+          
+          idx <- na.omit(idx)
+          
+        } else if (nrow(combinations) == 1) {
+
+          print("Next")
+          print(sub_group)
+          
+          save_dataset <- rbind(data, save_dataset)
+          next
+          
+        } 
+        
+      } # end not efficient case
       
       # units to classify
       results_convx <- t(apply(idx, 1, function(indices) { 
@@ -132,18 +188,53 @@ get_SMOTE_DMUs <- function (
         colSums(seleccion * lambda)
         
       }))
+    
+      # as data.frame
+      results_convx <- as.data.frame(results_convx)
       
-      browser()
+      # create contex information
+      vector_contex <- unique(data[,z])
       
-    }
+      n_col <- length(vector_contex)
+      
+      contex <- as.data.frame(matrix(
+        data = NA,
+        nrow = nrow(results_convx),
+        ncol = n_col
+      ))
+      
+      names(contex) <- names(vector_contex)
+      
+      for (colum_contex in 1:length(contex)) {
+        
+        contex[, colum_contex] <- rep(as.numeric(vector_contex[,colum_contex]), nrow(results_convx)) 
+        
+      }
+      
+      
+      new_data <- cbind(results_convx, contex)
+      
+      if(sense_balance == "not_efficient") {
+        
+        new_data$class_efficiency <- rep("not_efficient", nrow(results_convx))
+        
+      } else {
+        
+        new_data$class_efficiency <- rep("efficient", nrow(results_convx))
+        
+      }
+      
+      new_data <- rbind(data, new_data)
+      
+      save_dataset <- rbind(save_dataset, new_data)
+      
+    } # end loop sub_group
     
-    
-    
-    
-  }
+    save_dataset_balanced[[as.character(balance)]] <- save_dataset
+  } # end loop balance
     
    
-    
+  browser()
     
   
 
