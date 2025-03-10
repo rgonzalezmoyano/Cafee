@@ -233,50 +233,6 @@ get_SMOTE_DMUs <- function (
     save_dataset_balanced[[as.character(balance)]] <- save_dataset
   } # end loop balance
     
-   
-  browser()
-    
-  
-
-  
-  
-  for (context in 1:length(save_datasets)) {
-    
-    print(context)
-    # select data
-    data_context <- data[[context]]
-    
-    # eff data
-    data_eff <- data_context[data_context$class_efficiency == "efficient", ]
-    
-    idx <- facets[[context]]
-    
-    # create units
-    # lambda
-    n_idx <- 1:nrow(idx)
-    
-    # proportion importance
-    len <- ncol(facets[[context]])
-    
-    prop_imp <- 1/len
-    
-    lambda <- rep(prop_imp, ncol(facets[[context]]))
-    
-   
-    
-    # new_units <- as.data.frame(results_convx)
-    # browser()
-    # # new_units[, z] <- 
-    # 
-    # new_units$class_efficiency <- "efficient"
-    # rbind(data[[context]], new_units)
-    # 
-    # 
-    # save_datasets[[context]] <- rbind(data[[context]], new_units)
-    # save
-    
-  }
-    
-  return(new_data)
+  return(save_dataset_balanced)
   
 }

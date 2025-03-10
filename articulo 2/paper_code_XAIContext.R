@@ -70,7 +70,7 @@ data <- data
 # x and y indexes
 x <- c(10, 7, 6)
 y <- c(3:5)
-z <- c(2, 8) # environment variables    , 8
+z <- c(2) # environment variables    , 8
 
 # different types to label
 # target_method <- "additive"
