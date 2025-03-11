@@ -62,7 +62,7 @@ data <- data_2018
 #data <- data[1:200, ]
 idx_NA <- which(is.na(data$SCHLTYPE))
 data <- data[-idx_NA,]
-data <- data
+data <- data[1:200,]
 # ===
 # Information to cafee
 # ===
@@ -117,7 +117,7 @@ train_data <- label_efficiency[["data_labeled"]][-valid_index, ]
 prop.table(table(train_data$class_efficiency))
 
 # addresing imbalance
-balance <- c(0.3, 0.5) # c(NA, 0.2, 0.3, 0.4, 0.5)
+balance <- c(0.5) # c(NA, 0.2, 0.3, 0.4, 0.5)
 
 train_data_SMOTE <- SMOTE_data(
   data = train_data,

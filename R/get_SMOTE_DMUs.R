@@ -37,7 +37,8 @@ get_SMOTE_DMUs <- function (
     ))
     
     for(sub_group in 1:length(copy_data)) {
-    
+    print(paste("sub_group:", sub_group))
+      
       data <- copy_data
       # =========================================================== #
       # determinate number of efficient and not efficient to create #
@@ -45,6 +46,7 @@ get_SMOTE_DMUs <- function (
       data <- data[[sub_group]]
       
       if(nrow(facets[[sub_group]]) == 0) {
+        browser()
         print("nrow(facets[[sub_group]]) == 0")
         
         save_dataset <- rbind(data, save_dataset)
@@ -152,7 +154,7 @@ get_SMOTE_DMUs <- function (
       combinations <- as.data.frame(t(combn(n_comb, len)))
       
       if (sense_balance == "not_efficient") {
-        
+
         # delete combinations efficient
         #combinations <- anti_join(combinations, idx, by = names(idx))
         
@@ -177,7 +179,7 @@ get_SMOTE_DMUs <- function (
         } 
         
       } # end not efficient case
-      
+
       # units to classify
       results_convx <- t(apply(idx, 1, function(indices) { 
         
@@ -188,7 +190,7 @@ get_SMOTE_DMUs <- function (
         colSums(seleccion * lambda)
         
       }))
-    
+      
       # as data.frame
       results_convx <- as.data.frame(results_convx)
       
@@ -216,7 +218,7 @@ get_SMOTE_DMUs <- function (
       
       if(sense_balance == "not_efficient") {
         
-        new_data$class_efficiency <- rep("not_efficient", nrow(results_convx))
+        new_data$class_efficiency <- "not_efficient"
         
       } else {
         
