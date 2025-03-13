@@ -37,8 +37,11 @@ get_SMOTE_DMUs <- function (
     ))
     
     for(sub_group in 1:length(copy_data)) {
-    print(paste("sub_group:", sub_group))
+      print(paste("sub_group:", sub_group))
+      print(paste("Balance", balance))
+      cat("\n")
       
+      #if(sub_group == 13 & balance == 0.8) {browser}
       data <- copy_data
       # =========================================================== #
       # determinate number of efficient and not efficient to create #
@@ -46,10 +49,9 @@ get_SMOTE_DMUs <- function (
       data <- data[[sub_group]]
       
       if(nrow(facets[[sub_group]]) == 0) {
-        browser()
-        print("nrow(facets[[sub_group]]) == 0")
+        print(paste("No facets", sub_group))
         
-        save_dataset <- rbind(data, save_dataset)
+        save_dataset <- rbind(save_dataset, data)
         next
         
       }
@@ -124,10 +126,20 @@ get_SMOTE_DMUs <- function (
       # it is necessary to create create_ineff units
       create_ineff <- test_n_ineff - n_real_ineff
       
+      # balance perfect, next
+      if (create_eff == 0 & create_ineff == 0) {
+        
+        print(paste("Balance perfect in", sub_group))
+        
+        save_dataset <- rbind(save_dataset, data)
+        next
+        
+      }
+      
       # ============================================ #
       # get index to create efficient synthetic DMUs #
       # ============================================ #
-      
+      # if(sub_group == 3){browser()}
       # total combinations 
       # eff data
       data_eff <- data[data$class_efficiency == "efficient", ]
@@ -160,6 +172,7 @@ get_SMOTE_DMUs <- function (
         
         # select  k-create_ineff
         if (nrow(combinations) > (create_ineff * 3)) {
+          
           idx_combinations <- sample(x = 1:nrow(combinations), size = (create_ineff * 3), replace = FALSE)
           
           idx_ineff <- combinations[idx_combinations,]
@@ -168,15 +181,94 @@ get_SMOTE_DMUs <- function (
           
           idx <- na.omit(idx)
           
-        } else if (nrow(combinations) == 1) {
-
-          print("Next")
-          print(sub_group)
+        } else if ((nrow(combinations) - length(n_idx)) < create_ineff &
+                   nrow(combinations) == length(n_idx)){
           
-          save_dataset <- rbind(data, save_dataset)
+          # like there are less possible combinations than units, not possible to create, we need more facts
+          # print("bro")
+          # browser()
+          
+          print(paste("No possible create not efficient units in", sub_group))
+          
+          save_dataset <- rbind(save_dataset, data)
           next
           
-        } 
+          # len <- len - 1
+          # 
+          # prop_imp <- 1/len
+          # 
+          # lambda <- rep(prop_imp, len)
+          # 
+          # n_comb <- nrow(data_eff)
+          # 
+          # combinations <- as.data.frame(t(combn(n_comb, len)))
+          # 
+          # results_convx_special <- t(apply(combinations, 1, function(indices) { 
+          #   
+          #   # select row
+          #   seleccion <- data_eff[unlist(as.vector(indices)), c(x,y)]
+          #   
+          #   # calculate
+          #   colSums(seleccion * lambda)
+          #   
+          # }))
+          # 
+          # # change to dataframe
+          # results_convx_special <- as.data.frame(results_convx_special)
+          # 
+          # # change name
+          # names(results_convx_special) <- names(data_eff[, c(x,y)])
+          # 
+          # # create test dataset additive
+          # test_eff <- rbind(data_eff[, c(x,y)], results_convx_special)
+          # 
+          # # test additive
+          # test_add <- compute_scores_additive(test_eff, x = x, y = y)
+          # 
+          # # leave original eff units, get index
+          # new_results_convx_special <- test_eff[(nrow(data_eff) + 1):nrow(test_eff),]
+          # idx_eff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] < 0.0001)
+          
+        } else if ((nrow(combinations) - length(n_idx)) < create_ineff &
+                   nrow(combinations) > length(n_idx)) {
+          
+          print(paste("No possible create not efficient units in", sub_group))
+          
+          save_dataset <- rbind(save_dataset, data)
+          next
+          
+          # print("bro2")
+          # # change lambda
+          # browser()
+
+          
+          # idx_ineff <- combinations[-idx,]
+          
+          # idx_ineff <- combinations %>% 
+          #   anti_join(idx, by = colnames(combinations))
+          # 
+          # # save new unit s witf different lambda
+          # save_lambda_ineff <- as.data.frame(matrix(
+          #   data = NA,
+          #   ncol = length(c(x,y)),
+          #   nrow = 0
+          # ))
+          # 
+         
+          
+        }
+        # else if (nrow(combinations) == 1) {
+        #   
+        #   print("Next")
+        #   print(sub_group)
+        #   
+        #   save_dataset <- rbind(data, save_dataset)
+        #   next
+        #   
+        # } 
+        # 
+        
+        
         
       } # end not efficient case
 
@@ -193,6 +285,63 @@ get_SMOTE_DMUs <- function (
       
       # as data.frame
       results_convx <- as.data.frame(results_convx)
+      
+      
+      # if there are not enough efficient units, use
+      if(sense_balance == "efficient" & nrow(results_convx) < create_eff) {
+        
+        # need to create
+        need_eff <- create_eff - nrow(new_data)
+        
+        # eff_combinations <- idx
+        save_lambda_eff <- as.data.frame(matrix(
+          data = NA,
+          ncol = length(c(x,y)),
+          nrow = 0
+        ))
+        count_browser <- 0
+        while (nrow(save_lambda_eff) < need_eff) {
+          count_browser <- count_browser + 1
+          print(count_browser)
+          if(count_browser == 2000) {browser()}
+          # if(sub_group == 13 & balance == 0.7) {browser}
+          # process to generate lambda
+          generate_lambda <- runif(length(c(x, y)), min = 0.05, max = 0.95)
+          
+          normalize_lambda <- generate_lambda/sum(generate_lambda)
+          
+          # set lambda
+          lambda_eff <- normalize_lambda
+          
+          # set combnation to make new unit
+          idx_new_eff <- sample(1:nrow(idx), size = 1)
+          selec_comb <- idx[idx_new_eff,]
+          
+          # units to classify
+          seleccion <- data_eff[unlist(as.vector(selec_comb)), c(x,y)]
+          
+          # calculate
+          new_unit <- colSums(seleccion * lambda_eff)
+          
+          # check
+          check_data <- rbind(data_eff[, c(x,y)], new_unit)
+          
+          check_test <- compute_scores_additive(check_data, x = x, y = y)
+          
+          # save if is correct
+          if (check_test[nrow(data_eff) + 1,] < 0.0001) {
+            
+            save_lambda_eff <- rbind(save_lambda_eff, new_unit)
+            
+          }
+          
+        } # end loop while
+        
+        names(save_lambda_eff) <- names(results_convx)
+        
+        results_convx <- rbind(results_convx, save_lambda_eff)
+        
+      } 
       
       # create contex information
       vector_contex <- unique(data[,z])
@@ -213,7 +362,6 @@ get_SMOTE_DMUs <- function (
         
       }
       
-      
       new_data <- cbind(results_convx, contex)
       
       if(sense_balance == "not_efficient") {
@@ -226,13 +374,14 @@ get_SMOTE_DMUs <- function (
         
       }
       
-      new_data <- rbind(data, new_data)
+      new_data_completed <- rbind(data, new_data)
       
-      save_dataset <- rbind(save_dataset, new_data)
+      save_dataset <- rbind(save_dataset, new_data_completed)
       
     } # end loop sub_group
     
     save_dataset_balanced[[as.character(balance)]] <- save_dataset
+    
   } # end loop balance
     
   return(save_dataset_balanced)
