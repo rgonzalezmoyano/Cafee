@@ -107,7 +107,7 @@ convex_facets <- function (
         # stop if
         if(nrow(eff_convex)/nrow(data_context) > 0.95) {
           
-          print(paste("There are too many convex facets in sub group ", context, " :", nrow(eff_convex), " in a dataset of :", nrow(data_context)))
+          print(paste("There are too many convex facets in sub group", context, ":", nrow(eff_convex), " in a dataset of :", nrow(data_context)))
           break
         }
         
