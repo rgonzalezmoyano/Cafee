@@ -117,7 +117,7 @@ train_data <- label_efficiency[["data_labeled"]][-valid_index, ]
 prop.table(table(train_data$class_efficiency))
 
 # addresing imbalance
-balance <- c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9) # c(NA, 0.2, 0.3, 0.4, 0.5)
+balance <- c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6) # c(NA, 0.2, 0.3, 0.4, 0.5)
 
 train_data_SMOTE <- SMOTE_data(
   data = train_data,

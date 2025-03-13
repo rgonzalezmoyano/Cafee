@@ -286,6 +286,13 @@ get_SMOTE_DMUs <- function (
       # as data.frame
       results_convx <- as.data.frame(results_convx)
       
+      # check all convex are efficient
+      check_results_convx <- which(compute_scores_additive(results_convx, x = x, y = y) < 0.0001)
+      
+      # save only efficient
+      results_convx <- results_convx[check_results_convx, ]
+      
+      idx <- idx[check_results_convx, ]
       
       # if there are not enough efficient units, use
       if(sense_balance == "efficient" & nrow(results_convx) < create_eff) {
@@ -302,8 +309,9 @@ get_SMOTE_DMUs <- function (
         count_browser <- 0
         while (nrow(save_lambda_eff) < need_eff) {
           count_browser <- count_browser + 1
-          print(count_browser)
-          if(count_browser == 2000) {browser()}
+          #print(count_browser)
+          #if(count_browser == 5000) {browser()}
+          print((nrow(save_lambda_eff)/need_eff)*100)
           # if(sub_group == 13 & balance == 0.7) {browser}
           # process to generate lambda
           generate_lambda <- runif(length(c(x, y)), min = 0.05, max = 0.95)
