@@ -113,24 +113,28 @@ set.seed(0)
 # Dividir dataset en entrenamiento y validación
 valid_data <- label_efficiency[["data_labeled"]][valid_index, ]
 train_data <- label_efficiency[["data_labeled"]][-valid_index, ]
+new_x <- label_efficiency[["index"]][["x"]]
+new_y <- label_efficiency[["index"]][["y"]]
+new_z <- label_efficiency[["index"]][["z"]]
+
 
 prop.table(table(train_data$class_efficiency))
 
 # addresing imbalance
-balance <- c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6) # c(NA, 0.2, 0.3, 0.4, 0.5)
+balance <- c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9) # c(NA, 0.2, 0.3, 0.4, 0.5)
 
 train_data_SMOTE <- SMOTE_data(
   data = train_data,
-  x = label_efficiency[["index"]][["x"]],
-  y = label_efficiency[["index"]][["y"]],
-  z = label_efficiency[["index"]][["z"]],
+  x = new_x,
+  y = new_y,
+  z = new_z,
   balance_data = balance
 )
 
 copy_train_data <- train_data
 copy_train_data_SMOTE <- train_data_SMOTE
 copy_valid_data <- valid_data
-save_data <- list(copy_train_data, copy_train_data_SMOTE, copy_valid_data)
+save_data <- list(copy_train_data, copy_train_data_SMOTE, copy_valid_data, label_efficiency, valid_index)
 #save(save_data, file = "save_data_train.Rdata")
 
 # save results
@@ -164,11 +168,14 @@ batch_sizes <- c(1, 8, 16, 32)
 epochs_list <- c(100)
 activations <- c("relu", "tanh", "leaky_relu")  # Agregamos la función de activación
 
+optimizer <-  "adam"  # sgd, adam
+metric <- "accuracy" # accuracy; F1Score
+
 # Definir hiperparámetros a explorar
-learning_rates <- c(0.001)
-hidden_layers <- c(1, 2, 5, 10)
+learning_rates <- c(0.01, 0.001, 0.0001)
+hidden_layers <- c(5, 10)
 neurons_list <- c(16, 32)
-dropout_rates <- c(0, 0.4, 0.6)
+dropout_rates <- c(0.4, 0.6)
 batch_sizes <- c(16)
 epochs_list <- c(15)
 activations <- c("relu")  # Agregamos la función de activación
@@ -243,7 +250,8 @@ for (balance_i in 1:length(balance)) {
                     ", Neurons =", neurons, 
                     ", Dropout =", dropout, 
                     ", Batch =", batch, 
-                    ", Epochs =", epoch, "\n")
+                    ", Epochs =", epoch,
+                    ", activation function =", activation, "\n")
                 
                 # Almacenar los scores de los folds
                 cv_scores <- c()
@@ -253,14 +261,34 @@ for (balance_i in 1:length(balance)) {
                   return((x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE))
                 }
                 
+                # TRAIN SET 
+                # no class_efficiency 
                 x_train <- as.matrix(train_data[, !colnames(train_data) %in% "class_efficiency"])
+                
+                # change to numeric
                 x_train <- apply(x_train, 2, as.numeric)
-                x_train <- apply(x_train, 2, normalize_zscore)
+                
+                # normalize only x and y
+                # first, separete
+                x_train_norm <- x_train[, c(new_x, new_y)]
+                
+                # second, normalize
+                x_train_norm <- apply(x_train_norm, 2, normalize_zscore)
+                
+                # join inputs and outputs with z
+                x_train <- cbind(x_train_norm, x_train[, -c(new_x, new_y)])
+                  
+                # change class to numeric
                 y_train <- ifelse(train_data$class_efficiency == "efficient", 1, 0)
                 
+                # VALIDATION SET
+                # the same process
                 x_val <- as.matrix(valid_data[, !colnames(valid_data) %in% "class_efficiency"])
                 x_val <- apply(x_val, 2, as.numeric)
-                x_val <- apply(x_val, 2, normalize_zscore)
+                x_val_norm <- x_val[, c(new_x, new_y)]
+                x_val_norm <- apply(x_val_norm, 2, normalize_zscore)
+                x_val <- cbind(x_val_norm, x_val[, -c(new_x, new_y)])
+                
                 y_val <- ifelse(valid_data$class_efficiency == "efficient", 1, 0)
                 
                 
@@ -278,7 +306,7 @@ for (balance_i in 1:length(balance)) {
                   model <- keras_model_sequential()
                   
                   # Agregar la primera capa oculta con la entrada
-                  model %>% layer_dense(units = neurons, activation = 'relu', input_shape = ncol(X))
+                  model %>% layer_dense(units = neurons, activation = activation, input_shape = ncol(X))
                   
                   # Agregar capas ocultas adicionales según el número de elementos en hidden_layers
                   if (hidden_layer > 1) {
@@ -301,8 +329,8 @@ for (balance_i in 1:length(balance)) {
                 
                 model1 %>% compile(
                   loss = "binary_crossentropy",
-                  optimizer = "adam",    # sgd, adam
-                  metric = c("accuracy") # accuracy; F1Score
+                  optimizer = optimizer,    # sgd, adam
+                  metric = metric # accuracy; F1Score
                 ) 
                 
                 # training
@@ -379,12 +407,6 @@ for (balance_i in 1:length(balance)) {
       }
     }
   }
-  
-  # # Mostrar los mejores hiperparámetros
-  # best_model <- results[which.max(results$mean_accuracy), ]
-  # print("\n🏆 Mejor configuración encontrada:")
-  # print(results)
-  # 
 }
 
 
