@@ -36,6 +36,8 @@ get_SMOTE_DMUs <- function (
       nrow = 0
     ))
     
+    names(save_dataset) <- names(copy_data[[1]])
+    
     for(sub_group in 1:length(copy_data)) {
       print(paste("sub_group:", sub_group))
       print(paste("Balance", balance))
@@ -193,42 +195,6 @@ get_SMOTE_DMUs <- function (
           save_dataset <- rbind(save_dataset, data)
           next
           
-          # len <- len - 1
-          # 
-          # prop_imp <- 1/len
-          # 
-          # lambda <- rep(prop_imp, len)
-          # 
-          # n_comb <- nrow(data_eff)
-          # 
-          # combinations <- as.data.frame(t(combn(n_comb, len)))
-          # 
-          # results_convx_special <- t(apply(combinations, 1, function(indices) { 
-          #   
-          #   # select row
-          #   seleccion <- data_eff[unlist(as.vector(indices)), c(x,y)]
-          #   
-          #   # calculate
-          #   colSums(seleccion * lambda)
-          #   
-          # }))
-          # 
-          # # change to dataframe
-          # results_convx_special <- as.data.frame(results_convx_special)
-          # 
-          # # change name
-          # names(results_convx_special) <- names(data_eff[, c(x,y)])
-          # 
-          # # create test dataset additive
-          # test_eff <- rbind(data_eff[, c(x,y)], results_convx_special)
-          # 
-          # # test additive
-          # test_add <- compute_scores_additive(test_eff, x = x, y = y)
-          # 
-          # # leave original eff units, get index
-          # new_results_convx_special <- test_eff[(nrow(data_eff) + 1):nrow(test_eff),]
-          # idx_eff <- which(test_add[(nrow(data_eff) + 1):nrow(test_add),] < 0.0001)
-          
         } else if ((nrow(combinations) - length(n_idx)) < create_ineff &
                    nrow(combinations) > length(n_idx)) {
           
@@ -237,38 +203,7 @@ get_SMOTE_DMUs <- function (
           save_dataset <- rbind(save_dataset, data)
           next
           
-          # print("bro2")
-          # # change lambda
-          # browser()
-
-          
-          # idx_ineff <- combinations[-idx,]
-          
-          # idx_ineff <- combinations %>% 
-          #   anti_join(idx, by = colnames(combinations))
-          # 
-          # # save new unit s witf different lambda
-          # save_lambda_ineff <- as.data.frame(matrix(
-          #   data = NA,
-          #   ncol = length(c(x,y)),
-          #   nrow = 0
-          # ))
-          # 
-         
-          
         }
-        # else if (nrow(combinations) == 1) {
-        #   
-        #   print("Next")
-        #   print(sub_group)
-        #   
-        #   save_dataset <- rbind(data, save_dataset)
-        #   next
-        #   
-        # } 
-        # 
-        
-        
         
       } # end not efficient case
 
@@ -293,12 +228,12 @@ get_SMOTE_DMUs <- function (
       results_convx <- results_convx[check_results_convx, ]
       
       idx <- idx[check_results_convx, ]
-      
+     
       # if there are not enough efficient units, use
       if(sense_balance == "efficient" & nrow(results_convx) < create_eff) {
         
         # need to create
-        need_eff <- create_eff - nrow(new_data)
+        need_eff <- create_eff - nrow(results_convx)
         
         # eff_combinations <- idx
         save_lambda_eff <- as.data.frame(matrix(
@@ -306,6 +241,13 @@ get_SMOTE_DMUs <- function (
           ncol = length(c(x,y)),
           nrow = 0
         ))
+        
+        # names(save_lambda_eff) <- names(data)[c(x,y)]
+        # 
+        # # Fisrt, I paste the convex combinations
+        # save_lambda_eff <- rbind(save_lambda_eff, results_convx )
+        # 
+        # # Second, I search new efficient combinations
         count_browser <- 0
         while (nrow(save_lambda_eff) < need_eff) {
           count_browser <- count_browser + 1
@@ -349,28 +291,55 @@ get_SMOTE_DMUs <- function (
         
         results_convx <- rbind(results_convx, save_lambda_eff)
         
-      } 
-      
-      # create contex information
-      vector_contex <- unique(data[,z])
-      
-      n_col <- length(vector_contex)
-      
-      contex <- as.data.frame(matrix(
-        data = NA,
-        nrow = nrow(results_convx),
-        ncol = n_col
-      ))
-      
-      names(contex) <- names(vector_contex)
-      
-      for (colum_contex in 1:length(contex)) {
+      } else if (sense_balance == "efficient" & nrow(results_convx) >= create_eff) {
+        print("linea 353")
         
-        contex[, colum_contex] <- rep(as.numeric(vector_contex[,colum_contex]), nrow(results_convx)) 
+        # need to add
+        need_eff <- nrow(results_convx) - create_eff
+        
+        if (need_eff != 0) {
+          print("linea 360")
+          
+          new_idx <- sample(1:nrow(results_convx), size = need_eff)
+        } else {
+          print("linea 364")
+          new_idx <- 1:nrow(results_convx)
+        }
+        
+        results_convx <- results_convx[new_idx,]
         
       }
       
-      new_data <- cbind(results_convx, contex)
+      # add context if it is necessary
+      if (!(is.null(z))) {
+        # create contex information
+        
+        vector_contex <- unique(data[,z])
+        
+        n_col <- length(vector_contex)
+        
+        contex <- as.data.frame(matrix(
+          data = NA,
+          nrow = nrow(results_convx),
+          ncol = n_col
+        ))
+        
+        names(contex) <- names(vector_contex)
+        
+        for (colum_contex in 1:length(contex)) {
+          
+          contex[, colum_contex] <- rep(as.numeric(vector_contex[,colum_contex]), nrow(results_convx)) 
+          
+        }
+        
+        new_data <- cbind(results_convx, contex)
+        
+      } else {
+        
+        # no z case
+        new_data <- results_convx
+        
+      }
       
       if(sense_balance == "not_efficient") {
         

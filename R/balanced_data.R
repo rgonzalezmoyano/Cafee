@@ -36,7 +36,7 @@ SMOTE_balance_data <- function (
   prop <- prop_real
   
   sense_balance <- NULL
-  browser()
+  
   # determinate the way to balance, create efficient or not efficient
   if (prop < balance_data) {
     
@@ -1053,7 +1053,7 @@ SMOTE_data <- function (
     y = y,
     z = z
   )
-
+  
   # loop 
   # number synthetic function for each level of dataset
 

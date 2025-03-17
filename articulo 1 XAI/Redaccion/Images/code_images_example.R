@@ -201,10 +201,10 @@ plot2 <- ggplot() +
   scale_x_continuous(limits = c(0, 10)) +
   scale_y_continuous(limits = c(0, 10)) +
   
-  # # name DMUs
-  # geom_text(data = eval_data[eval_data$class_efficiency == "efficient", ],
-  #           aes(x = x, y = y, label = row.names(eval_data[eval_data$class_efficiency == "efficient", ])),
-  #           vjust = -1, hjust = 1) +
+  # name DMUs
+  geom_text(data = eval_data[eval_data$class_efficiency == "efficient", ],
+            aes(x = x, y = y, label = row.names(eval_data[eval_data$class_efficiency == "efficient", ])),
+            vjust = -1, hjust = 1) +
 
   # # name DMUs
   # geom_text(data = new_dmu[new_dmu$class_efficiency == "efficient", ],
@@ -258,9 +258,14 @@ plot5 <- ggplot(data = eval_data) +
   geom_point(data = grid, aes(x = x, y = y, color = label), size = 0.6, alpha = 0.5) + #  size = 0.6, alpha = 0.3
   geom_point(aes(x = x, y = y)) +
   scale_color_manual(values = c("olivedrab2", "pink"), name = "Class", labels = c("efficient", "inefficient")) +
+
+  # name DMUs
+  geom_text(data = eval_data[eval_data$class_efficiency == "efficient", ],
+            aes(x = x, y = y, label = row.names(eval_data[eval_data$class_efficiency == "efficient", ])),
+            vjust = -1, hjust = 1) +
   
   labs(x = "input", y = "output") +
- 
+
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0) +
   theme_bw() +
@@ -270,13 +275,15 @@ plot5 <- ggplot(data = eval_data) +
 plot5
 
 
-#ggsave(plot = plot5, dpi = 600, filename = "balance_class.png")
+ggsave(plot = plot5, dpi = 600, width = 10, heigh = 6, filename = "balance_class.png")
 
 # draw a directional vector
 # Coordenadas de los puntos
 DMU <- 22
 point <- data[DMU,1:2]
-projection <- list_method[["nnet"]][["data_scenario_list"]][["0.75"]][["data_scenario"]][DMU,]
+projection <- list_method[["nnet"]][["data_scenario_list"]][[1]][["data_scenario"]][DMU,]
+
+names(projection) <- names(point)
 
 # Crear un data frame para el vector
 vector_data <- data.frame(
@@ -285,7 +292,6 @@ vector_data <- data.frame(
   xend = projection[,1],      # Coordenada x final
   yend = projection[,2]       # Coordenada y final
 )
-list_method[["nnet"]][["data_scenario_list"]][["0.95"]][["betas"]][DMU,]
 
 plot7 <- ggplot(data = eval_data) +
   
@@ -301,7 +307,7 @@ plot7 <- ggplot(data = eval_data) +
   geom_point(data = point, aes(x = x, y = y)) +
   
   geom_segment(
-    data = vector_data, aes(x = x, y = y, xend = xend, yend = yend),
+    data = vector_data, aes(x = x, y = y, xend = xend + 0.03, yend = yend - 0.05),
     arrow = arrow(length = unit(0.2, "cm")), # Flecha al final del segmento
     size = 0.7,
     color = "blue") +
@@ -315,6 +321,11 @@ plot7 <- ggplot(data = eval_data) +
   geom_text(data = projection,
             aes(x = x, y = y, label = "22'"),
             vjust = -0.6, hjust = 1.2) +
+  
+  # name DMUs
+  geom_text(data = eval_data[eval_data$class_efficiency == "efficient", ],
+            aes(x = x, y = y, label = row.names(eval_data[eval_data$class_efficiency == "efficient", ])),
+            vjust = -1, hjust = 1) +
 
   labs(x = "input", y = "output") +
   
@@ -326,7 +337,7 @@ plot7 <- ggplot(data = eval_data) +
 
 plot7
 
-#ggsave(plot = plot7, dpi = 600, filename = "projection.png")
+ggsave(plot = plot7, dpi = 600, width = 10, heigh = 6, filename = "projection.png")
 
 # degradado
 # make a grid of the predictors
@@ -362,7 +373,7 @@ plot6 <- ggplot() +
 
 plot6
 
-ggsave(plot = plot6, dpi = 600, filename = "NN_uncertenty.png")
+ggsave(plot = plot6, dpi = 600, width = 10, heigh = 6, filename = "NN_uncertenty.png")
 library(openxlsx)
 # write.xlsx(list_method[["nnet"]][["real_decision_balance"]], file = "real_decision_balance_example.xlsx")
 # write.xlsx(list_method[["nnet"]][["train_decision_balance"]], file = "train_decision_balance_example.xlsx")  
