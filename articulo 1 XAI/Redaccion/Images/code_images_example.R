@@ -184,7 +184,14 @@ plot1 <- ggplot() +
   ylim(0, 10) +
   
   theme_bw() +
-  theme(legend.position = "bottom")
+  theme(
+    legend.position = "bottom",
+    axis.title = element_text(size = 16),  # Tamaño de los títulos de los ejes
+    axis.text = element_text(size = 14),   # Tamaño de los números en los ejes
+    plot.title = element_text(size = 18),  # Por si añades un título general
+    legend.text = element_text(size = 14), # Texto de la leyenda
+    legend.title = element_text(size = 15) # Título de la leyenda
+  )
 
 plot1
 
@@ -225,7 +232,14 @@ plot2 <- ggplot() +
   ylim(0, 10) +
   
   theme_bw() +
-  theme(legend.position = "bottom")
+  theme(
+    legend.position = "bottom",
+    axis.title = element_text(size = 16),  # Tamaño de los títulos de los ejes
+    axis.text = element_text(size = 14),   # Tamaño de los números en los ejes
+    plot.title = element_text(size = 18),  # Por si añades un título general
+    legend.text = element_text(size = 14), # Texto de la leyenda
+    legend.title = element_text(size = 15) # Título de la leyenda
+  )
 
 plot2
 
@@ -269,7 +283,14 @@ plot5 <- ggplot(data = eval_data) +
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0) +
   theme_bw() +
-  theme(legend.position = "bottom") +
+  theme(
+    legend.position = "bottom",
+    axis.title = element_text(size = 16),  # Tamaño de los títulos de los ejes
+    axis.text = element_text(size = 14),   # Tamaño de los números en los ejes
+    plot.title = element_text(size = 18),  # Por si añades un título general
+    legend.text = element_text(size = 14), # Texto de la leyenda
+    legend.title = element_text(size = 15) # Título de la leyenda
+  ) +
   guides(color = guide_legend(override.aes = list(size = 5)))
 
 plot5
@@ -332,7 +353,14 @@ plot7 <- ggplot(data = eval_data) +
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0) +
   theme_bw() +
-  theme(legend.position = "bottom") +
+  theme(
+    legend.position = "bottom",
+    axis.title = element_text(size = 16),  # Tamaño de los títulos de los ejes
+    axis.text = element_text(size = 14),   # Tamaño de los números en los ejes
+    plot.title = element_text(size = 18),  # Por si añades un título general
+    legend.text = element_text(size = 14), # Texto de la leyenda
+    legend.title = element_text(size = 15) # Título de la leyenda
+  ) +
   guides(color = guide_legend(override.aes = list(size = 5)))
 
 plot7
@@ -369,7 +397,14 @@ plot6 <- ggplot() +
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0) +
   theme_bw() +
-  theme(legend.position = "bottom")
+  theme(
+    legend.position = "bottom",
+    axis.title = element_text(size = 16),  # Tamaño de los títulos de los ejes
+    axis.text = element_text(size = 14),   # Tamaño de los números en los ejes
+    plot.title = element_text(size = 18),  # Por si añades un título general
+    legend.text = element_text(size = 9), # Texto de la leyenda
+    legend.title = element_text(size = 12) # Título de la leyenda
+  )
 
 plot6
 

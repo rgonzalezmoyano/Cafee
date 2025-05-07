@@ -55,7 +55,7 @@ projection[1, ] <- data.frame(x1 = data[3,1], y = data[3,2])
 projection[2, ] <- data.frame(x1 = 5, y = 6.6)
 
 names(projection) <- c("x1", "y")
-
+library(ggplot2)
 # plot
 plot <- ggplot() +
   geom_point(data = data, aes(x = x1, y = y)) +
@@ -84,9 +84,16 @@ plot <- ggplot() +
   
   theme_bw() +
   
-  theme(legend.position = "bottom")
+  theme(
+    legend.position = "bottom",
+    axis.title = element_text(size = 16),  # Subido a 16
+    axis.text = element_text(size = 14),   # Subido a 14
+    plot.title = element_text(size = 18),  # Subido a 18
+    legend.text = element_text(size = 14), # Subido a 14
+    legend.title = element_text(size = 15) # Subido a 15
+  )
 
 plot
 
 # ggsave(plot = plot, dpi = 600, filename = "DEA projection.png")
-ggsave(file = "img1.png", plot = plot, dpi = 600, width = 10, heigh = 6)
+ggsave(file = "projection.png", plot = plot, dpi = 600, width = 10, heigh = 6)

@@ -1,5 +1,5 @@
 ### Generate an image of the SVM hyperplane.
-
+library(caret)
 set.seed(6)
 
 data <- matrix(
@@ -78,11 +78,12 @@ modelo <- train (
 
 library(NeuralNetTools)
 old.par <- par(mar = c(bottom = 0, left = 2, top = 2, right = 3), xpd = NA)
-plotnet(modelo,
-  bias = FALSE,
-  pos_col = "black", neg_col = "black",
-  var_labs = FALSE,
-  nid = F)
+plot <- plotnet(modelo,
+        bias = F,                 # No mostrar bias
+        pos_col = "black",             # Color de pesos positivos
+        neg_col = "black",             # Color de pesos negativos
+        var_labs = FALSE,              # No mostrar etiquetas de las variables
+        nid = F)                   # No mostrar grosor de las conexiones
 # old.par <- par(mar = c(bottom = 0, left = 2, top = 2, right = 3), xpd = NA)
 
 plot
