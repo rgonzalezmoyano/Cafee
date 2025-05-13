@@ -45,11 +45,17 @@ data$ST26Q17 <- apply(as.matrix(data$ST26Q17), MARGIN = 1, FUN = get_last_char)
 # group_by school #
 # =============== #
 
+# only SPAIN
+data <- data %>% 
+  filter(CNT == "ESP")
+
 # create ID_key
 data$ID_PISA <- paste0(data$CNT, data$SCHOOLID)
+# create ID_key by student
+data$ID_PISA <- paste0(data$SCHOOLID, data$STIDSTD)
 
 # dimensions
-nrow = length(unique(data$ID_PISA))
+nrow <- length(unique(data$ID_PISA))
 ncol <- as.numeric(length(names(data)))
 
 
@@ -68,7 +74,7 @@ names(new_data) <- names(data)
 # bucle
 for (i in 1:nrow(new_data)) {
   paste("Iteración:", print(i))
-  print(i/18139)
+  print(i/nrow(new_data))
   print("")
   # ID
   new_data[i, 635] <- unique(data$ID_PISA)[i]
@@ -119,7 +125,13 @@ for (i in 1:nrow(new_data)) {
       # get value to delete per school
       no_value <- posible_value[length(posible_value)]
       
-      if (posible_value[length(posible_value)] - posible_value[length(posible_value) - 1] == 1) {
+      if (length(posible_value) == 1) {
+        # do nothing
+        # comprobar si está bien cuando no sea para España solo
+        strange_v <- 0
+        no_value <- 0
+        
+      } else if (posible_value[length(posible_value)] - posible_value[length(posible_value) - 1] == 1 & posible_value[length(posible_value)] > 50) {
         
         strange_v <- 2
         
@@ -241,5 +253,5 @@ for (i in 1:nrow(new_data)) {
 
 
 # save data
-file <- paste("pisa/data_PISA_2012_1_to_319", ".RData", sep = "")
-save(save_new_data, file = file)
+file <- paste("pisa/data_PISA_2012_by_ESP_student", ".RData", sep = "")
+save(new_data, file = file)
