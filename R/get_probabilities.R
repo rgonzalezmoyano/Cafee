@@ -54,7 +54,7 @@ compute_target <- function (
     if (z == 0) {
       variables <- c(x, y)
     } else {
-      variables <- c(x, y, z)
+      variables <- c(x, y, z:length(data))
     }
     
     data <- as.data.frame(data)
